@@ -1,0 +1,580 @@
+{
+  "nav": {
+    "announcements": "Announcements",
+    "story": "Our Story",
+    "testimonials": "Testimonials",
+    "classes": "Classes",
+    "channels": "Channels",
+    "support": "Support",
+    "store": "Store",
+    "login": "Student Login",
+    "dashboard": "My Dashboard",
+    "admin": "Admin Panel",
+    "menu": "Open menu",
+    "close": "Close menu",
+    "features": "Features",
+    "register": "Register",
+    "how": "How it works"
+  },
+  "hero": {
+    "kicker": "G.C.E. A/L Combined Mathematics",
+    "nameLine1": "Hasitha",
+    "nameLine2": "Madusanka",
+    "tagline": "The staircase that builds engineers",
+    "description": "Theory, revision and paper classes in {centers} and island-wide online, live classes, HD recordings, tutes and timed papers in one place.",
+    "ctaPrimary": "Register Now",
+    "ctaSecondary": "Free Seminars",
+    "imageAlt": "Hasitha Madusanka",
+    "scroll": "Scroll",
+    "new": "New",
+    "newText": "Weekly papers, leaderboards & streaks are live",
+    "stats": {
+      "centers": "Class centers",
+      "recordings": "Recordings",
+      "access": "Access anywhere",
+      "batches": "A/L batches"
+    },
+    "cards": {
+      "rank": "#1 in Panadura",
+      "rankSub": "Weekly paper leaderboard",
+      "live": "Live now",
+      "liveSub": "Theory class · Zoom",
+      "streak": "6-week streak",
+      "streakSub": "All-island top 10"
+    },
+    "taglineLead": "Master",
+    "rotate": [
+      "Pure Maths",
+      "Applied Maths",
+      "Past papers",
+      "Combined Maths"
+    ],
+    "mock": {
+      "week": "Week 12",
+      "result": "Latest result",
+      "paper": "Differentiation paper",
+      "island": "island"
+    }
+  },
+  "announcements": {
+    "label": "Announcements",
+    "items": [
+      "2026 A/L Theory admissions are now open",
+      "2027 A/L new batch starts this month: Panadura & Online",
+      "Monthly paper class every Sunday at Horana",
+      "Free seminar recordings are available in the Free Zone",
+      "Island-wide tute delivery for registered students"
+    ],
+    "previous": "Previous announcement",
+    "next": "Next announcement"
+  },
+  "story": {
+    "label": "Our Story",
+    "title": "A journey of excellence",
+    "milestones": [
+      {
+        "icon": "spark",
+        "title": "Where it began",
+        "text": "Started with a handful of students in Panadura and a simple belief: every student can master Combined Maths with the right guidance."
+      },
+      {
+        "icon": "map",
+        "title": "{centerCountAll} class centers",
+        "text": "{centers_and} class halls, plus island-wide online classes for students anywhere in Sri Lanka."
+      },
+      {
+        "icon": "video",
+        "title": "Learn anytime",
+        "text": "Every lesson is recorded in HD and organised week by week, so you can revise at your own pace, as many times as you need."
+      },
+      {
+        "icon": "paper",
+        "title": "Exam-ready practice",
+        "text": "Timed online MCQ papers with instant marks, full review mode and a batch leaderboard to keep you sharp."
+      },
+      {
+        "icon": "trophy",
+        "title": "Results that speak",
+        "text": "Year after year, our students walk into the exam hall confident, and walk out with the results they worked for."
+      }
+    ]
+  },
+  "testimonials": {
+    "label": "Testimonials",
+    "title": "Voices of our students",
+    "watch": "See what our students say",
+    "play": "Play video",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "previous": "Previous testimonial",
+    "next": "Next testimonial",
+    "items": [
+      {
+        "name": "Sanduni Perera",
+        "meta": "2025 A/L · Panadura",
+        "text": "Sir explains every theory from the basics. The weekly paper classes completely changed how I manage time in the exam."
+      },
+      {
+        "name": "Kavindu Fernando",
+        "meta": "2025 A/L · Online",
+        "text": "I missed a few live classes because of school, but the recordings and tutes helped me catch up within the same week."
+      },
+      {
+        "name": "Nethmi Silva",
+        "meta": "2024 A/L · Horana",
+        "text": "The online MCQ papers with the leaderboard made practice fun. I could see my progress every single month."
+      },
+      {
+        "name": "Isuru Jayasinghe",
+        "meta": "2024 A/L · Kalutara",
+        "text": "Mechanics was my weakest area. Sir's short methods and revision classes made it my strongest by the final exam."
+      }
+    ],
+    "close": "Close video"
+  },
+  "classes": {
+    "label": "Classes",
+    "title": "Classes for every batch",
+    "subtitle": "Theory, revision, paper and extra classes, at a center near you or online.",
+    "thisMonth": "This month",
+    "perMonth": "{amount} / month",
+    "free": "Free",
+    "enroll": "Enroll now",
+    "viewAll": "View all classes",
+    "previous": "Previous class",
+    "next": "Next class",
+    "goTo": "Go to slide {n}",
+    "placeholders": [
+      {
+        "title": "2026 A/L Theory",
+        "type": "Theory",
+        "year": 2026,
+        "lines": [
+          "Pure Maths: Differentiation",
+          "Applied: Newton's laws",
+          "Weekly tute + recording"
+        ]
+      },
+      {
+        "title": "2026 A/L Revision",
+        "type": "Revision",
+        "year": 2026,
+        "lines": [
+          "Full syllabus revision",
+          "Past paper discussions",
+          "Short methods & tricks"
+        ]
+      },
+      {
+        "title": "2027 A/L Theory",
+        "type": "Theory",
+        "year": 2027,
+        "lines": [
+          "Pure Maths: Functions",
+          "Applied: Vectors",
+          "Weekly tute + recording"
+        ]
+      },
+      {
+        "title": "Paper Class",
+        "type": "Paper Class",
+        "year": 2026,
+        "lines": [
+          "Model paper every week",
+          "Marking & discussion",
+          "Batch leaderboard"
+        ]
+      },
+      {
+        "title": "Free Seminar",
+        "type": "Free Seminar",
+        "year": 2028,
+        "lines": [
+          "Introduction to A/L Maths",
+          "Study plan for beginners",
+          "Open to everyone"
+        ]
+      }
+    ]
+  },
+  "channels": {
+    "label": "Channels",
+    "title": "Join our WhatsApp channels",
+    "subtitle": "Class updates, timetables and papers, straight to your phone.",
+    "items": {
+      "2026theory": "2026 Theory",
+      "2026revision": "2026 Revision",
+      "2027theory": "2027 Theory",
+      "2028theory": "2028 Theory",
+      "papers": "Paper Class"
+    }
+  },
+  "cta": {
+    "title": "Ready to join the next batch?",
+    "text": "Create your free student account in a minute and get your Student ID instantly.",
+    "button": "Register Now"
+  },
+  "faq": {
+    "label": "Support",
+    "title": "Frequently asked questions",
+    "more": "See more questions",
+    "less": "Show fewer questions",
+    "items": [
+      {
+        "q": "How do I register for a class?",
+        "a": "Create a free account with your mobile number, then open the Store in your dashboard, choose your class and month, and upload your bank slip."
+      },
+      {
+        "q": "How do I pay the class fee?",
+        "a": "Pay by bank deposit or online transfer to the account shown in the Store. Use your Student ID as the reference and upload a photo of the slip."
+      },
+      {
+        "q": "When will I get access after paying?",
+        "a": "Your payment is checked manually. Once approved, the class month unlocks automatically, usually within a few hours."
+      },
+      {
+        "q": "Can I watch the recordings again?",
+        "a": "Yes. Recordings for every month you have paid for stay available in My Classes, organised week by week."
+      },
+      {
+        "q": "When can I join a live class?",
+        "a": "The Join button appears 20 minutes before the class starts. The link is shown only to students who have paid for that month."
+      },
+      {
+        "q": "I forgot my password. What should I do?",
+        "a": "Contact us on WhatsApp with your Student ID and registered mobile number and we will reset it for you."
+      },
+      {
+        "q": "Are the online papers timed?",
+        "a": "Yes. MCQ papers have a countdown timer and submit automatically when time runs out. You can review answers after the paper closes."
+      },
+      {
+        "q": "Do you deliver printed tutes?",
+        "a": "Yes. Order tute books from the Store and they will be delivered island-wide to the address you provide."
+      }
+    ]
+  },
+  "footer": {
+    "blurb": "G.C.E. A/L Combined Mathematics classes by Hasitha Madusanka, {centers} and online.",
+    "contact": "Get in Touch",
+    "follow": "Follow Us",
+    "links": "Quick Links",
+    "rights": "© {year} Hasitha Madusanka · Combined Mathematics. All rights reserved.",
+    "notice": "Recordings are watermarked. Sharing or re-recording is prohibited."
+  },
+  "features": {
+    "label": "Features",
+    "title": "Everything you need to score an A",
+    "subtitle": "One student portal for classes, papers, results and tutes, built for A/L Combined Maths.",
+    "items": {
+      "papers": {
+        "title": "Weekly papers & leaderboards",
+        "text": "Sit the weekly paper, get your marks online and see your rank in your center and all-island. Track every result on a progress chart."
+      },
+      "streaks": {
+        "title": "Streaks & badges",
+        "text": "Keep your weekly paper streak alive, build a daily study streak and unlock achievements as you improve."
+      },
+      "centers": {
+        "title": "{centerCountAll} class centers",
+        "text": "{centers} and island-wide online classes."
+      },
+      "live": {
+        "title": "Live classes",
+        "text": "Join Zoom or YouTube live classes straight from your dashboard, the link unlocks 20 minutes before class."
+      },
+      "recordings": {
+        "title": "HD recordings",
+        "text": "Missed a class? Watch the recording week by week, as many times as you need."
+      },
+      "delivery": {
+        "title": "Tutes delivered to your door",
+        "text": "Add your address once when you register, monthly tutes and books are posted island-wide to the address on your profile."
+      }
+    }
+  },
+  "marquee": {
+    "topics": [
+      "Differentiation",
+      "Integration",
+      "Vectors",
+      "Probability",
+      "Complex numbers",
+      "Trigonometry",
+      "Matrices",
+      "Circles"
+    ],
+    "perks": [
+      "Weekly papers",
+      "Center & all-island ranks",
+      "Live Zoom classes",
+      "HD recordings",
+      "Tutes delivered",
+      "Study streaks",
+      "Sinhala & English"
+    ]
+  },
+  "how": {
+    "label": "How it works",
+    "title": "From paper to podium",
+    "subtitle": "Every week, the same simple loop keeps you improving.",
+    "step": "Step {n}",
+    "steps": [
+      {
+        "title": "Sit the weekly paper",
+        "text": "Download the paper from your dashboard or sit it at your class center, every batch gets a fresh paper each week."
+      },
+      {
+        "title": "Get your marks online",
+        "text": "Marks are entered right after marking. See your score, grade and how far ahead of the class you are."
+      },
+      {
+        "title": "Climb the leaderboard",
+        "text": "Rank up in your center and all-island, keep your weekly streak alive and unlock badges along the way."
+      }
+    ],
+    "phone": {
+      "thisWeek": "This week",
+      "paper": "Week 12 paper",
+      "paperMeta": "Differentiation · 100 marks",
+      "marks": "92 / 100",
+      "grade": "Grade A",
+      "island": "All-island",
+      "board": "Leaderboard",
+      "you": "You"
+    }
+  },
+  "home": {
+    "nav": {
+      "home": "Home",
+      "process": "Our Process",
+      "teacher": "Teacher",
+      "centers": "Centers",
+      "classes": "Classes",
+      "stories": "Stories",
+      "support": "FAQ",
+      "gallery": "Gallery"
+    },
+    "hero": {
+      "kicker": "G.C.E. Advanced Level",
+      "line1": "Combined Maths",
+      "line2": "Hasitha Madusanka",
+      "tagline": "The staircase that builds engineers",
+      "desc": "Combined Maths lecturer on the national TV programme Guruthalawa. {centers} and online.",
+      "ctaGuest": "Join now",
+      "badge": "THEORY",
+      "ctaLearn": "Learn more",
+      "tv": "National TV lecturer",
+      "stats": {
+        "subs": "YouTube subscribers",
+        "abResults": "A / B results",
+        "videos": "Lesson videos",
+        "centers": "Centers + Online"
+      }
+    },
+    "about": {
+      "label": "About the program",
+      "p1": "An A/L Combined Mathematics programme led by Hasitha Madusanka, Combined Maths lecturer on the national TV programme Guruthalawa and the Jathika Pasala YouTube channel.",
+      "p2": "Through Theory, Revision and Paper classes we cover the full syllabus from start to finish and walk you step by step to the doors of the engineering faculty.",
+      "pillars": [
+        "Experience",
+        "Structure",
+        "Dedication",
+        "Results"
+      ],
+      "quoteLabel": "What students say"
+    },
+    "process": {
+      "label": "How we work",
+      "title": "Our Process",
+      "subtitle": "From the first lesson to the exam hall, every step is planned.",
+      "items": [
+        {
+          "sticker": "bulb",
+          "title": "Theory Classes",
+          "text": "Every Pure and Applied concept from the ground up, with worked examples and short-cuts for a solid foundation."
+        },
+        {
+          "sticker": "write",
+          "title": "Revision Classes",
+          "text": "The whole syllabus revisited in a short time, building speed and confidence in problem solving."
+        },
+        {
+          "sticker": "detective",
+          "title": "Paper Classes",
+          "text": "Weekly timed papers, marking and full discussion, real exam experience before the exam."
+        },
+        {
+          "sticker": "online",
+          "title": "Online Classes",
+          "text": "Join live from anywhere in the island. Missed a lesson? Watch the HD recording any time."
+        },
+        {
+          "sticker": "mailbox",
+          "title": "Tute Delivery",
+          "text": "Lesson-matched tutes and papers delivered island-wide to your door."
+        }
+      ]
+    },
+    "teacher": {
+      "label": "Teacher",
+      "title": "About Your Teacher",
+      "text": "A Combined Maths lecturer on the national TV programme Guruthalawa and the Jathika Pasala YouTube channel, Hasitha sir has reached thousands of students across the island and turns Combined Maths from a subject you fear into one you love. Through his ‘staircase that builds engineers’, students step into universities and engineering faculties every year.",
+      "name": "Hasitha Madusanka",
+      "role": "B.Sc · Combined Maths Lecturer",
+      "photoSoon": "Sir's photo coming soon"
+    },
+    "centers": {
+      "label": "Centers",
+      "title": "Our Centers",
+      "text": "Classes run at {centerCount} centers and island-wide online. Pick the one nearest to you.",
+      "onlineTitle": "Online Classes",
+      "onlineText": "Live Zoom classes + HD recordings, from anywhere in Sri Lanka.",
+      "call": "Class inquiries",
+      "items": [
+        {
+          "key": "horana",
+          "place": "Widula",
+          "town": "Horana"
+        },
+        {
+          "key": "matugama",
+          "place": "Panola",
+          "town": "Matugama"
+        },
+        {
+          "key": "kalutara",
+          "place": "Rasanya",
+          "town": "Kalutara"
+        },
+        {
+          "key": "panadura",
+          "place": "Sakya",
+          "town": "Panadura"
+        }
+      ]
+    },
+    "stories": {
+      "label": "Success stories",
+      "title": "Inspiring Success Stories",
+      "subtitle": "Our students' journeys, class memories and special moments, on YouTube.",
+      "watch": "Watch video",
+      "lessons": "Free lesson videos",
+      "more": "More videos on YouTube"
+    },
+    "gallery": {
+      "title": "Our Class",
+      "subtitle": "A collection of memorable moments",
+      "soon": "Group photo coming soon",
+      "viewAll": "View the full gallery"
+    },
+    "community": {
+      "label": "YouTube channel",
+      "title": "Join Our Community",
+      "subtitle": "Subscribe for free lessons, past-paper walkthroughs and motivation.",
+      "name": "Hasitha Madusanka | Combined Maths",
+      "subscribers": "Subscribers",
+      "videos": "Videos",
+      "subscribe": "Click to Subscribe",
+      "stay": "Hit the bell so you never miss new videos, live classes and notices."
+    },
+    "channels": {
+      "title": "Channels",
+      "subtitle": "Join our Telegram and WhatsApp channels to get every update first.",
+      "items": {
+        "2027revision": "2027 Revision + Paper",
+        "2027theory": "2027 Theory",
+        "2028theory": "2028 Theory",
+        "wa2027": "2027 Combined Maths",
+        "wa2028": "2028 Combined Maths"
+      }
+    },
+    "cta": {
+      "title": "Take the first step to your engineering dream today",
+      "text": "Create a student account in a minute and join your class.",
+      "button": "Register now"
+    },
+    "footer": {
+      "quick": "Quick Links",
+      "telegram": "Telegram Channels",
+      "contact": "Contact",
+      "social": "Social",
+      "call": "Call",
+      "whatsapp": "WhatsApp"
+    }
+  },
+  "galleryPage": {
+    "title": "Gallery",
+    "subtitle": "Classes, functions, group photos and trips, moments from the HM Maths family.",
+    "all": "All",
+    "categories": {
+      "class": "Classes",
+      "function": "Functions",
+      "group": "Group photos",
+      "trip": "Trips",
+      "other": "Other"
+    },
+    "photosN": "{n} photos",
+    "empty": "No albums here yet",
+    "emptyText": "New photos are added after classes, functions and trips, check back soon.",
+    "back": "All albums",
+    "open": "Open photo",
+    "close": "Close",
+    "prev": "Previous photo",
+    "next": "Next photo",
+    "counter": "{i} / {n}"
+  },
+  "seo": {
+    "back": "Home",
+    "hub": "A/L Combined Maths classes",
+    "hubTitle": "A/L Combined Maths Classes in Sri Lanka",
+    "hubDesc": "G.C.E. A/L Combined Maths classes (Pure and Applied) by Hasitha Madusanka in {centers_and} and online. Live classes, recordings, tutes and weekly papers.",
+    "hubIntro": "HM Maths runs G.C.E. A/L Combined Mathematics classes (Pure Maths and Applied Maths) with Hasitha Madusanka in {centers_and}, and online for students anywhere in Sri Lanka. Pick the center nearest to you, or join online.",
+    "centerTitle": "A/L Combined Maths Class in {town}",
+    "centerDesc": "Join the A/L Combined Maths class in {town} with Hasitha Madusanka: theory, revision and paper classes, live and recorded, with tutes and weekly online papers.",
+    "centerIntro": "Looking for a Combined Maths class in {town}? HM Maths offers G.C.E. A/L Combined Mathematics theory, revision and paper classes in {town}{venue}, taught by Hasitha Madusanka, the Combined Maths lecturer on the national TV programme Guruthalawa.",
+    "onlineTitle": "Online A/L Combined Maths Class in Sri Lanka",
+    "onlineDesc": "Learn A/L Combined Maths online with Hasitha Madusanka from anywhere in Sri Lanka: live Zoom classes, HD recordings, tutes and weekly online papers.",
+    "onlineIntro": "Cannot come to a center? Join the HM Maths online A/L Combined Maths class from anywhere in Sri Lanka: live classes with Hasitha Madusanka, HD recordings of every lesson, tutes, and timed online papers with instant marks.",
+    "whyTitle": "Why students choose HM Maths",
+    "why": [
+      "The full A/L syllabus, Pure and Applied, from the basics to exam techniques",
+      "Live classes plus HD recordings you can rewatch any time",
+      "Tutes as PDF and printed books, posted island-wide",
+      "Weekly timed online papers with instant marks and island rankings",
+      "Pay monthly by bank transfer. Access opens once the payment is approved"
+    ],
+    "classesTitle": "Classes in {town}",
+    "onlineClassesTitle": "Online classes",
+    "noClasses": "New classes here are announced soon. Register free to join the Free Zone seminars now, or ask us on WhatsApp.",
+    "perMonth": "LKR {amount} / month",
+    "free": "Free",
+    "view": "View class",
+    "batch": "{year} A/L",
+    "faqTitle": "Common questions",
+    "faq": [
+      {
+        "q": "Where is the Combined Maths class in {town}?",
+        "a": "The {town} class{venue} is listed above with its timetable. Register on this site and each class page shows the exact days, time and hall."
+      },
+      {
+        "q": "Which A/L batches can join?",
+        "a": "Classes run for the 2026, 2027 and 2028 A/L batches, and there are revision and paper classes for repeat candidates. The batch is shown on every class card."
+      },
+      {
+        "q": "How do I enroll and pay for the {town} class?",
+        "a": "Create a free account, choose the class and month, pay by bank transfer and upload the slip. Your access opens as soon as the payment is approved."
+      },
+      {
+        "q": "Can I study online instead of coming to {town}?",
+        "a": "Yes. Every class has live online access and recordings, so you can learn from anywhere in Sri Lanka."
+      }
+    ],
+    "ctaTitle": "Start with a free account",
+    "register": "Register free",
+    "whatsapp": "WhatsApp us",
+    "otherCenters": "Other class centers",
+    "allCenters": "All centers",
+    "online": "Online"
+  }
+}

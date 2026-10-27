@@ -1,0 +1,769 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "classes": "My Classes",
+    "free": "Free Zone",
+    "exams": "Online Exams",
+    "payments": "Payments",
+    "store": "Store",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "admin": "Admin Panel",
+    "papers": "Papers & Marks",
+    "leaderboard": "Leaderboard",
+    "events": "Events",
+    "channels": "Channels",
+    "contact": "Contact us",
+    "faq": "FAQ"
+  },
+  "crumbs": {
+    "dashboard": "Dashboard",
+    "classes": "My Classes",
+    "free-zone": "Free Zone",
+    "exams": "Online Exams",
+    "review": "Review",
+    "leaderboard": "Leaderboard",
+    "store": "Store",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "payments": "Payments",
+    "classDetail": "Class",
+    "lesson": "Lesson",
+    "details": "Details",
+    "papers": "Papers & Marks",
+    "events": "Events",
+    "channels": "Channels",
+    "contact": "Contact us",
+    "faq": "FAQ"
+  },
+  "dashboard": {
+    "welcome": "Welcome Back, {name}",
+    "welcomeNew": "Welcome to HM Maths, {name}! Your Student ID is {id}. Free seminars are unlocked, enroll in a class from the Store.",
+    "tiles": {
+      "classes": "My Classes",
+      "exams": "Online Exams",
+      "payments": "Payments",
+      "store": "Class Store",
+      "papers": "Papers & Marks",
+      "leaderboard": "Leaderboard",
+      "classesHint": "{n} active this month",
+      "papersHint": "{n} papers sat",
+      "leaderboardHint": "#{rank} all-island",
+      "leaderboardNone": "See the top students",
+      "storeHint": "Classes, tutes & books"
+    },
+    "slide": "Show slide {n}",
+    "banners": [
+      {
+        "title": "The staircase that builds engineers",
+        "text": "Live classes, HD recordings, tutes and timed papers, all in one place.",
+        "cta": "Go to My Classes",
+        "href": "/dashboard/classes",
+        "theme": "orange",
+        "symbol": "∫"
+      },
+      {
+        "title": "Next month's admissions are open",
+        "text": "Upload your bank slip early and get access on day one.",
+        "cta": "Pay class fees",
+        "href": "/dashboard/store",
+        "theme": "teal",
+        "symbol": "Σ"
+      },
+      {
+        "title": "Practise with timed MCQ papers",
+        "text": "Instant marks, full review mode and a batch leaderboard.",
+        "cta": "Open papers",
+        "href": "/dashboard/exams",
+        "theme": "dark",
+        "symbol": "π"
+      },
+      {
+        "title": "Free seminars for everyone",
+        "text": "Orientation videos and sample lessons in the Free Zone.",
+        "cta": "Watch now",
+        "href": "/dashboard/free-zone",
+        "theme": "purple",
+        "symbol": "∞"
+      }
+    ],
+    "upcoming": "Upcoming Classes",
+    "noUpcoming": "No upcoming live classes.",
+    "order": "Tute order",
+    "open": "Open",
+    "results": "Results Center",
+    "resultsHint": "Your recent paper marks (%)",
+    "noResults": "No results yet",
+    "noResultsText": "Your marks appear here after the first paper.",
+    "paperN": "P{n}",
+    "average": "Average Score",
+    "averageLabel": "across {n} papers",
+    "notices": "Latest Notices",
+    "noNotices": "No notices yet.",
+    "support": {
+      "waText": "Hello, I need help with HM Maths. My Student ID: {id}"
+    },
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "heroText": "Keep your streak going, sit this week's paper and check where you rank.",
+    "nextClass": "Next live class",
+    "joinNow": "Join now",
+    "browseClasses": "Browse classes",
+    "myResults": "My results",
+    "ranksTitle": "My ranks",
+    "rankIsland": "All-island",
+    "rankTown": "My center",
+    "sid": "Student ID",
+    "payDelivery": {
+      "title": "Payment & Delivery",
+      "fees": "Class fees",
+      "delivery": "Tute delivery",
+      "payFees": "Pay class fees",
+      "all": "All payments",
+      "classFee": "Class fee",
+      "noFees": "No class fee payments yet.",
+      "noOrders": "No tute book orders yet.",
+      "note": "Note: {note}"
+    },
+    "free": {
+      "title": "Free seminars",
+      "all": "All free seminars",
+      "video": "1 video",
+      "videos": "{n} videos",
+      "soon": "Videos coming soon",
+      "badge": "Free",
+      "none": "No free seminars right now."
+    }
+  },
+  "store": {
+    "classesTitle": "Monthly class admissions",
+    "classesText": "Pay monthly by bank transfer. Past months are available as archive packs inside each class.",
+    "enroll": "Enroll",
+    "noClasses": "No classes open yet",
+    "noClassesText": "New class admissions will appear here.",
+    "booksTitle": "Tute books",
+    "booksText": "Printed tutes delivered island-wide.",
+    "noBooks": "No tute books listed",
+    "noBooksText": "Printed tutes will be available here soon.",
+    "title": "Store",
+    "subtitle": "Monthly class admissions, past-month archive packs and printed tute books.",
+    "publicSubtitle": "Class admissions and tute books. Sign in to enroll.",
+    "owned": "You have this",
+    "pending": "Awaiting approval",
+    "open": "Open class",
+    "tabs": {
+      "classes": "Classes",
+      "books": "Tute books"
+    },
+    "filters": {
+      "year": "Exam year",
+      "allYears": "All years",
+      "yours": "yours",
+      "mode": "Class type",
+      "all": "All",
+      "online": "Online",
+      "physical": "Physical"
+    },
+    "sections": {
+      "online": "Online classes",
+      "center": "{town}, physical class",
+      "other": "Other classes"
+    },
+    "noMatch": "No classes match these filters",
+    "noMatchText": "Try another exam year or class type.",
+    "clearFilters": "Show all classes"
+  },
+  "classes": {
+    "title": "My Classes",
+    "subtitle": "Your paid months, tap a card to watch the recordings and download the tutes.",
+    "myId": "My Student ID",
+    "empty": "Seems like you haven't registered to a class yet.",
+    "emptyText": "Upload your bank slip from the Store. Your class unlocks here once the admin approves it.",
+    "goStore": "Go to Store",
+    "month": {
+      "recording": "1 recording",
+      "recordings": "{n} recordings",
+      "tute": "1 tute",
+      "tutes": "{n} tutes",
+      "nothing": "Recordings coming soon",
+      "open": "Watch recordings",
+      "liveNow": "Live now",
+      "join": "Join",
+      "nextLive": "Next live class: {date}"
+    },
+    "pendingNote": "Waiting for approval: {list}.",
+    "rejectedNote": "Slip rejected: {list}, re-upload it from Payments.",
+    "viewPayments": "Payments"
+  },
+  "classroom": {
+    "comingSoon": "Content is coming soon.",
+    "months": "Months",
+    "otherMonths": "+ Other months",
+    "live": "Live Class Hub",
+    "recordings": "Lesson Recordings",
+    "materials": "Class Materials",
+    "week": "Week {n}",
+    "noRecordings": "Recordings will appear here after each class.",
+    "pdfTute": "PDF tute",
+    "noMaterials": "No tutes uploaded for this month yet.",
+    "cancelledText": "This class has been cancelled. Watch the notices for the new date.",
+    "back": "My Classes",
+    "backFree": "Free seminars"
+  },
+  "lesson": {
+    "locked": "This lesson is locked",
+    "lockedText": "Your payment for this month hasn't been approved yet.",
+    "enroll": "Enroll / upload slip",
+    "noRecording": "Recording not uploaded yet",
+    "week": "Week {n}",
+    "tute": "Tute PDF",
+    "watermark": "This video is watermarked with your Student ID. Screen-recording or sharing leads to account suspension.",
+    "inMonth": "Lessons in {month}"
+  },
+  "free": {
+    "title": "Free Zone",
+    "subtitle": "Free seminars, orientation videos and sample recordings, open to every registered student.",
+    "empty": "No free content yet",
+    "emptyText": "Free seminars will appear here.",
+    "week": "Week {n}",
+    "soon": "Videos coming soon."
+  },
+  "exams": {
+    "title": "Online Exams",
+    "subtitle": "Timed MCQ papers with instant marks, structured papers with answer-sheet upload, and batch rankings.",
+    "empty": "No papers available",
+    "emptyText": "Papers for your enrolled classes will appear here.",
+    "mcq": "MCQ",
+    "structured": "Structured / Essay",
+    "of": "of {total}",
+    "meta": "{min} min · {n} questions",
+    "uploadSheets": "Upload answer sheets",
+    "closes": "Closes {date}",
+    "review": "Review answers",
+    "viewSubmission": "View submission",
+    "leaderboard": "Leaderboard",
+    "closed": "Closed",
+    "continue": "Continue",
+    "start": "Start paper",
+    "open": "Open paper"
+  },
+  "exam": {
+    "back": "All papers",
+    "alreadySubmitted": "You have already submitted this paper.",
+    "reviewLink": "Review your answers",
+    "opensOn": "This paper opens on {date}.",
+    "closedOn": "This paper closed on {date}.",
+    "deadline": "Submission deadline: {date}",
+    "download": "Download question paper (PDF)",
+    "paperSoon": "The question paper will be uploaded soon.",
+    "yourSubmission": "Your submission",
+    "submittedAt": "Submitted {date}",
+    "page": "Page {n}",
+    "leaderboard": "Leaderboard",
+    "marking": "Your paper is being marked. You can re-upload until it is graded.",
+    "replace": "Replace your answer sheets",
+    "upload": "Upload your answer sheets",
+    "submissionsClosed": "Submissions for this paper are closed.",
+    "needPage": "Upload at least one page of your answers.",
+    "submitted": "Answer sheets submitted!",
+    "addSheets": "Add answer sheet photos / PDF",
+    "submitSheets": "Submit answer sheets"
+  },
+  "mcq": {
+    "autoSubmitted": "Time's up, auto-submitted.",
+    "score": "Score: {score} / {total}",
+    "meta": "{n} questions · {min} minutes",
+    "rules": [
+      "The timer starts as soon as you press Start and keeps running if you close the page.",
+      "Your answers are saved on this device as you go.",
+      "The paper submits automatically when the time is up.",
+      "You can attempt this paper only once."
+    ],
+    "start": "Start paper",
+    "answered": "{done}/{total} answered",
+    "questionOf": "Question {n} of {total}",
+    "mark": "1 mark",
+    "marks": "{n} marks",
+    "previous": "Previous",
+    "next": "Next",
+    "confirm": "Submit now? {n} unanswered.",
+    "submit": "Submit paper",
+    "noQuestions": "This paper has no questions yet.",
+    "questions": "Questions",
+    "questionN": "Question {n}",
+    "lastMinute": "Less than a minute left!"
+  },
+  "review": {
+    "back": "All papers",
+    "notAvailable": "Review not available.",
+    "title": "Paper review",
+    "submitted": "Submitted {date}",
+    "late": "late",
+    "marks": "{score} / {total} marks",
+    "correct": "correct",
+    "rank": "Rank",
+    "q": "Q{n}.",
+    "yourAnswer": "(your answer)",
+    "notAnswered": "Not answered",
+    "explanation": "Explanation:",
+    "answersLater": "Correct answers and explanations will be shown after the paper closes on {date}."
+  },
+  "leaderboard": {
+    "back": "All papers",
+    "title": "Leaderboard",
+    "subtitle": "{title} · {n} students",
+    "yourRank": "Your rank",
+    "empty": "No results yet",
+    "rank": "Rank",
+    "student": "Student",
+    "center": "Center",
+    "marks": "Marks",
+    "you": "(you)"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Payments, tute delivery and site updates, all in one place.",
+    "back": "Back",
+    "filters": {
+      "all": "All",
+      "payments": "Payments",
+      "delivery": "Tute delivery",
+      "updates": "Updates"
+    },
+    "pinned": "Pinned",
+    "new": "New",
+    "empty": "No notifications",
+    "emptyText": "You're all caught up.",
+    "kinds": {
+      "payment_approved": {
+        "title": "Payment approved",
+        "body": "{class} · {month} is now unlocked."
+      },
+      "payment_rejected": {
+        "title": "Payment not approved",
+        "body": "Your slip for {class} · {month} was not approved."
+      },
+      "order_approved": {
+        "title": "Tute order approved",
+        "body": "Your order for {product} was approved."
+      },
+      "order_rejected": {
+        "title": "Tute order not approved",
+        "body": "Your order for {product} was not approved."
+      },
+      "order_shipped": {
+        "title": "Tute books on the way",
+        "body": "{product} has been shipped, it will reach you soon."
+      },
+      "update": {
+        "title": "Site update"
+      }
+    },
+    "note": "Note: {note}",
+    "view": "View",
+    "class": "Class",
+    "batch": "{year} batch"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Your photo, QR pass, contact numbers and delivery address.",
+    "idTitle": "My Student ID",
+    "idHint": "Show this card at the class center. Joined {date}.",
+    "details": "Personal details",
+    "password": "Password",
+    "fullName": "Full name",
+    "mobile": "Mobile number",
+    "nic": "NIC",
+    "locked": "Contact the admin to change",
+    "school": "School",
+    "district": "District",
+    "town": "Class center",
+    "alYear": "A/L year",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "updating": "Updating…",
+    "change": "Change password",
+    "joined": "Joined {date}",
+    "stats": {
+      "classes": "Active classes",
+      "papers": "Papers done",
+      "average": "Average score"
+    },
+    "completeness": "Profile {pct}% complete",
+    "completeHint": "Add your school and district to complete it.",
+    "completeHintAddress": "Add your home address and city to receive delivery.",
+    "completeHintPhone": "Add your phone number to complete your profile.",
+    "completeHintGeneric": "Complete remaining fields to reach 100%.",
+    "completeHintGuardian": "Add guardian phone number for class notifications.",
+    "completeDone": "All set, your profile is 100% complete.",
+    "detailsHint": "Keep your details up to date so we can reach you.",
+    "lockedTitle": "Registration details",
+    "editable": "Your details",
+    "securityHint": "Use a strong password that you don't use anywhere else.",
+    "tipsTitle": "Strong password tips",
+    "tips": [
+      "At least 8 characters",
+      "Mix upper and lower case letters",
+      "Add numbers or symbols",
+      "Never share it with anyone"
+    ],
+    "idTip": "Use your Student ID as the bank reference when you pay.",
+    "deliveryTitle": "Delivery address",
+    "deliveryHint": "Tutes and store orders are posted to this address.",
+    "address": "Home address",
+    "city": "City / town",
+    "postal": "Postal code",
+    "addAddress": "Add your delivery address so we can post your tutes →",
+    "qrTitle": "My QR Code",
+    "qrHint": "Show this QR at class to mark your attendance.",
+    "qrUse": "Keep a screenshot on your phone for quick scanning on class days.",
+    "contactTitle": "Contact & recovery",
+    "contactHint": "You can update your WhatsApp and guardian numbers at any time.",
+    "whatsapp": "WhatsApp number",
+    "guardian": "Guardian phone number",
+    "photoUpload": "Upload photo",
+    "photoChange": "Change photo",
+    "photoRemove": "Remove",
+    "photoType": "Please choose a JPG, PNG or WebP image.",
+    "photoTooBig": "Image is too large (max 15 MB).",
+    "photoStudioHint": "JPG, PNG, WebP · Auto-optimized & synced in real time",
+    "realtimeActive": "Real-time profile sync active"
+  },
+  "payments": {
+    "title": "Payments History",
+    "subtitle": "Class fees and tute orders you have submitted.",
+    "back": "Dashboard",
+    "summary": "Class Fee Summary",
+    "studentId": "Student ID",
+    "approved": "Approved",
+    "pending": "Pending",
+    "total": "Total",
+    "pay": "Pay class fees",
+    "refHint": "Use your Student ID as the bank reference.",
+    "history": "Payments History",
+    "historyHint": "(Your payment history for classes and tute books.)",
+    "store": "View Store",
+    "classFee": "Class fee",
+    "tuteBook": "Tute book",
+    "qty": "Qty {n}",
+    "bankSlip": "Bank slip",
+    "view": "View",
+    "empty": "No payments yet.",
+    "cols": {
+      "item": "Item",
+      "id": "Order ID",
+      "amount": "Amount",
+      "status": "Status",
+      "method": "Payment method",
+      "reference": "Reference",
+      "date": "Date",
+      "slip": "Slip"
+    },
+    "totalPaid": "Total paid",
+    "totalPaidHint": "{n} approved payment(s)",
+    "approvedHint": "Unlocked months & orders",
+    "pendingHint": "{amount} awaiting review",
+    "needsAction": "Needs action",
+    "needsActionHint": "Slips to upload again",
+    "rejectedTitle": "{n} slip(s) were not accepted",
+    "rejectedText": "Check the admin's note below and upload a new slip.",
+    "reupload": "Upload new slip",
+    "filters": {
+      "all": "All",
+      "class": "Class fees",
+      "order": "Tute books"
+    },
+    "howTitle": "How to pay",
+    "steps": [
+      "Pick a class and month (or a tute book) in the Store.",
+      "Deposit or transfer the amount to one of the accounts below.",
+      "Upload a photo of the slip. Access unlocks once the admin approves it."
+    ],
+    "reference": "Your bank reference",
+    "ref": "Ref {ref}",
+    "noteLabel": "Admin note",
+    "viewSlip": "View slip",
+    "emptyText": "When you pay a class fee or order a tute book, it will show up here."
+  },
+  "enroll": {
+    "current": "(current)",
+    "next": "(next month)",
+    "archive": "(archive pack)",
+    "yourMonths": "Your months for this class",
+    "title": "Enroll & upload slip",
+    "steps": "1. Pay to the account · 2. Upload the slip · 3. Access unlocks after approval",
+    "rejected": "A previous slip was rejected. Select that month and upload a clear slip again.",
+    "hasAccess": "You already have access for {month}.",
+    "month": "Month",
+    "slip": "Bank slip (photo or PDF)",
+    "uploadSlip": "Upload bank slip",
+    "reference": "Reference / transaction no. (optional)",
+    "referencePlaceholder": "e.g. 123456789",
+    "submitting": "Submitting…",
+    "submit": "Submit for approval",
+    "deliveryTitle": "Tutes will be posted to",
+    "deliveryMissing": "No delivery address on your profile yet.",
+    "deliveryEdit": "Update address",
+    "ownedTitle": "You have this class",
+    "ownedText": "Your access for {month} is active. Lessons, recordings and tutes are unlocked.",
+    "openClass": "Open class",
+    "payAnother": "Pay for another month",
+    "pendingTitle": "Slip under review",
+    "pendingText": "Your slip for {month} was sent on {date}. You can send another slip after it is reviewed, or withdraw it to upload a new one.",
+    "withdraw": "Withdraw slip",
+    "withdrawConfirm": "Withdraw this slip? You can upload a new one afterwards.",
+    "rejectedTitle": "Slip rejected",
+    "rejectedText": "Your slip for {month} was rejected. Please upload a clear slip again.",
+    "reason": "Reason: {note}",
+    "stepPay": "Pay",
+    "stepUpload": "Upload slip",
+    "stepAccess": "Get access"
+  },
+  "order": {
+    "amount": "{price} × quantity (+ courier if applicable)",
+    "title": "Order this tute book",
+    "quantity": "Quantity",
+    "address": "Delivery address & contact number",
+    "addressPlaceholder": "No, Street, Town, District, 07X XXX XXXX",
+    "slip": "Bank slip",
+    "uploadSlip": "Upload bank slip",
+    "placing": "Placing order…",
+    "place": "Place order",
+    "addressFromProfile": "Filled from your profile, edit if this order should go elsewhere."
+  },
+  "navGroups": {
+    "learn": "Learn",
+    "compete": "Compete",
+    "account": "Account",
+    "support": "Support"
+  },
+  "streak": {
+    "title": "Your streaks",
+    "subtitle": "Keep the runs going, every paper counts.",
+    "none": "No active streak yet",
+    "noneSub": "Sit this week's paper to start one",
+    "inARow": "{n} in a row",
+    "papersRow": "{n} papers in a row",
+    "best": "Best {n}",
+    "next": "Next goal: {n}",
+    "view": "View all",
+    "types": {
+      "top3": {
+        "name": "Top 3 streak",
+        "rule": "All-island top 3 in a row"
+      },
+      "top10": {
+        "name": "Top 10 streak",
+        "rule": "All-island top 10 in a row"
+      },
+      "score75": {
+        "name": "75+ streak",
+        "rule": "75% (A) or more in a row"
+      },
+      "pass50": {
+        "name": "50+ streak",
+        "rule": "50% or more in a row"
+      },
+      "improve": {
+        "name": "Improving streak",
+        "rule": "Beat your previous score in a row"
+      },
+      "attend": {
+        "name": "Paper streak",
+        "rule": "Weekly papers sat in a row"
+      }
+    },
+    "paperTitle": "Weekly paper streak",
+    "weeks": "weeks",
+    "keepGoing": "Don't break it this week!",
+    "start": "Sit this week's paper to start"
+  },
+  "badges": {
+    "progress": "{n} of {total} unlocked",
+    "premium": {
+      "name": "Premium Verified",
+      "hint": "Average 75%+ over 3+ papers, no paper below 70%"
+    },
+    "firstPaper": {
+      "name": "First paper",
+      "hint": "Sit your first paper"
+    },
+    "streak3": {
+      "name": "On fire",
+      "hint": "3-week paper streak"
+    },
+    "streak5": {
+      "name": "Unstoppable",
+      "hint": "5-week paper streak"
+    },
+    "streak10": {
+      "name": "Legend",
+      "hint": "10-week paper streak"
+    },
+    "score90": {
+      "name": "90 club",
+      "hint": "Score 90% or more"
+    },
+    "fullMarks": {
+      "name": "Perfect",
+      "hint": "Get full marks on a paper"
+    },
+    "top10": {
+      "name": "Top 10",
+      "hint": "Top 10 all-island in your latest paper"
+    },
+    "townChampion": {
+      "name": "Center champion",
+      "hint": "#1 in your center in your latest paper"
+    },
+    "champion": {
+      "name": "Island champion",
+      "hint": "#1 all-island in your latest paper"
+    },
+    "papers10": {
+      "name": "Dedicated",
+      "hint": "Sit 10 papers"
+    },
+    "hot10": {
+      "name": "Top 10 ×3",
+      "hint": "All-island top 10 in 3 papers in a row"
+    },
+    "pass50x5": {
+      "name": "Consistent",
+      "hint": "50% or more in 5 papers in a row"
+    },
+    "score75x3": {
+      "name": "A-streak",
+      "hint": "75% or more in 3 papers in a row"
+    },
+    "improve3": {
+      "name": "Rising star",
+      "hint": "Beat your previous score 3 times in a row"
+    }
+  },
+  "ranks": {
+    "of": "of {n} students",
+    "title": "Leaderboard",
+    "eyebrow": "Compete",
+    "subtitle": "Points = sum of your paper percentages. Sit every paper to climb!",
+    "islandRank": "All-island rank",
+    "townRank": "{town} rank",
+    "myPoints": "My points",
+    "pointsHint": "For the selected filters",
+    "streak": "Paper streak",
+    "weeksN": "{n} weeks",
+    "bestN": "Best: {n} weeks",
+    "filters": {
+      "scope": "Center",
+      "period": "Period",
+      "batch": "Batch"
+    },
+    "island": "All island",
+    "allBatches": "All batches",
+    "periods": {
+      "week": "This week",
+      "month": "This month",
+      "year": "This year",
+      "all": "All time"
+    },
+    "types": {
+      "all": "All papers",
+      "weekly": "Weekly only"
+    },
+    "papersAvg": "{n} papers · avg {avg}%",
+    "pts": "points",
+    "empty": "No marks for this selection yet.",
+    "you": "You",
+    "howPoints": "Each paper adds its percentage to your points (e.g. 78% = 78 points). Ties share the same rank.",
+    "repeatNote": "Students re-sitting the A/L are listed under the year they are sitting now, marked e.g. 2nd attempt."
+  },
+  "papers": {
+    "title": "Papers & Marks",
+    "eyebrow": "Compete",
+    "subtitle": "Your weekly paper marks, ranks, streaks and achievements.",
+    "openLeaderboard": "Leaderboard",
+    "latest": "Latest result",
+    "noLatest": "No results yet",
+    "noLatestText": "Your marks appear here as soon as they're entered after each paper.",
+    "marksOf": "{marks} / {total}",
+    "islandRank": "All-island rank",
+    "townRank": "{town} rank",
+    "grade": "Grade",
+    "stats": {
+      "sat": "Papers sat",
+      "average": "Average",
+      "best": "Best score",
+      "points": "Points",
+      "pointsHint": "Sum of your percentages"
+    },
+    "progress": "My progress",
+    "progressHint": "Your last 10 papers (%)",
+    "noProgress": "No papers yet",
+    "paperN": "P{n}",
+    "achievements": "Achievements",
+    "all": "All papers",
+    "outOf": "Out of {total}",
+    "paperFile": "Download paper",
+    "answersFile": "Answers",
+    "notSat": "Not sat",
+    "viewResult": "View result",
+    "emptyTitle": "No papers yet",
+    "emptyText": "Papers for your batch will appear here once they're published.",
+    "back": "All papers",
+    "ahead": "You beat",
+    "classAvg": "Average score",
+    "noMarkYet": "Your marks for this paper haven't been entered yet.",
+    "board": "Leaderboard",
+    "boardEmpty": "No marks entered yet.",
+    "you": "You",
+    "scope": {
+      "island": "All island"
+    },
+    "premium": {
+      "keep": "You're Premium Verified. Keep every paper at {floor}% or more to keep the badge.",
+      "rule": "Earned automatically with an average of {threshold}% or more over at least {min} papers. A paper below {floor}% removes it.",
+      "morePapers": "Sit {n} more paper(s)",
+      "raiseAvg": "Average {avg}% → {threshold}%",
+      "recover": "{n} more paper(s) in a row at {floor}%+",
+      "average": "Average"
+    },
+    "rankIslandShort": "#{rank} of {n} all-island",
+    "rankTownShort": "#{rank} of {n} · {town}"
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Seminars, paper days, exam dates and meetings for your batch.",
+    "empty": "No upcoming events",
+    "emptyText": "New seminars and paper days will show up here.",
+    "past": "Recent events",
+    "join": "Join online"
+  },
+  "channels": {
+    "title": "Channels",
+    "subtitle": "Join the Telegram and WhatsApp channels for class updates, timetables and papers.",
+    "yourBatch": "Your batch"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Questions about classes, payments or tutes? We're happy to help.",
+    "whatsapp": "WhatsApp",
+    "call": "Call us",
+    "facebook": "Message us on Facebook",
+    "centers": "Class centers",
+    "idTip": "Tip: mention your Student ID ({id}) so we can help you faster."
+  },
+  "faqPage": {
+    "title": "FAQ",
+    "subtitle": "Answers to the questions students ask most."
+  },
+  "tabs": {
+    "dashboard": "Home",
+    "classes": "Classes",
+    "papers": "Papers",
+    "store": "Store"
+  }
+}

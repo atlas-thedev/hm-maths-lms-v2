@@ -1,0 +1,265 @@
+{
+  "meta": {
+    "title": "HM Maths | A/L Combined Maths Classes by Hasitha Madusanka",
+    "titleTemplate": "%s | HM Maths",
+    "description": "A/L Combined Maths classes by Hasitha Madusanka in {centers} and online across Sri Lanka. Live classes, HD recordings, tutes and timed online papers. උසස් පෙළ සංයුක්ත ගණිතය.",
+    "keywords": [
+      "combined maths class",
+      "A/L combined maths",
+      "combined maths classes in Sri Lanka",
+      "online combined maths class",
+      "combined maths tuition",
+      "G.C.E. A/L combined mathematics",
+      "pure maths applied maths A/L",
+      "combined maths past papers",
+      "combined maths online papers",
+      "Hasitha Madusanka",
+      "Hasitha Madusanka combined maths",
+      "HM Maths",
+      "Guruthalawa combined maths",
+      "2026 A/L combined maths",
+      "2027 A/L combined maths",
+      "2028 A/L combined maths",
+      "සංයුක්ත ගණිතය",
+      "උසස් පෙළ සංයුක්ත ගණිතය",
+      "හසිත මධුසංක"
+    ]
+  },
+  "brand": {
+    "short": "HM Maths",
+    "tutor": "Hasitha Madusanka",
+    "subject": "Combined Mathematics",
+    "sub": "Hasitha Madusanka · Combined Maths"
+  },
+  "free": "Free",
+  "perMonth": "{amount} / month",
+  "alBatch": "{year} A/L",
+  "dash": "—",
+  "classTypes": {
+    "Theory": "Theory",
+    "Revision": "Revision",
+    "Paper Class": "Paper Class",
+    "Extra Class": "Extra Class",
+    "Free Seminar": "Free Seminar"
+  },
+  "towns": {
+    "Panadura": "Panadura",
+    "Horana": "Horana",
+    "Mathugama": "Mathugama",
+    "Kalutara": "Kalutara",
+    "Online": "Online"
+  },
+  "noticeTags": {
+    "General": "General",
+    "Urgent": "Urgent",
+    "Exam Notice": "Exam Notice"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "shipped": "Shipped",
+    "in_progress": "In progress",
+    "submitted": "Submitted",
+    "graded": "Graded"
+  },
+  "examTypes": {
+    "mcq": "MCQ",
+    "structured": "Structured"
+  },
+  "actions": {
+    "save": "Save",
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "close": "Close",
+    "more": "More",
+    "viewAll": "View all",
+    "logout": "Log out",
+    "submit": "Submit",
+    "open": "Open",
+    "download": "Download",
+    "refresh": "Refresh",
+    "create": "Create",
+    "add": "Add",
+    "update": "Update",
+    "home": "Home"
+  },
+  "language": {
+    "switchTo": "Switch language to {lang}"
+  },
+  "shell": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "theme": "Theme",
+    "toggleTheme": "Toggle theme",
+    "admin": "Admin",
+    "owner": "Owner",
+    "notifications": "Notifications",
+    "cart": "Store",
+    "account": "Account",
+    "helpDesk": "Help Desk",
+    "privacy": "Privacy Policy",
+    "backToSite": "Back to website",
+    "adminConsole": "Admin console",
+    "more": "More",
+    "qrScanner": "QR Scanner",
+    "tabs": "Main navigation",
+    "developer": "Developer",
+    "devConsole": "Developer panel"
+  },
+  "file": {
+    "choose": "Choose file",
+    "uploading": "Uploading…",
+    "replace": "Uploaded, click to replace",
+    "limit": "Max {mb} MB",
+    "limitWithTypes": "Max {mb} MB · {types}",
+    "tooBig": "{name} is larger than {mb} MB",
+    "clear": "Clear files",
+    "current": "current file"
+  },
+  "bank": {
+    "title": "Bank account details",
+    "amount": "Amount to pay:",
+    "name": "Name",
+    "account": "Account",
+    "branch": "Branch",
+    "reference": "Write your Student ID as the reference / remark when you deposit or transfer."
+  },
+  "idCard": {
+    "subtitle": "Combined Mathematics · Student ID",
+    "alYear": "A/L Year",
+    "center": "Center",
+    "nic": "NIC",
+    "admin": "ADMIN"
+  },
+  "video": {
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "play": "Play",
+    "pause": "Pause",
+    "replay": "Replay",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume": "Volume",
+    "speed": "Playback speed",
+    "back10": "Back 10 seconds",
+    "forward10": "Forward 10 seconds",
+    "seek": "Seek",
+    "live": "Live",
+    "lockTamper": "The watermark was removed or hidden, so the video is locked. Reload this page to try again.",
+    "lockDevtools": "Close the browser developer tools to keep watching.",
+    "loadError": "Couldn't load this video. Check your connection and reload.",
+    "limit": "You have opened too many recordings in the last hour. Please try again later."
+  },
+  "live": {
+    "ended": "This live session has ended. The recording will be added to Lesson Recordings.",
+    "opensBefore": "Join opens {min} minutes before class",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Min",
+    "seconds": "Sec",
+    "startsIn": "Class starts in {time}",
+    "durationDHM": "{d}d {h}h {m}m",
+    "durationHM": "{h}h {m}m",
+    "join": "Join Live Class",
+    "liveNow": "LIVE NOW",
+    "startingIn": "Starting in {min} min",
+    "loading": "Loading join link…",
+    "joinOn": "Join on {platform}",
+    "noLink": "The join link will be shared soon, please check back in a minute."
+  },
+  "notices": {
+    "newNotice": "New notice: {title}",
+    "newNotification": "You have a new notification"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "The page you are looking for doesn't exist or has been moved.",
+    "home": "Go home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "text": "An unexpected error occurred. Please try again.",
+    "retry": "Try again",
+    "home": "Go to home page",
+    "reference": "Error reference: {digest}",
+    "stale": "This page was out of date or your sign-in expired. Reloading, please try again."
+  },
+  "accountIssue": {
+    "title": "We couldn't load your profile",
+    "text": "You are signed in, but your student profile was not found. This usually means the database setup script has not been run yet, or your profile was removed.",
+    "admin": "If you are the administrator: run sudo bash /srv/hm-maths/app/deploy/update.sh on the server, then sign in again.",
+    "student": "If you are a student, please contact the class on WhatsApp.",
+    "logout": "Log out and try again"
+  },
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "copy": {
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "schedule": {
+    "days": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "every": "Every {days}",
+    "and": "&",
+    "types": {
+      "regular": "Regular class",
+      "extra": "Extra class"
+    },
+    "cancelled": "Cancelled",
+    "platforms": {
+      "youtube": "YouTube Live",
+      "zoom": "Zoom",
+      "meet": "Google Meet",
+      "teams": "Microsoft Teams",
+      "other": "Live link"
+    }
+  },
+  "paperTypes": {
+    "weekly": "Weekly paper",
+    "monthly": "Monthly paper",
+    "model": "Model paper",
+    "term": "Term test"
+  },
+  "attempts": {
+    "1": "1st attempt",
+    "2": "2nd attempt",
+    "3": "3rd attempt"
+  },
+  "premium": {
+    "name": "Premium Verified",
+    "active": "Verified",
+    "yourPosition": "Your position"
+  },
+  "maintenance": {
+    "title": "We'll be right back",
+    "text": "HM Maths is getting an update. Please check back in a little while.",
+    "back": "Expected back: {when}",
+    "staff": "Staff sign in"
+  },
+  "pageLoading": "Loading…"
+}

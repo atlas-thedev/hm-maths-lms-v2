@@ -1,0 +1,116 @@
+{
+  "_comment": "Editable site data (non-translated). Text lives in src/i18n/messages/*.",
+  "contact": {
+    "phone": "077 265 4198",
+    "whatsapp": "0703399339",
+    "email": "",
+    "address": ""
+  },
+  "social": {
+    "facebook": "https://www.facebook.com/HasithaCmaths",
+    "youtube": "https://www.youtube.com/@HasithaCmaths",
+    "tiktok": "",
+    "instagram": ""
+  },
+  "bankAccounts": [
+    {
+      "bank": "Bank of Ceylon",
+      "branch": "Panadura",
+      "accountName": "H. MADUSANKA",
+      "accountNumber": "0000 0000 0000"
+    },
+    {
+      "bank": "Commercial Bank",
+      "branch": "Horana",
+      "accountName": "H. MADUSANKA",
+      "accountNumber": "0000 0000 0000"
+    }
+  ],
+  "channels": [
+    {
+      "key": "2027revision",
+      "kind": "telegram",
+      "url": "https://t.me/HM2027MR",
+      "handle": "@HM2027MR",
+      "image": "/images/channels/HM2027MR.webp"
+    },
+    {
+      "key": "2027theory",
+      "kind": "telegram",
+      "url": "https://t.me/TH2027HM",
+      "handle": "@TH2027HM",
+      "image": "/images/channels/TH2027HM.webp"
+    },
+    {
+      "key": "2028theory",
+      "kind": "telegram",
+      "url": "https://t.me/TH2028HM",
+      "handle": "@TH2028HM",
+      "image": "/images/channels/TH2028HM.webp"
+    },
+    {
+      "key": "wa2027",
+      "kind": "whatsapp",
+      "url": "https://whatsapp.com/channel/0029Vb6inhj8V0thbQfZmO2F",
+      "handle": "WhatsApp Channel",
+      "image": "/images/channels/wa-2027.webp"
+    },
+    {
+      "key": "wa2028",
+      "kind": "whatsapp",
+      "url": "https://whatsapp.com/channel/0029VbCbEWvBqbrCmuhoDi2P",
+      "handle": "WhatsApp Channel",
+      "image": "/images/channels/wa-2028.webp"
+    }
+  ],
+  "testimonialVideoId": "",
+  "heroImage": "/images/tutor.png",
+  "authImage": "/images/auth-bg.jpg",
+  "youtube": {
+    "handle": "@HasithaCmaths",
+    "subscribers": "7.4K+",
+    "abResults": "+500",
+    "videos": "226+",
+    "avatar": "/images/hasitha-yt.webp",
+    "banner": "/images/yt-banner.webp",
+    "stories": [
+      {
+        "id": "LxNV4hvP3zA",
+        "title": "කොළඹ Uni 1st Class Degree එකක් ගත්ත අපේ කොල්ලා 🔥"
+      },
+      {
+        "id": "DUk6Kb23Hks",
+        "title": "හැමෝටම Campus යන්න බෑ ඒක තමා ඇත්ත!"
+      },
+      {
+        "id": "u2gcPnaWQVA",
+        "title": "හසිත සර් guess කරපු දේවල් 🎯💪"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "XLepZWy5ZpM",
+        "title": "2025 A/L Combined Mathematics: Syllabus එකම මුල සිට අග"
+      },
+      {
+        "id": "TW_TbTiqlTU",
+        "title": "2025 AL Applied 11 b) සාපේක්ෂ ප්‍රවේගය"
+      },
+      {
+        "id": "FlmR8UeSn14",
+        "title": "2025 AL 13 b) සංකීර්ණ සංඛ්‍යා"
+      },
+      {
+        "id": "E6c4pvU1K3M",
+        "title": "අවකලන ප්‍රස්තාර නිර්මාණය: Pure Paper ලකුණු 10%ක් පැය 2න්"
+      },
+      {
+        "id": "ftjX4v7FwFA",
+        "title": "2027 සරල රේඛාව: Combined Maths Part 02"
+      }
+    ],
+    "bannerHero": "/images/hasitha-hero.webp"
+  },
+  "teacherImage": "/images/teacher.jpg",
+  "galleryImage": "/images/group.jpg"
+}
