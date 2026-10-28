@@ -199,8 +199,14 @@ export async function reviewEnrollmentAction(_p: ActionState, fd: FormData): Pro
   const { db } = await requireAdmin();
   const decision = str(fd, "decision");
   if (decision !== "approved" && decision !== "rejected") return { error: await m("decision") };
-  const note = optStr(fd, "admin_note") ?? (decision === "rejected" ? "Slip unclear or amount incorrect. Please re-upload." : null);
-  const { error } = await db.from("enrollments").update({ status: decision, admin_note: note }).eq("id", str(fd, "id"));
+  const explicitNote = optStr(fd, "admin_note");
+  const updatePayload: { status: string; admin_note?: string | null } = { status: decision };
+  if (explicitNote !== null) {
+    updatePayload.admin_note = explicitNote;
+  } else if (decision === "rejected") {
+    updatePayload.admin_note = "Slip unclear or amount incorrect. Please re-upload.";
+  }
+  const { error } = await db.from("enrollments").update(updatePayload).eq("id", str(fd, "id"));
   if (error) return fail(error, await m("fail.update"));
   revalidatePath("/admin", "layout");
   return { ok: true, message: decision === "approved" ? await m("approved") : await m("rejected") };

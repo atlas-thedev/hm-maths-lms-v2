@@ -31,10 +31,10 @@ async function findStudentId(input: string, method: "qr" | "manual"): Promise<st
 }
 
 /**
- * Admin scanner: checks the student in for today (once per day — a second scan just shows the details)
+ * Admin scanner: checks the student in for today (once per day per class — a second scan just shows the details)
  * and returns their details, recent papers (marks or missed) and recent attendance.
  */
-export async function scanAction(input: string, method: "qr" | "manual" = "qr"): Promise<ScanResult> {
+export async function scanAction(input: string, method: "qr" | "manual" = "qr", classId?: string | null): Promise<ScanResult> {
   const { db, user } = await requireAdmin();
   const t = await getT("admin.attendance");
   const raw = String(input ?? "").trim().slice(0, 200);
@@ -42,16 +42,21 @@ export async function scanAction(input: string, method: "qr" | "manual" = "qr"):
   const id = await findStudentId(raw, method === "manual" ? "manual" : "qr");
   if (!id || !UUID.test(id)) return { ok: false, error: method === "qr" ? t("errors.badQr") : t("errors.notFound") };
 
+  const targetClassId = classId && UUID.test(classId) ? classId : null;
+
   const data = await asService(async (c) => {
     const p = (await c.query(
       `select id, full_name, student_id, avatar_path, mobile, whatsapp, guardian_mobile, al_year, attempt, town, school, district, city, role
          from public.profiles where id = $1`, [id])).rows[0];
     if (!p || p.role !== "student") return null;
     const ins = (await c.query(
-      `insert into public.attendance (student_id, scanned_by, method) values ($1, $2, $3)
-       on conflict (student_id, day) do nothing returning scanned_at`, [id, user.id, method])).rows[0];
+      `insert into public.attendance (student_id, scanned_by, method, class_id) values ($1, $2, $3, $4)
+       on conflict (student_id, day, (coalesce(class_id, '00000000-0000-0000-0000-000000000000'::uuid))) do nothing returning scanned_at`, [id, user.id, method, targetClassId])).rows[0];
     const at = ins?.scanned_at ?? (await c.query(
-      "select scanned_at from public.attendance where student_id = $1 and day = (now() at time zone 'Asia/Colombo')::date", [id])).rows[0]?.scanned_at;
+      `select scanned_at from public.attendance
+       where student_id = $1 and day = (now() at time zone 'Asia/Colombo')::date
+         and (coalesce(class_id, '00000000-0000-0000-0000-000000000000'::uuid)) = coalesce($2::uuid, '00000000-0000-0000-0000-000000000000'::uuid)
+       limit 1`, [id, targetClassId])).rows[0]?.scanned_at;
     const papers = (await c.query(
       `select pa.id, pa.title, pa.paper_date::text as date, pa.total_marks::float8 as total, m.marks::float8 as marks, m.remark
          from public.papers pa
@@ -79,10 +84,15 @@ export async function scanAction(input: string, method: "qr" | "manual" = "qr"):
 }
 
 /** Undo a check-in (wrong student scanned). */
-export async function removeAttendanceAction(studentId: string, day: string): Promise<boolean> {
+export async function removeAttendanceAction(studentId: string, day: string, classId?: string | null): Promise<boolean> {
   await requireAdmin();
   if (!UUID.test(studentId) || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return false;
-  await asService((c) => c.query("delete from public.attendance where student_id = $1 and day = $2", [studentId, day]));
+  await asService((c) => {
+    if (classId && UUID.test(classId)) {
+      return c.query("delete from public.attendance where student_id = $1 and day = $2 and class_id = $3", [studentId, day, classId]);
+    }
+    return c.query("delete from public.attendance where student_id = $1 and day = $2 and class_id is null", [studentId, day]);
+  });
   revalidatePath("/admin/attendance");
   return true;
 }

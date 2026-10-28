@@ -16,24 +16,44 @@ export async function generateMetadata() {
 
 const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Colombo" });
 
-type Row = { student_id: string; scanned_at: string; method: "qr" | "manual"; full_name: string; sid: string | null; town: string; al_year: number | null; attempt: number; school: string | null };
+type Row = {
+  student_id: string;
+  class_id: string | null;
+  class_title: string | null;
+  scanned_at: string;
+  method: "qr" | "manual";
+  full_name: string;
+  sid: string | null;
+  town: string;
+  al_year: number | null;
+  attempt: number;
+  school: string | null;
+};
 
 export default async function AttendancePage({ searchParams }: { searchParams: Promise<{ day?: string; scan?: string }> }) {
   await requireAdmin();
   const { day: dayParam, scan } = await searchParams;
   const day = dayParam && /^\d{4}-\d{2}-\d{2}$/.test(dayParam) ? dayParam : today();
   const [t, tc, f] = await Promise.all([getT("admin.attendance"), getT("common"), getFormat()]);
-  const rows = await asService(async (c) => (await c.query(
-    `select a.student_id, a.scanned_at, a.method, p.full_name, p.student_id as sid, p.town, p.al_year, p.attempt, p.school
-       from public.attendance a join public.profiles p on p.id = a.student_id
-      where a.day = $1 order by a.scanned_at desc limit 1000`, [day])).rows as Row[]);
+  const [classes, rows] = await asService(async (c) => {
+    const cls = (await c.query(
+      "select id, title from public.classes where is_active = true order by target_year desc, title asc")).rows as { id: string; title: string }[];
+    const att = (await c.query(
+      `select a.student_id, a.class_id, c.title as class_title, a.scanned_at, a.method,
+              p.full_name, p.student_id as sid, p.town, p.al_year, p.attempt, p.school
+         from public.attendance a
+         join public.profiles p on p.id = a.student_id
+         left join public.classes c on c.id = a.class_id
+        where a.day = $1 order by a.scanned_at desc limit 1000`, [day])).rows as Row[];
+    return [cls, att];
+  });
   const byTown = rows.reduce<Record<string, number>>((m, r) => ({ ...m, [r.town]: (m[r.town] ?? 0) + 1 }), {});
   const isToday = day === today();
 
   return (
     <div className="space-y-5">
       <PageHeader title={t("title")} description={t("subtitle")} icon={ScanLine} />
-      <Scanner autoStart={scan === "1"} />
+      <Scanner autoStart={scan === "1"} classes={classes} />
 
       <Card>
         <CardHeader className="flex flex-col gap-3 space-y-0 border-b sm:flex-row sm:items-center sm:justify-between">
@@ -52,19 +72,32 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
         <CardContent className="pt-4 sm:pt-4">
           {rows.length ? (
             <Table>
-              <thead><tr><th>{t("cols.time")}</th><th>{t("cols.student")}</th><th>{t("cols.batch")}</th><th>{t("cols.center")}</th><th>{t("cols.method")}</th><th /></tr></thead>
+              <thead>
+                <tr>
+                  <th>{t("cols.time")}</th>
+                  <th>{t("cols.student")}</th>
+                  <th>පන්තිය</th>
+                  <th>{t("cols.batch")}</th>
+                  <th>{t("cols.center")}</th>
+                  <th>{t("cols.method")}</th>
+                  <th />
+                </tr>
+              </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.student_id}>
+                  <tr key={`${r.student_id}-${r.class_id ?? "general"}`}>
                     <td className="whitespace-nowrap font-mono text-xs">{f.time(r.scanned_at)}</td>
                     <td>
                       <p className="font-medium">{r.full_name}</p>
                       <p className="font-mono text-xs text-muted-foreground">{r.sid ?? tc("dash")}{r.school ? ` · ${r.school}` : ""}</p>
                     </td>
+                    <td className="text-xs">
+                      {r.class_title ? <span className="font-semibold text-teal-700 dark:text-teal-400">{r.class_title}</span> : <span className="text-muted-foreground italic">General</span>}
+                    </td>
                     <td className="whitespace-nowrap text-xs">{r.al_year ?? tc("dash")} · {tc(`attempts.${r.attempt ?? 1}`)}</td>
                     <td className="text-xs">{tc(`towns.${r.town}`)}</td>
                     <td className="text-xs">{t(`method.${r.method}`)}</td>
-                    <td className="text-right"><UndoCheckIn studentId={r.student_id} day={day} label={t("undo")} confirmText={t("undoConfirm", { name: r.full_name })} /></td>
+                    <td className="text-right"><UndoCheckIn studentId={r.student_id} classId={r.class_id} day={day} label={t("undo")} confirmText={t("undoConfirm", { name: r.full_name })} /></td>
                   </tr>
                 ))}
               </tbody>

@@ -21,12 +21,14 @@ const isIOS = () =>
 const inAppBrowser = () =>
   typeof navigator !== "undefined" && /(WhatsApp|FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|Snapchat|TikTok|Twitter)/i.test(navigator.userAgent);
 
+export type ClassOption = { id: string; title: string };
+
 /**
  * Camera QR scanner for class days. The camera is only opened when the admin taps "Start camera"
  * (and this page is the only one allowed to use it — see next.config.ts). A Student ID / mobile can
  * also be typed in when a student has no phone with them.
  */
-export function Scanner({ autoStart = false }: { autoStart?: boolean }) {
+export function Scanner({ autoStart = false, classes = [] }: { autoStart?: boolean; classes?: ClassOption[] }) {
   const t = useT("admin.attendance");
   const tc = useT("common");
   const locale = useLocale();
@@ -43,13 +45,14 @@ export function Scanner({ autoStart = false }: { autoStart?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [manual, setManual] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [, startTransition] = useTransition();
 
   const submit = useCallback(async (value: string, method: "qr" | "manual") => {
     paused.current = true;
     setBusy(true);
     try {
-      const r = await scanAction(value, method);
+      const r = await scanAction(value, method, selectedClassId || null);
       setResult(r);
       if (r.ok) {
         navigator.vibrate?.(r.already ? [60, 60, 60] : 120);
@@ -62,7 +65,7 @@ export function Scanner({ autoStart = false }: { autoStart?: boolean }) {
       // Keep scanning after a short pause; the same code is ignored for a few seconds.
       setTimeout(() => { paused.current = false; }, 1200);
     }
-  }, [router, t]);
+  }, [router, t, selectedClassId]);
 
   const stop = useCallback(() => {
     if (raf.current) cancelAnimationFrame(raf.current);
@@ -156,6 +159,26 @@ export function Scanner({ autoStart = false }: { autoStart?: boolean }) {
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,420px)_1fr]">
       {/* ── Camera ── */}
       <Card className="overflow-hidden">
+        {classes.length > 0 && (
+          <div className="border-b bg-muted/40 p-3">
+            <label htmlFor="scanner-class-select" className="mb-1 block text-xs font-semibold text-muted-foreground">
+              පන්තිය තෝරන්න (Select Class for Attendance):
+            </label>
+            <select
+              id="scanner-class-select"
+              value={selectedClassId}
+              onChange={(e) => setSelectedClassId(e.target.value)}
+              className="h-9 w-full rounded-lg border border-input bg-background px-2.5 text-xs font-medium shadow-sm transition-colors focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            >
+              <option value="">සාමාන්‍ය දෛනික පැමිණීම (General Daily Check-in)</option>
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div className="relative aspect-square w-full bg-slate-950 sm:aspect-[4/3] lg:aspect-square">
           <video ref={video} playsInline muted className={cn("h-full w-full object-cover", cam !== "on" && "invisible")} data-testid="scanner-video" />
           {cam === "on" && (
@@ -321,7 +344,7 @@ function StudentResult({ r, onNext, t, tc, f }: {
 }
 
 /** Remove a wrong check-in from the day's list. */
-export function UndoCheckIn({ studentId, day, label, confirmText }: { studentId: string; day: string; label: string; confirmText: string }) {
+export function UndoCheckIn({ studentId, classId, day, label, confirmText }: { studentId: string; classId?: string | null; day: string; label: string; confirmText: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   return (
@@ -329,7 +352,7 @@ export function UndoCheckIn({ studentId, day, label, confirmText }: { studentId:
       onClick={async () => {
         if (!window.confirm(confirmText)) return;
         setBusy(true);
-        await removeAttendanceAction(studentId, day).catch(() => false);
+        await removeAttendanceAction(studentId, day, classId).catch(() => false);
         setBusy(false);
         router.refresh();
       }}

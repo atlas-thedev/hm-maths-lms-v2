@@ -19,6 +19,8 @@ export async function submitEnrollmentAction(_p: ActionState, fd: FormData): Pro
   const month = String(fd.get("month") ?? "");
   const slip = String(fd.get("slip_url") ?? "");
   const bankRef = String(fd.get("bank_ref") ?? "").trim().slice(0, 80) || null;
+  const attendanceMode = String(fd.get("attendance_mode") ?? "").trim();
+  const notes = String(fd.get("notes") ?? "").trim().slice(0, 200);
 
   if (!MONTH_RE.test(month)) return { error: t("selectMonth") };
   const cur = currentMonth();
@@ -38,9 +40,20 @@ export async function submitEnrollmentAction(_p: ActionState, fd: FormData): Pro
     .eq("student_id", user.id).eq("class_id", classId).eq("month", month).maybeSingle();
   if (existing?.status === "approved") return { error: t("alreadyAccess") };
 
+  const modeLabels: Record<string, string> = {
+    online: "Online",
+    physical_panadura: "භෞතිකව: පානදුර (සක්යා)",
+    physical_horana: "භෞතිකව: හොරණ (විදුල)",
+    physical_mathugama: "භෞතිකව: මතුගම (පැනෝලා)",
+    physical_kalutara: "භෞතිකව: කළුතර (රසන්‍යා)",
+  };
+  const modeText = modeLabels[attendanceMode] ? `[${modeLabels[attendanceMode]}]` : "";
+  const fullNote = [modeText, notes].filter(Boolean).join(" ");
+  const noteToSave = fullNote ? fullNote.slice(0, 300) : null;
+
   const { error } = existing
-    ? await db.from("enrollments").update({ slip_url: slip, bank_ref: bankRef, status: "pending", admin_note: null }).eq("id", existing.id)
-    : await db.from("enrollments").insert({ student_id: user.id, class_id: classId, month, slip_url: slip, bank_ref: bankRef, status: "pending" });
+    ? await db.from("enrollments").update({ slip_url: slip, bank_ref: bankRef, status: "pending", admin_note: noteToSave }).eq("id", existing.id)
+    : await db.from("enrollments").insert({ student_id: user.id, class_id: classId, month, slip_url: slip, bank_ref: bankRef, status: "pending", admin_note: noteToSave });
   if (error) return { error: t("slipFailed") };
 
   revalidatePath("/dashboard", "layout");

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowRight, CalendarClock, CheckCircle2, Clock3, MapPin, Truck, XCircle } from "lucide-react";
+import { ArrowRight, CalendarClock, CheckCircle2, Clock3, Info, MapPin, Truck, XCircle } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { ClassBanner } from "@/components/class-banner";
 import { BankDetails } from "@/components/bank-details";
@@ -71,6 +71,16 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
             </div>
             <p className="font-display text-xl font-bold">{tc("perMonth", { amount: formatLKR(cls.fee) })}</p>
           </div>
+        </div>
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm space-y-2">
+          <div className="flex items-center gap-2 font-semibold text-primary">
+            <Info className="h-4.5 w-4.5 shrink-0" />
+            <span>භෞතික පන්ති (Physical) සහ සහන ගාස්තු (Discounts) පිළිබඳව:</span>
+          </div>
+          <ul className="list-disc list-inside text-xs text-muted-foreground space-y-1 pl-1">
+            <li>ඔබ භෞතිකව පන්තියට සම්බන්ධ වන්නේ නම් පහත පෝරමයේ <strong>&ldquo;පන්තියට සම්බන්ධ වන ආකාරය&rdquo;</strong> යටතේ ඔබේ මධ්‍යස්ථානය තෝරන්න.</li>
+            <li>2nd shy / 3rd shy පැරණි සිසුන් සහන ගාස්තු යටතේ ගෙවීම් කරන්නේ නම්, ඔබගේ පැරණි ශිෂ්‍ය අංකය / කාඩ්පත් අංකය <strong>&ldquo;විශේෂ සටහන්&rdquo;</strong> කොටසේ සඳහන් කරන්න.</li>
+          </ul>
         </div>
         <Card><CardContent className="pt-5 sm:pt-5"><BankDetails amount={formatLKR(cls.fee)} /></CardContent></Card>
         {(mine ?? []).length > 0 && (
