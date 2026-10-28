@@ -48,22 +48,34 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
                 transition={{ delay: Math.min(i, 4) * 0.08, duration: 0.6 }}
                 className="w-[82%] shrink-0 snap-start sm:w-[46%] lg:w-[31.5%]">
                 <Link href={href} className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-teal-100 bg-white shadow-soft transition duration-300 hover:-translate-y-1.5 hover:border-teal-300 hover:shadow-lift dark:border-white/10 dark:bg-slate-900">
-                  <div className="flex-1 p-6">
+                  <div className="flex flex-1 flex-col p-6">
                     <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider">
                       <span className="rounded-full bg-teal-50 px-2.5 py-1 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">{tc(`classTypes.${c.type}`)}</span>
                       {c.year ? <span className="rounded-full bg-brand-50 px-2.5 py-1 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">{tc("alBatch", { year: c.year })}</span> : null}
                     </div>
-                    <h3 className="mt-3.5 font-display text-lg font-bold text-ink group-hover:text-teal-600 dark:text-white line-clamp-2">{c.title}</h3>
-                    {c.schedule ? (
-                      <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                        <p className="flex items-center gap-1.5"><CalendarClock className="h-3.5 w-3.5 text-teal-600 shrink-0" /><span className="line-clamp-1">{c.schedule}</span></p>
-                      </div>
-                    ) : null}
-                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-100 pt-3 dark:border-white/5">
-                      <span className="whitespace-nowrap font-display text-lg font-bold text-ink dark:text-white">
-                        {!c.id ? null : c.isFree ? t("free") : t("perMonth", { amount: `LKR ${c.fee.toLocaleString("en-LK")}` })}
+                    <h3 className="mt-3.5 font-display text-base sm:text-lg font-bold text-ink group-hover:text-teal-600 dark:text-white line-clamp-2 h-[3.25rem] flex items-start">
+                      {c.title}
+                    </h3>
+                    <div className="mt-2 text-xs text-slate-500 dark:text-slate-400 h-5 flex items-center">
+                      {c.schedule ? (
+                        <p className="flex items-center gap-1.5 truncate">
+                          <CalendarClock className="h-3.5 w-3.5 text-teal-600 shrink-0" />
+                          <span className="truncate">{c.schedule}</span>
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="mt-auto border-t border-slate-100 pt-3 dark:border-white/5 flex items-center justify-between gap-2">
+                      <span className="whitespace-nowrap font-display text-base sm:text-lg font-bold text-ink dark:text-white">
+                        {!c.id ? null : c.isFree ? t("free") : (
+                          <>
+                            LKR {c.fee.toLocaleString("en-LK")}
+                            <span className="ml-1 text-[11px] font-normal text-slate-500">/මසකට</span>
+                          </>
+                        )}
                       </span>
-                      <span className="whitespace-nowrap text-sm font-semibold text-teal-700 transition group-hover:translate-x-0.5">{t("enroll")} →</span>
+                      <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs sm:text-sm font-semibold text-teal-700 transition group-hover:translate-x-0.5">
+                        {t("enroll")} →
+                      </span>
                     </div>
                   </div>
                   <ClassBanner cls={c.bannerClass ?? { banner_url: c.banner, class_type: c.type, title: c.title }} className="aspect-[16/9]" />

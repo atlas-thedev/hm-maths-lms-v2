@@ -477,8 +477,8 @@ export function ResetPasswordButton({ id, name, compact = false }: { id: string;
       onSuccess={(s) => { toast.success(s?.message ?? "", { duration: 60_000, description: t("students.resetShare") }); }}>
       <input type="hidden" name="id" value={id} />
       {compact
-        ? <SubmitButton variant="outline" size="icon" aria-label={t("students.reset")} title={t("students.reset")}><KeyRound /></SubmitButton>
-        : <SubmitButton variant="outline" size="sm"><KeyRound /> {t("students.reset")}</SubmitButton>}
+        ? <SubmitButton variant="outline" size="icon-sm" className="h-9 w-9 rounded-lg" aria-label={t("students.reset")} title={t("students.reset")}><KeyRound className="h-4 w-4" /></SubmitButton>
+        : <SubmitButton variant="outline" size="sm" className="h-9 gap-1.5"><KeyRound className="h-4 w-4" /> {t("students.reset")}</SubmitButton>}
     </ActionForm>
   );
 }
@@ -489,9 +489,9 @@ export function DeleteUserButton({ id, name, compact = false }: { id: string; na
   return (
     <ActionForm action={A.deleteUserAction} confirm={t("students.deleteConfirm", { name })}>
       <input type="hidden" name="id" value={id} />
-      <SubmitButton variant="ghost" size={compact ? "icon" : "sm"} aria-label={t("students.delete")} title={t("students.delete")}
-        className="text-destructive hover:bg-destructive/10 hover:text-destructive">
-        <Trash2 />{compact ? null : t("students.delete")}
+      <SubmitButton variant="ghost" size={compact ? "icon-sm" : "sm"} aria-label={t("students.delete")} title={t("students.delete")}
+        className={cn("text-destructive hover:bg-destructive/10 hover:text-destructive", compact && "h-9 w-9 rounded-lg")}>
+        <Trash2 className="h-4 w-4" />{compact ? null : t("students.delete")}
       </SubmitButton>
     </ActionForm>
   );
@@ -505,7 +505,7 @@ export function RoleButton({ id, role, compact }: { id: string; role: string; co
     <ActionForm action={A.setRoleAction} confirm={next === "admin" ? t("students.makeAdminConfirm") : t("students.makeStudentConfirm")}>
       <input type="hidden" name="id" value={id} /><input type="hidden" name="role" value={next} />
       {compact ? (
-        <SubmitButton variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" title={label} aria-label={label}>
+        <SubmitButton variant="ghost" size="icon-sm" className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground" title={label} aria-label={label}>
           {next === "admin" ? <ShieldCheck className="h-4 w-4 text-primary" /> : <ShieldAlert className="h-4 w-4 text-warning" />}
         </SubmitButton>
       ) : (

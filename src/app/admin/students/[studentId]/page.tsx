@@ -134,20 +134,20 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
   const meta = [tc(`attempts.${student.attempt ?? 1}`), student.al_year ? tc("alBatch", { year: student.al_year }) : null].filter(Boolean).join(" · ");
 
   return (
-    <div className="space-y-6 pt-2 sm:pt-4">
+    <div className="space-y-6 pb-12 pt-3 sm:pt-4">
       {/* ── Top Navigation & Quick Actions ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
-        <Link href="/admin/students" className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border/70 pb-4 pt-1">
+        <Link href="/admin/students" className={buttonVariants({ variant: "outline", size: "sm", className: "h-9 gap-1.5 text-xs font-semibold w-fit" })}>
           <ArrowLeft className="h-4 w-4" /> සියලු සිසුන් වෙත (Back)
         </Link>
         <div className="flex flex-wrap items-center gap-2">
           {student.mobile && (
-            <a href={`tel:${student.mobile}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+            <a href={`tel:${student.mobile}`} className={buttonVariants({ variant: "outline", size: "sm", className: "h-9 gap-1.5 text-xs font-medium" })}>
               <Phone className="h-3.5 w-3.5 text-primary" /> අමතන්න ({student.mobile})
             </a>
           )}
           {wa && (
-            <a href={wa} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "sm", className: "text-whatsapp hover:text-whatsapp" })}>
+            <a href={wa} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "sm", className: "h-9 gap-1.5 text-xs font-medium text-whatsapp hover:text-whatsapp hover:bg-emerald-50 dark:hover:bg-emerald-950/20" })}>
               <WhatsAppIcon className="h-4 w-4" /> WhatsApp
             </a>
           )}
