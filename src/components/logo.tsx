@@ -17,16 +17,34 @@ export function LogoMark({ className, tone = "brand", onDark = false }: { classN
   const brand = useBrand();
 
   if (brand.logoUrl) {
-    const light = brand.logoUrl, dark = brand.logoDarkUrl || brand.logoUrl;
-    const sanitizedClass = className?.replace(/\bsm:grid\b/g, "sm:block");
-    const cls = cn(tone === "tile" ? "h-10 w-10 shrink-0 object-contain rounded-full" : "h-9 w-9 shrink-0 object-contain rounded-full", sanitizedClass);
+    const light = brand.logoUrl;
+    const dark = brand.logoDarkUrl || brand.logoUrl;
+    const tile = tone === "tile" && brand.logoOnTile;
+
+    const containerCls = cn(
+      "relative shrink-0 inline-grid place-items-center select-none",
+      tile ? "rounded-xl bg-brand-500 shadow-md shadow-brand-500/25 ring-1 ring-black/10 overflow-hidden" : "rounded-full",
+      tone === "tile" ? "h-10 w-10" : "h-9 w-9",
+      className
+    );
+    const imgCls = cn(
+      "shrink-0 object-contain",
+      tile ? "h-[68%] w-[68%]" : "h-full w-full rounded-full"
+    );
+
     /* eslint-disable @next/next/no-img-element */
-    if (onDark || light === dark) return <img src={onDark ? dark : light} alt="" aria-hidden="true" className={cls} />;
+    if (onDark || light === dark) {
+      return (
+        <span className={containerCls} aria-hidden="true">
+          <img src={onDark ? dark : light} alt="" aria-hidden="true" className={cn(imgCls, "block")} />
+        </span>
+      );
+    }
     return (
-      <>
-        <img src={light} alt="" aria-hidden="true" className={cn(cls, "dark:hidden")} />
-        <img src={dark} alt="" aria-hidden="true" className={cn(cls, "hidden dark:block")} />
-      </>
+      <span className={containerCls} aria-hidden="true">
+        <img src={light} alt="" aria-hidden="true" className={cn(imgCls, "block dark:hidden")} />
+        <img src={dark} alt="" aria-hidden="true" className={cn(imgCls, "hidden dark:block")} />
+      </span>
     );
     /* eslint-enable @next/next/no-img-element */
   }

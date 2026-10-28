@@ -30,7 +30,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           <ArrowLeft className="h-4 w-4" /> {t("home")}
         </Link>
         <div className="absolute inset-x-10 bottom-12 max-w-xl">
-          <LogoMark tone="tile" className="mb-6 h-14 w-14" />
+          <LogoMark tone="tile" onDark className="mb-6 h-14 w-14" />
           <p className="font-display text-5xl font-extrabold leading-[1.1] text-white xl:text-6xl">
             {t("taglineBefore")} <span className="text-brand-200">{t("taglineHighlight")}</span> {t("taglineAfter")}
           </p>
