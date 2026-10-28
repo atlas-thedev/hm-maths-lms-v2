@@ -34,17 +34,62 @@ export function LogoMark({ className, tone = "brand", onDark = false }: { classN
 
   if (tone === "tile") {
     return (
-      <span
-        className={cn(
-          "relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl shadow-md transition-all active:scale-95",
-          "bg-gradient-to-br from-[#16325c] via-[#102544] to-[#071426] ring-1 ring-amber-400/40 shadow-black/25",
-          "dark:from-[#1a3866] dark:via-[#102544] dark:to-[#061020] dark:ring-amber-400/50 dark:shadow-[0_0_15px_rgba(232,184,74,0.25)]",
-          className
-        )}
-        aria-hidden="true"
-      >
-        <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
-        <LogoMark tone="brand" className="relative h-[65%] w-[65%] drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" />
+      <span className={cn("relative inline-grid h-10 w-10 shrink-0 place-items-center select-none", className)} aria-hidden="true">
+        {/* Light Mode Logo Badge (crisp navy & polished gold) */}
+        <span
+          className={cn(
+            "grid h-10 w-10 place-items-center overflow-hidden rounded-xl transition-all active:scale-95",
+            "bg-gradient-to-br from-[#183a6b] via-[#102544] to-[#071324] ring-1 ring-[#c5962b]/55 shadow-md shadow-black/20",
+            onDark ? "hidden" : "dark:hidden"
+          )}
+        >
+          <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/10" />
+          <svg viewBox="0 0 44 44" focusable="false" className="relative h-[66%] w-[66%] drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <defs>
+              <linearGradient id={`${id}-light`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#F8DF9E" />
+                <stop offset="50%" stopColor="#E2AE3C" />
+                <stop offset="100%" stopColor="#BA8316" />
+              </linearGradient>
+            </defs>
+            <g fill="none" stroke={`url(#${id}-light)`} strokeWidth="5.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5.2 11.2v27" />
+              <path d="M19.7 11.2v27" />
+              <path d="M5.2 25.2h14.5" />
+              <path d="M19.7 11.2l8.5 20.5 8.5-20.5" />
+              <path d="M36.7 11.2v27" />
+            </g>
+            <circle cx="39" cy="5.6" r="2.5" fill={`url(#${id}-light)`} />
+          </svg>
+        </span>
+
+        {/* Dark Mode Logo Badge (deep sapphire with luminous gold glow) */}
+        <span
+          className={cn(
+            "grid h-10 w-10 place-items-center overflow-hidden rounded-xl transition-all active:scale-95",
+            "bg-gradient-to-br from-[#1a3866] via-[#0d1e38] to-[#040b17] ring-1 ring-[#f4cf70]/80 shadow-[0_0_18px_rgba(232,184,74,0.35)]",
+            onDark ? "grid" : "hidden dark:grid"
+          )}
+        >
+          <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
+          <svg viewBox="0 0 44 44" focusable="false" className="relative h-[66%] w-[66%] drop-shadow-[0_0_8px_rgba(244,207,112,0.6)]">
+            <defs>
+              <linearGradient id={`${id}-dark`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFF4D0" />
+                <stop offset="40%" stopColor="#FFD45A" />
+                <stop offset="100%" stopColor="#E5A61E" />
+              </linearGradient>
+            </defs>
+            <g fill="none" stroke={`url(#${id}-dark)`} strokeWidth="5.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5.2 11.2v27" />
+              <path d="M19.7 11.2v27" />
+              <path d="M5.2 25.2h14.5" />
+              <path d="M19.7 11.2l8.5 20.5 8.5-20.5" />
+              <path d="M36.7 11.2v27" />
+            </g>
+            <circle cx="39" cy="5.6" r="2.6" fill={`url(#${id}-dark)`} />
+          </svg>
+        </span>
       </span>
     );
   }
