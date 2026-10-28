@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import { cache } from "react";
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE, type Locale } from "./config";
 import { buildMessages } from "./build-messages";
-import { getBrand, getCenters, getSiteData, getSiteText } from "@/lib/settings";
+import { getBrand, getCenters, getFaqs, getSiteData, getSiteText } from "@/lib/settings";
 import { makeT } from "./translate";
 import { formatDate, formatDateTime, formatMonth, formatTime } from "@/lib/utils";
 import { scheduleLabel } from "@/lib/schedule";
@@ -19,10 +19,10 @@ export const getLocale = cache(async (): Promise<Locale> => {
 /** Translations with the Developer-panel changes applied (site text, brand name, centers). Cached per request by getT / layout. */
 export const getMessages = cache(async () => {
   const locale = await getLocale();
-  const [brand, centers, text, site] = await Promise.all([getBrand(), getCenters(), getSiteText(), getSiteData()]);
+  const [brand, centers, text, site, faqs] = await Promise.all([getBrand(), getCenters(), getSiteText(), getSiteData(), getFaqs()]);
   return buildMessages(locale, {
     brand: { name: brand.name, fullName: brand.fullName, owner: brand.owner, logoUrl: brand.logo.image ?? "", logoDarkUrl: brand.logo.dark ?? "", logoOnTile: brand.logo.onTile },
-    centers, site, overrides: text[locale], onlineLabel: { en: "Online", si: "ඔන්ලයින්" },
+    centers, site, overrides: text[locale], onlineLabel: { en: "Online", si: "ඔන්ලයින්" }, faqs,
   });
 });
 

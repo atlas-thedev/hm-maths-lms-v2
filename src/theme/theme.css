@@ -62,7 +62,7 @@
 
     /* ── Primary action (filled buttons, active tab) ── */
     --primary: var(--brand-500);
-    --primary-foreground: 216 62% 14%; /* Navy text on gold button */
+    --primary-foreground: 0 0% 100%; /* Pure white text on gold button & chips */
     --primary-text: var(--brand-700);
 
     /* ── Status colours: base (filled), soft (tinted background) + soft text ── */
@@ -96,8 +96,8 @@
     --gradient-brand: linear-gradient(135deg, hsl(38 80% 45%) 0%, hsl(var(--brand-500)) 100%);
     --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-50)) 0%, hsl(var(--brand-100)) 100%);
     --gradient-dark: linear-gradient(135deg, hsl(216 62% 16%) 0%, hsl(216 55% 12%) 100%);
-    --gradient-logo-from: hsl(var(--brand-400));
-    --gradient-logo-to: hsl(var(--brand-600));
+    --gradient-logo-from: hsl(45 96% 64%);
+    --gradient-logo-to: hsl(38 90% 48%);
 
     /* ── Class poster colours (generated banners when a class has no uploaded image) ── */
     --gradient-class-theory: linear-gradient(135deg, hsl(var(--brand-700)) 0%, hsl(var(--brand-800)) 50%, hsl(var(--brand-950)) 100%);
@@ -166,6 +166,8 @@
     --highlight-soft-foreground: 255 92% 80%;
 
     --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-500) / .12) 0%, hsl(var(--brand-700) / .12) 100%);
+    --gradient-logo-from: hsl(45 96% 66%);
+    --gradient-logo-to: hsl(38 90% 52%);
     --medal-gold-text: 45 93% 62%; --medal-silver-text: 220 9% 78%; --medal-bronze-text: 27 85% 64%;
     --portal-head: 20 14% 4%;
   }

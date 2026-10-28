@@ -122,7 +122,7 @@ export function buildTheme(t: ThemeSettings): BuiltTheme {
   const btn: RGB = t.buttons === "deep" ? scale[600].rgb : rgb;
   const primary = t.buttons === "deep" ? scale[600].hsl : hslVar(bh, bs, bl);
   const whiteRatio = contrast(WHITE, btn), inkRatio = contrast(INK, btn);
-  const primaryForeground = whiteRatio >= 4.5 || whiteRatio >= inkRatio ? "0 0% 100%" : "216 62% 14%";
+  const primaryForeground = "0 0% 100%";
 
   // Brand-coloured text: the first shade readable on the page background.
   const pick = (order: (typeof STEPS)[number][], bg: RGB) => {

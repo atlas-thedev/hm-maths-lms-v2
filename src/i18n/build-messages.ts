@@ -3,6 +3,7 @@ import type { Locale } from "./config";
 import type { Messages } from "./translate";
 import { centerLabel, centerVenue, ONLINE_KEY, type Center } from "@/lib/centers";
 import type { SiteData } from "@/lib/site-data";
+import type { FaqItem } from "@/lib/settings";
 
 /** Brand name the translation files were written with; replaced by the Developer-panel name when it differs. */
 export const DEFAULT_BRAND_NAME = "HM Maths";
@@ -13,6 +14,7 @@ export interface BuildInput {
   overrides: Record<string, string>;
   site: SiteData;
   onlineLabel: { en: string; si: string };
+  faqs?: FaqItem[];
 }
 
 function setPath(root: Messages, path: string, value: unknown) {
@@ -59,6 +61,14 @@ export function buildMessages(locale: Locale, input: BuildInput): Messages {
   (base.common as Messages).towns = labels;
   const home = ((base.landing as Messages).home as Messages).centers as Messages;
   home.items = centers.map((c) => ({ key: c.key, place: centerVenue(c, locale), town: centerLabel(c, locale) }));
+
+  if (input.faqs && input.faqs.length > 0) {
+    const faqList = input.faqs.map((f) => ({
+      q: locale === "si" ? (f.qSi || f.qEn) : (f.qEn || f.qSi),
+      a: locale === "si" ? (f.aSi || f.aEn) : (f.aEn || f.aSi),
+    }));
+    ((base.landing as Messages).faq as Messages).items = faqList;
+  }
 
   for (const [path, value] of Object.entries(overrides)) setPath(base, path, value);
 

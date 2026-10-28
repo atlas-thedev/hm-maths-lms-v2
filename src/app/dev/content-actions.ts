@@ -6,7 +6,7 @@ import { asService } from "@/lib/db/pg";
 import { KEY_RE, normalizeCenters, ONLINE_KEY, type Center } from "@/lib/centers";
 import { defaultFor, EDITABLE_NS, missingVars } from "@/lib/site-text";
 import {
-  getBrandSettings, getCenters, getSiteData, getSiteText, recordAuditLog, saveBrandSettings, saveCenters, saveSiteData, saveSiteText, type SiteText,
+  getBrandSettings, getCenters, getFaqs, getSiteData, getSiteText, recordAuditLog, saveBrandSettings, saveCenters, saveFaqs, saveSiteData, saveSiteText, type FaqItem, type SiteText,
 } from "@/lib/settings";
 import { youtubeId } from "@/lib/youtube";
 import type { Locale } from "@/i18n/config";
@@ -187,4 +187,39 @@ export async function saveSiteDataAction(_p: ActionState, fd: FormData): Promise
   revalidatePath("/sitemap.xml");
   const zeros = section === "bank" && next.bankAccounts.some((b) => /^[0\s-]+$/.test(b.accountNumber));
   return { ok: true, message: zeros ? "Saved, but an account number is all zeros. Students would pay into nothing, so please enter the real one." : "Saved. Live on the next page load." };
+}
+
+// ─── Frequently Asked Questions (FAQ) ───
+export async function saveFaqsAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const { user } = await requireDeveloper();
+  let raw: unknown;
+  try {
+    raw = JSON.parse(str(fd, "faqs"));
+  } catch {
+    return { error: "Could not read the FAQ list. Reload the page and try again." };
+  }
+  if (!Array.isArray(raw)) return { error: "Invalid FAQ list format." };
+
+  const text = (v: unknown, max = 2000) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+  const out: FaqItem[] = [];
+
+  for (const [i, item] of (raw as Record<string, unknown>[]).entries()) {
+    const qEn = text(item.qEn, 300);
+    const aEn = text(item.aEn, 3000);
+    const qSi = text(item.qSi, 300);
+    const aSi = text(item.aSi, 3000);
+
+    if (!qEn && !qSi) return { error: `FAQ #${i + 1}: please provide a question in English or Sinhala.` };
+    if (!aEn && !aSi) return { error: `FAQ #${i + 1}: please provide an answer.` };
+
+    const id = text(item.id, 50) || `faq-${Date.now().toString(36)}${i}`;
+    out.push({ id, qEn, aEn, qSi, aSi });
+  }
+
+  await saveFaqs(out, user.id);
+  await log(`FAQ updated → ${out.length} questions`, { count: out.length });
+  refreshAll();
+  revalidatePath("/dashboard/faq");
+  revalidatePath("/");
+  return { ok: true, message: `Saved ${out.length} FAQ questions. Live across the home page and student portal.` };
 }

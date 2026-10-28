@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">HM Maths</title>
+  <defs>
+    <linearGradient id="hmGold" gradientUnits="userSpaceOnUse" x1="12" y1="12" x2="52" y2="52">
+      <stop offset="0" stop-color="#F6D78F"/>
+      <stop offset="1" stop-color="#C79327"/>
+    </linearGradient>
+    <linearGradient id="hmNavy" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="64" y2="64">
+      <stop offset="0" stop-color="#17315A"/>
+      <stop offset="1" stop-color="#0A1A31"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#hmNavy)"/>
+  <rect x="3.4" y="3.4" width="57.2" height="57.2" rx="11.6" fill="none" stroke="#E8B84A" stroke-opacity=".38" stroke-width="1.1"/>
+  <g fill="none" stroke="url(#hmGold)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16.5 18.5v27"/>
+    <path d="M31 18.5v27"/>
+    <path d="M16.5 32.5h14.5"/>
+    <path d="M31 18.5l8.5 20.5 8.5-20.5"/>
+    <path d="M48 18.5v27"/>
+  </g>
+  <circle cx="50.3" cy="12.9" r="2.4" fill="url(#hmGold)"/>
+</svg>

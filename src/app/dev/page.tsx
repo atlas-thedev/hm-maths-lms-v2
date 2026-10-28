@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { Activity, Database, GitCommit, HardDrive, MapPin, Megaphone, Palette, Phone, Power, Server, ShieldCheck, Tag, Type, Users, UserRoundCheck, Wrench } from "lucide-react";
+import { Activity, Database, GitCommit, HardDrive, HelpCircle, MapPin, Megaphone, Palette, Phone, Power, Server, ShieldCheck, Tag, Type, Users, UserRoundCheck, Wrench } from "lucide-react";
 import { requireDeveloper } from "@/lib/auth";
 import { asService } from "@/lib/db/pg";
 import { getAccessSettings, getAnnouncementSettings, getMaintenanceSettings, getThemeSettings } from "@/lib/settings";
@@ -141,9 +141,10 @@ export default async function DevOverviewPage() {
         <ActionCard href="/dev/users" title="Accounts & sessions" description="Developers, sign everyone out" icon={Users} tone="info" />
         <ActionCard href="/dev/tools" title="Tools & exports" description="CSV exports, clear cache" icon={HardDrive} tone="highlight" />
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <ActionCard href="/dev/brand" title="Brand & SEO" description="Name, logo, home photos, Google text" icon={Tag} />
         <ActionCard href="/dev/content" title="Site text" description="Edit any sentence, English or Sinhala" icon={Type} tone="info" />
+        <ActionCard href="/dev/faq" title="FAQ" description="Add, edit and reorder frequently asked questions" icon={HelpCircle} tone="brand" />
         <ActionCard href="/dev/centers" title="Centers" description="Class locations (Nugegoda, …)" icon={MapPin} tone="success" />
         <ActionCard href="/dev/contact" title="Contact & links" description="Phones, channels, bank accounts, videos" icon={Phone} tone="warning" />
       </div>

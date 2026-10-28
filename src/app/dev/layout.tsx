@@ -13,6 +13,7 @@ export default async function DevLayout({ children }: { children: React.ReactNod
       { href: "/dev/theme", label: "Theme & colours", tab: "Theme", icon: "palette" },
       { href: "/dev/brand", label: "Brand & SEO", tab: "Brand", icon: "brand" },
       { href: "/dev/content", label: "Site text", icon: "type" },
+      { href: "/dev/faq", label: "FAQ", icon: "faq" },
       { href: "/dev/centers", label: "Centers", icon: "map" },
       { href: "/dev/contact", label: "Contact & links", icon: "link" },
       { href: "/dev/site", label: "Maintenance & site", tab: "Site", icon: "power" },

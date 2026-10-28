@@ -18,7 +18,7 @@ import { normalizeSiteData, type SiteData } from "@/lib/site-data";
 
 // ─── generic read / write ───
 // Every setting is read with ONE query per request (React cache()), so adding settings costs nothing extra.
-const ALL_KEYS = ["landing_stats", "theme", "maintenance", "announcement", "access", "brand", "centers", "site_text", "site_data"];
+const ALL_KEYS = ["landing_stats", "theme", "maintenance", "announcement", "access", "brand", "centers", "site_text", "site_data", "faqs"];
 const allSettings = cache(async (): Promise<Record<string, unknown>> => {
   try {
     const rows = await asService(async (c) => (await c.query("select key, value from public.system_settings where key = any($1::text[])", [ALL_KEYS])).rows);
@@ -139,6 +139,90 @@ export const getSiteText = cache(async (): Promise<SiteText> => {
   return { en: cleanText(v.en), si: cleanText(v.si) };
 });
 export const saveSiteText = (next: SiteText, actorId: string) => writeSetting("site_text", { en: cleanText(next.en), si: cleanText(next.si) }, actorId);
+
+// ─── Frequently Asked Questions (FAQ) ───
+export interface FaqItem {
+  id: string;
+  qEn: string;
+  aEn: string;
+  qSi: string;
+  aSi: string;
+}
+
+export function defaultFaqs(): FaqItem[] {
+  return [
+    {
+      id: "faq-1",
+      qEn: "How do I register for a class?",
+      aEn: "Create a free account with your mobile number, then open the Store in your dashboard, choose your class and month, and upload your bank slip.",
+      qSi: "පන්තියකට ලියාපදිංචි වන්නේ කෙසේද?",
+      aSi: "ඔබගේ ජංගම දුරකථන අංකයෙන් නොමිලේ ගිණුමක් සාදා, පුවරුවේ වෙළඳසැල විවෘත කර, පන්තිය සහ මාසය තෝරා, බැංකු රිසිට්පත උඩුගත කරන්න."
+    },
+    {
+      id: "faq-2",
+      qEn: "How do I pay the class fee?",
+      aEn: "Pay by bank deposit or online transfer to the account shown in the Store. Use your Student ID as the reference and upload a photo of the slip.",
+      qSi: "පන්ති ගාස්තු ගෙවන්නේ කෙසේද?",
+      aSi: "වෙළඳසැලේ පෙන්වා ඇති ගිණුමට බැංකු තැන්පතුවක් හෝ ඔන්ලයින් මාරු කිරීමක් මඟින් ගෙවන්න. සඳහන ලෙස ඔබගේ ශිෂ්‍ය අංකය භාවිත කර රිසිට්පතේ ඡායාරූපයක් උඩුගත කරන්න."
+    },
+    {
+      id: "faq-3",
+      qEn: "When will I get access after paying?",
+      aEn: "Your payment is checked manually. Once approved, the class month unlocks automatically, usually within a few hours.",
+      qSi: "ගෙවීමෙන් පසු ප්‍රවේශය ලැබෙන්නේ කවදාද?",
+      aSi: "ඔබගේ ගෙවීම අතින් පරීක්ෂා කෙරේ. අනුමත වූ පසු එම මාසයේ පන්තිය ස්වයංක්‍රීයව විවෘත වේ, සාමාන්‍යයෙන් පැය කිහිපයක් ඇතුළත."
+    },
+    {
+      id: "faq-4",
+      qEn: "Can I watch the recordings again?",
+      aEn: "Yes. Recordings for every month you have paid for stay available in My Classes, organised week by week.",
+      qSi: "පටිගත කිරීම් නැවත නැරඹිය හැකිද?",
+      aSi: "ඔව්. ඔබ ගෙවූ සෑම මාසයකම පටිගත කිරීම් සතියෙන් සතිය සකසා මගේ පන්ති තුළ තිබේ."
+    },
+    {
+      id: "faq-5",
+      qEn: "When can I join a live class?",
+      aEn: "The Join button appears 20 minutes before the class starts. The link is shown only to students who have paid for that month.",
+      qSi: "සජීවී පන්තියට සම්බන්ධ විය හැක්කේ කවදාද?",
+      aSi: "පන්තිය ආරම්භ වීමට මිනිත්තු 20 කට පෙර සම්බන්ධ වීමේ බොත්තම දිස් වේ. සබැඳිය පෙන්වන්නේ එම මාසයට ගෙවූ සිසුන්ට පමණි."
+    },
+    {
+      id: "faq-6",
+      qEn: "I forgot my password. What should I do?",
+      aEn: "Contact us on WhatsApp with your Student ID and registered mobile number and we will reset it for you.",
+      qSi: "මට මුරපදය අමතක වුණා. කුමක් කළ යුතුද?",
+      aSi: "ඔබගේ ශිෂ්‍ය අංකය සහ ලියාපදිංචි දුරකථන අංකය සමඟ WhatsApp හරහා අප අමතන්න, අපි එය යළි සකසන්නෙමු."
+    },
+    {
+      id: "faq-7",
+      qEn: "Are the online papers timed?",
+      aEn: "Yes. MCQ papers have a countdown timer and submit automatically when time runs out. You can review answers after the paper closes.",
+      qSi: "ඔන්ලයින් ප්‍රශ්න පත්‍ර කාලානුබද්ධද?",
+      aSi: "ඔව්. බහුවරණ ප්‍රශ්න පත්‍රවල කාල ගණකයක් ඇති අතර කාලය අවසන් වූ විට ස්වයංක්‍රීයව ඉදිරිපත් වේ. ප්‍රශ්න පත්‍රය වැසූ පසු පිළිතුරු සමාලෝචනය කළ හැක."
+    },
+    {
+      id: "faq-8",
+      qEn: "Do you deliver printed tutes?",
+      aEn: "Yes. Order tute books from the Store and they will be delivered island-wide to the address you provide.",
+      qSi: "මුද්‍රිත නිබන්ධන බෙදා හරිනවාද?",
+      aSi: "ඔව්. වෙළඳසැලෙන් නිබන්ධන පොත් ඇණවුම් කළ විට ඔබ ලබා දෙන ලිපිනයට දිවයින පුරා බෙදා හරිනු ලැබේ."
+    }
+  ];
+}
+
+export const getFaqs = cache(async (): Promise<FaqItem[]> => {
+  const v = await readRaw("faqs");
+  if (!Array.isArray(v) || v.length === 0) return defaultFaqs();
+  return (v as Record<string, unknown>[]).map((r, i) => ({
+    id: str(r.id) || `faq-${i + 1}`,
+    qEn: str(r.qEn, "", 300),
+    aEn: str(r.aEn, "", 2000),
+    qSi: str(r.qSi, "", 300),
+    aSi: str(r.aSi, "", 2000),
+  })).filter((f) => f.qEn || f.qSi);
+});
+
+export const saveFaqs = (next: FaqItem[], actorId: string) => writeSetting("faqs", next, actorId);
 
 // ─── Audit log ───
 export async function recordAuditLog(entry: {
