@@ -8,9 +8,9 @@ User=hm
 WorkingDirectory=/srv/hm-maths/app
 EnvironmentFile=/srv/hm-maths/.env
 Environment=NODE_ENV=production
-Environment=PORT=3000
+Environment=PORT=3100
 Environment=HOSTNAME=127.0.0.1
-ExecStart=/usr/bin/npx next start -p 3000 -H 127.0.0.1
+ExecStart=/usr/bin/npx next start -p 3100 -H 127.0.0.1
 Restart=always
 RestartSec=3
 
