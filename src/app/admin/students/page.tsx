@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, QrCode, Search } from "lucide-react";
+import { Phone, QrCode, Search, UserRound } from "lucide-react";
 import { WhatsAppIcon } from "@/components/brand-icons";
 import { canDeleteAccount, isOwnerRole, requireAdmin } from "@/lib/auth";
 import { Badge, Input, PageHeader, Select, Table, buttonVariants, cardVariants } from "@/components/ui";
@@ -7,7 +7,7 @@ import { AL_YEARS } from "@/lib/constants";
 import { townKeys } from "@/lib/centers";
 import { getCenters } from "@/lib/settings";
 import type { Profile } from "@/lib/types";
-import { cn, toStudentId, whatsappLink } from "@/lib/utils";
+import { cn, initials, toStudentId, whatsappLink } from "@/lib/utils";
 import { getFormat, getT } from "@/i18n/server";
 import { DeleteUserButton, ResetPasswordButton, RoleButton } from "../forms";
 
@@ -29,6 +29,10 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
   const { data, count } = await query;
   const rows = (data ?? []) as (Profile & { enrollments: { count: number }[] })[];
 
+  const avatarPaths = rows.map((r) => r.avatar_path).filter(Boolean) as string[];
+  const signedAvatars = avatarPaths.length ? (await db.storage.from("avatars").createSignedUrls(avatarPaths, 1800)).data ?? [] : [];
+  const avatarUrlMap = new Map(signedAvatars.map((x) => [x.path, x.signedUrl]));
+
   return (
     <div>
       <PageHeader title={t("title")} description={t("shown", { n: rows.length, total: count ?? rows.length })} />
@@ -43,15 +47,30 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
       <ul className="space-y-2.5 sm:hidden">
         {rows.map((p) => {
           const wa = whatsappLink(p.mobile, t("waHello", { name: p.full_name }));
+          const avatarUrl = avatarUrlMap.get(p.avatar_path ?? "");
           return (
             <li key={p.id} className={cn(cardVariants(), "p-3.5")}>
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="flex flex-wrap items-center gap-1.5 font-semibold leading-snug">
-                    <span className="break-words">{p.full_name}</span>
-                    {p.role === "developer" ? <Badge variant="highlight">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge>{tc("shell.admin")}</Badge> : null}
-                  </p>
-                  <p className="font-mono text-xs text-muted-foreground">{p.student_id ?? tc("dash")} · {p.al_year ?? tc("dash")} · {tc(`towns.${p.town}`)}</p>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Link href={`/admin/students/${p.id}`} className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border bg-muted ring-1 ring-border/50">
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="grid h-full w-full place-items-center bg-teal-600/10 font-display text-xs font-bold text-teal-700 dark:text-teal-400">
+                        {initials(p.full_name)}
+                      </div>
+                    )}
+                  </Link>
+                  <div className="min-w-0">
+                    <p className="flex flex-wrap items-center gap-1.5 font-semibold leading-snug">
+                      <Link href={`/admin/students/${p.id}`} className="break-words hover:text-primary hover:underline">
+                        {p.full_name}
+                      </Link>
+                      {p.role === "developer" ? <Badge variant="highlight">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge>{tc("shell.admin")}</Badge> : null}
+                    </p>
+                    <p className="font-mono text-xs text-muted-foreground">{p.student_id ?? tc("dash")} · {p.al_year ?? tc("dash")} · {tc(`towns.${p.town}`)}</p>
+                  </div>
                 </div>
                 <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">{t("cols.enrollments")}: {p.enrollments?.[0]?.count ?? 0}</span>
               </div>
@@ -61,6 +80,9 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                 <p>{t("cols.joined")}: {f.date(p.created_at)}</p>
               </div>
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t pt-2.5">
+                <Link href={`/admin/students/${p.id}`} className={buttonVariants({ variant: "outline", size: "sm", className: "h-9 gap-1 text-xs" })}>
+                  <UserRound className="h-3.5 w-3.5 text-teal-700 dark:text-teal-400" /> විස්තර
+                </Link>
                 {p.mobile && <a href={`tel:${p.mobile}`} aria-label={p.mobile} className={buttonVariants({ variant: "outline", size: "sm", className: "h-9" })}><Phone /> {p.mobile}</a>}
                 {wa && <a href={wa} target="_blank" rel="noreferrer" aria-label={t("whatsapp")} className={buttonVariants({ variant: "outline", size: "icon" })}><WhatsAppIcon className="h-5 w-5" /></a>}
                 <span className="ml-auto flex items-center gap-1">
@@ -82,14 +104,29 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
         <tbody>
           {rows.map((p) => {
             const wa = whatsappLink(p.mobile, t("waHello", { name: p.full_name }));
+            const avatarUrl = avatarUrlMap.get(p.avatar_path ?? "");
             return (
               <tr key={p.id}>
                 <td>
-                  <p className="font-medium">
-                    {p.full_name}{" "}
-                    {p.role === "developer" ? <Badge variant="highlight">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge>{tc("shell.admin")}</Badge> : null}
-                  </p>
-                  <p className="font-mono text-xs text-muted-foreground">{p.student_id ?? tc("dash")}</p>
+                  <div className="flex items-center gap-3">
+                    <Link href={`/admin/students/${p.id}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border bg-muted ring-1 ring-border/50 transition hover:ring-primary">
+                      {avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="grid h-full w-full place-items-center bg-teal-600/10 font-display text-xs font-bold text-teal-700 dark:text-teal-400">
+                          {initials(p.full_name)}
+                        </div>
+                      )}
+                    </Link>
+                    <div className="min-w-0">
+                      <Link href={`/admin/students/${p.id}`} className="font-medium hover:text-primary hover:underline block truncate">
+                        {p.full_name}{" "}
+                        {p.role === "developer" ? <Badge variant="highlight">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge>{tc("shell.admin")}</Badge> : null}
+                      </Link>
+                      <p className="font-mono text-xs text-muted-foreground">{p.student_id ?? tc("dash")}</p>
+                    </div>
+                  </div>
                 </td>
                 <td className="text-xs"><p>{p.mobile ?? tc("dash")}</p><p className="text-muted-foreground">{t("nic")} {p.nic ?? tc("dash")}</p></td>
                 <td className="text-xs">{p.al_year ?? tc("dash")} · {tc(`towns.${p.town}`)}</td>
@@ -97,9 +134,13 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                 <td>{p.enrollments?.[0]?.count ?? 0}</td>
                 <td className="text-xs text-muted-foreground">{f.date(p.created_at)}</td>
                 <td>
-                  <div className="flex items-center justify-end gap-1">
-                    {p.role === "student" && <Link href={`/admin/students/${p.id}`} aria-label={t("qr")} title={t("qr")} className={buttonVariants({ variant: "ghost", size: "icon", className: "" })}><QrCode className="h-4 w-4" /></Link>}
-                    {wa && <a href={wa} target="_blank" rel="noreferrer" aria-label={t("whatsapp")} className={buttonVariants({ variant: "ghost", size: "icon", className: "" })}><WhatsAppIcon className="h-5 w-5" /></a>}
+                  <div className="flex items-center justify-end gap-1.5">
+                    <Link href={`/admin/students/${p.id}`} aria-label="විස්තර බලන්න" title="විස්තර බලන්න (View Profile)" className={buttonVariants({ variant: "outline", size: "sm", className: "h-8 px-2 text-xs gap-1" })}>
+                      <UserRound className="h-3.5 w-3.5 text-teal-700 dark:text-teal-400" />
+                      <span>විස්තර</span>
+                    </Link>
+                    {p.role === "student" && <Link href={`/admin/students/${p.id}`} aria-label={t("qr")} title={t("qr")} className={buttonVariants({ variant: "ghost", size: "icon", className: "h-8 w-8" })}><QrCode className="h-4 w-4" /></Link>}
+                    {wa && <a href={wa} target="_blank" rel="noreferrer" aria-label={t("whatsapp")} className={buttonVariants({ variant: "ghost", size: "icon", className: "h-8 w-8" })}><WhatsAppIcon className="h-4 w-4" /></a>}
                     {p.id !== user.id && (p.role === "student" || (isOwner && p.role !== "developer")) && <ResetPasswordButton id={p.id} name={p.full_name} compact />}
                     {isOwner && p.id !== user.id && !isOwnerRole(p.role) && <RoleButton id={p.id} role={p.role} />}
                     {p.id !== user.id && canDeleteAccount(profile.role, p.role) && <DeleteUserButton id={p.id} name={p.full_name} compact />}
