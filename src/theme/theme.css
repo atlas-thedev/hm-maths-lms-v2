@@ -108,7 +108,7 @@
 
     /* ── Public landing page ── */
     --landing-bg: 210 25% 98%;
-    --landing-hero: 216 62% 16%;   /* Navy Blue #102544 */
+    --landing-hero: 0 0% 0%;   /* true black */
 
     /* ── Other companies' brand colours (WhatsApp, Facebook, YouTube buttons) ── */
     --whatsapp: 173 77% 31%;
