@@ -95,7 +95,7 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }} className="mt-4 text-[15px] leading-relaxed text-white/65">{t("desc")}</motion.p>
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.6, ease }} className="mt-7 flex flex-wrap justify-center gap-3">
             <Magnetic strength={0.3}>
-              <Link href={primary.href} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-brand-950 shadow-lg shadow-brand-500/30 transition hover:-translate-y-0.5 hover:bg-brand-400">
+              <Link href={primary.href} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-500/30 transition hover:-translate-y-0.5 hover:bg-brand-400">
                 <span aria-hidden className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/35 to-transparent transition duration-700 group-hover:translate-x-full" />
                 <span className="relative">{primary.label}</span> <ArrowRight className="relative h-4 w-4 transition group-hover:translate-x-0.5" />
               </Link>

@@ -163,7 +163,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
 
       {/* ── Student Hero Card with Profile Picture (PFP) ── */}
       <Card className="overflow-hidden bg-gradient-to-br from-card via-card to-muted/30">
-        <CardContent className="p-6">
+        <CardContent className="p-6 sm:pt-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
             {/* Profile Picture (PFP) */}
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-border bg-muted shadow-md ring-4 ring-primary/10 sm:h-28 sm:w-28">
