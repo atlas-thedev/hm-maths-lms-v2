@@ -28,11 +28,11 @@ export const toneSoft: Record<Tone, string> = {
 /** Solid fill + white (or dark) text. */
 export const toneSolid: Record<Tone, string> = {
   brand: "bg-gradient-brand text-white",
-  success: "bg-success text-success-foreground",
-  warning: "bg-warning text-warning-foreground",
-  danger: "bg-destructive text-destructive-foreground",
-  info: "bg-info text-info-foreground",
-  highlight: "bg-highlight text-highlight-foreground",
+  success: "bg-success text-white",
+  warning: "bg-warning text-white",
+  danger: "bg-destructive text-white",
+  info: "bg-info text-white",
+  highlight: "bg-highlight text-white",
   neutral: "bg-secondary text-secondary-foreground",
   dark: "bg-gradient-dark text-white",
 };

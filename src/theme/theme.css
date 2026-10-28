@@ -70,8 +70,8 @@
     --success-foreground: 0 0% 100%;
     --success-soft: 141 79% 92%;
     --success-soft-foreground: 156 73% 22%;
-    --warning: 38 90% 45%;
-    --warning-foreground: 216 62% 14%;
+    --warning: 35 95% 40%;
+    --warning-foreground: 0 0% 100%;
     --warning-soft: 44 95% 90%;
     --warning-soft-foreground: 36 90% 24%;
     --destructive: 0 74% 42%;
@@ -82,10 +82,10 @@
     --info-foreground: 0 0% 100%;
     --info-soft: 214 90% 94%;
     --info-soft-foreground: 216 70% 25%;
-    --highlight: 42 78% 50%;
-    --highlight-foreground: 216 62% 14%;
-    --highlight-soft: 45 100% 95%;
-    --highlight-soft-foreground: 38 80% 30%;
+    --highlight: 263 70% 50%;
+    --highlight-foreground: 0 0% 100%;
+    --highlight-soft: 251 91% 95%;
+    --highlight-soft-foreground: 263 70% 38%;
 
     /* ── Leaderboard medals: light → dark stops of each medal, and its text colour ── */
     --medal-gold-from: 45 96% 64%;  --medal-gold-to: 36 92% 44%;  --medal-gold-text: 32 95% 30%;
@@ -124,48 +124,48 @@
   }
 
   .dark {
-    --background: 216 62% 8%;             /* Deep Navy near-black */
-    --foreground: 210 20% 96%;
-    --card: 216 55% 12%;                  /* Rich Navy Card */
-    --card-foreground: 210 20% 96%;
-    --popover: 216 55% 12%;
-    --popover-foreground: 210 20% 96%;
-    --muted: 216 40% 16%;
-    --muted-foreground: 215 20% 68%;
-    --secondary: 216 40% 16%;
-    --secondary-foreground: 210 20% 96%;
-    --accent: 42 40% 15%;                 /* Dark gold tint */
+    --background: 0 0% 0%;             /* true black, no gradient */
+    --foreground: 30 15% 95%;
+    --card: 0 0% 7%;
+    --card-foreground: 30 15% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 30 15% 95%;
+    --muted: 0 0% 11%;
+    --muted-foreground: 30 8% 68%;
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 30 15% 95%;
+    --accent: 42 40% 12%;              /* dark brand tint — keep the hue in step with --brand-* */
     --accent-foreground: var(--brand-300);
-    --border: 216 40% 20%;
-    --input: 216 40% 24%;
+    --border: 0 0% 17%;
+    --input: 0 0% 21%;
     --ring: var(--brand-400);
 
     --primary: var(--brand-500);
-    --primary-foreground: 216 62% 12%;
+    --primary-foreground: 0 0% 100%;
     --primary-text: var(--brand-400);
 
     --success: 152 60% 31%;
     --success-foreground: 0 0% 100%;
     --success-soft: 152 50% 13%;
     --success-soft-foreground: 152 60% 70%;
-    --warning: 42 90% 50%;
-    --warning-foreground: 216 62% 12%;
-    --warning-soft: 42 60% 14%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-soft: 38 60% 13%;
     --warning-soft-foreground: 43 96% 65%;
     --destructive: 0 72% 52%;
     --destructive-foreground: 0 0% 100%;
     --destructive-soft: 0 50% 15%;
     --destructive-soft-foreground: 0 90% 76%;
-    --info: 216 80% 52%;
+    --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
-    --info-soft: 216 60% 14%;
-    --info-soft-foreground: 216 90% 75%;
-    --highlight: 42 80% 55%;
-    --highlight-foreground: 216 62% 12%;
-    --highlight-soft: 42 40% 16%;
-    --highlight-soft-foreground: 43 90% 78%;
+    --info-soft: 200 60% 13%;
+    --info-soft-foreground: 199 92% 74%;
+    --highlight: 263 70% 58%;
+    --highlight-foreground: 0 0% 100%;
+    --highlight-soft: 263 40% 16%;
+    --highlight-soft-foreground: 255 92% 80%;
 
-    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-500) / .15) 0%, hsl(var(--brand-700) / .15) 100%);
+    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-500) / .12) 0%, hsl(var(--brand-700) / .12) 100%);
     --medal-gold-text: 45 93% 62%; --medal-silver-text: 220 9% 78%; --medal-bronze-text: 27 85% 64%;
-    --portal-head: 216 62% 10%;
+    --portal-head: 20 14% 4%;
   }
