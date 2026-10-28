@@ -30,6 +30,6 @@ export const BRAND = {
   },
 
   /** Browser / phone status-bar colour and the installed-app splash colours. */
-  themeColor: { light: "#faf8f6", dark: "#0c0a09" },
-  appBackground: "#141414",
+  themeColor: { light: "#f8fafc", dark: "#102544" },
+  appBackground: "#102544",
 } as const;

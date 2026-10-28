@@ -54,7 +54,7 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
         </div>
         <div className="flex items-center gap-1">
           <LanguageSwitcher className={cn("hidden sm:inline-flex", scrolled ? "text-slate-600 hover:bg-slate-100" : "text-white/90 hover:bg-white/10 hover:text-white")} />
-          <Link href={cta.href} className="rounded-full bg-ink px-5 py-2.5 text-[13px] font-semibold text-white shadow-md shadow-black/10 transition hover:-translate-y-px hover:bg-brand-600">{cta.label}</Link>
+          <Link href={cta.href} className="rounded-full bg-brand-500 px-5 py-2.5 text-[13px] font-bold text-brand-950 shadow-md shadow-brand-500/25 transition hover:-translate-y-px hover:bg-brand-400">{cta.label}</Link>
           <button type="button" onClick={() => setOpen(true)} aria-label={tn("menu")} className={cn("inline-flex h-10 w-10 items-center justify-center rounded-full lg:hidden", scrolled ? "text-slate-700 hover:bg-slate-100" : "text-white hover:bg-white/10")}>
             <Menu className="h-5 w-5" />
           </button>
@@ -82,7 +82,7 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
                 <LanguageSwitcher className="text-slate-600" />
                 <div className="flex gap-2">
                   {account === "guest" && <Link href="/register" className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold">{tn("register")}</Link>}
-                  <Link href={cta.href} className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white">{cta.label}</Link>
+                  <Link href={cta.href} className="rounded-full bg-brand-500 px-4 py-2.5 text-sm font-bold text-brand-950 shadow-md shadow-brand-500/20">{cta.label}</Link>
                 </div>
               </div>
             </motion.div>

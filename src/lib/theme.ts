@@ -23,9 +23,10 @@ export interface ThemeSettings {
   buttons: "exact" | "deep";
 }
 
-export const DEFAULT_THEME: ThemeSettings = { brand: "#f05b06", radius: 0.9, defaultMode: "light", allowToggle: true, buttons: "deep" };
+export const DEFAULT_THEME: ThemeSettings = { brand: "#e8b84a", radius: 0.9, defaultMode: "light", allowToggle: true, buttons: "exact" };
 
 export const THEME_PRESETS: { name: string; brand: string }[] = [
+  { name: "Navy & Gold", brand: "#e8b84a" },
   { name: "HM Orange", brand: "#f05b06" },
   { name: "Royal Blue", brand: "#2563eb" },
   { name: "Emerald", brand: "#059669" },
@@ -121,7 +122,7 @@ export function buildTheme(t: ThemeSettings): BuiltTheme {
   const btn: RGB = t.buttons === "deep" ? scale[600].rgb : rgb;
   const primary = t.buttons === "deep" ? scale[600].hsl : hslVar(bh, bs, bl);
   const whiteRatio = contrast(WHITE, btn), inkRatio = contrast(INK, btn);
-  const primaryForeground = whiteRatio >= 4.5 || whiteRatio >= inkRatio ? "0 0% 100%" : "20 14% 8%";
+  const primaryForeground = whiteRatio >= 4.5 || whiteRatio >= inkRatio ? "0 0% 100%" : "216 62% 14%";
 
   // Brand-coloured text: the first shade readable on the page background.
   const pick = (order: (typeof STEPS)[number][], bg: RGB) => {

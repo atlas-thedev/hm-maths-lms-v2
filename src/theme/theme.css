@@ -13,79 +13,79 @@
  *  Light mode is in :root, dark mode in .dark — change both.
  */
   :root, .force-light {
-    /* ── Brand scale (HM orange) ── */
-    --brand-50: 25 100% 96%;
-    --brand-100: 25 100% 91%;
-    --brand-200: 24 100% 82%;
-    --brand-300: 22 100% 70%;
-    --brand-400: 22 96% 58%;
-    --brand-500: 22 95% 48%;
-    --brand-600: 22 95% 39%;
-    --brand-700: 19 93% 35%;
-    --brand-800: 17 84% 29%;
-    --brand-900: 16 78% 25%;
-    --brand-950: 16 91% 13%;
+    /* ── Brand scale (Gold #E8B84A) ── */
+    --brand-50: 45 100% 96%;
+    --brand-100: 44 95% 91%;
+    --brand-200: 43 90% 82%;
+    --brand-300: 42 85% 72%;
+    --brand-400: 42 82% 65%;
+    --brand-500: 42 78% 60%;
+    --brand-600: 40 78% 50%;
+    --brand-700: 38 80% 40%;
+    --brand-800: 35 80% 30%;
+    --brand-900: 32 78% 22%;
+    --brand-950: 216 62% 14%;
 
-    /* ── Neutral greys (warm, no blue cast) ── */
-    --gray-50: 60 9% 98%;
-    --gray-100: 60 5% 96%;
-    --gray-200: 20 6% 90%;
-    --gray-300: 24 6% 83%;
-    --gray-400: 24 5% 64%;
-    --gray-500: 25 5% 45%;
-    --gray-600: 33 5% 32%;
-    --gray-700: 30 6% 25%;
-    --gray-800: 12 6% 15%;
-    --gray-900: 24 11% 9%;
-    --gray-950: 20 14% 4%;
-    --ink: 0 0% 4%;            /* near-black used for dark tiles / landing hero */
-    --sand-100: 30 41% 89%;    /* beige heading gradient on the dark landing hero */
-    --sand-300: 28 21% 75%;
-    --sand-500: 24 14% 66%;
+    /* ── Neutral greys & Navy accents ── */
+    --gray-50: 210 20% 98%;
+    --gray-100: 214 20% 95%;
+    --gray-200: 214 18% 89%;
+    --gray-300: 215 16% 80%;
+    --gray-400: 215 14% 63%;
+    --gray-500: 215 12% 46%;
+    --gray-600: 215 15% 33%;
+    --gray-700: 216 25% 24%;
+    --gray-800: 216 40% 18%;
+    --gray-900: 216 55% 12%;
+    --gray-950: 216 62% 8%;
+    --ink: 216 62% 16%;            /* Navy Blue #102544 */
+    --sand-100: 43 85% 90%;
+    --sand-300: 42 75% 75%;
+    --sand-500: 40 60% 60%;
 
     /* ── Page surfaces & text ── */
-    --background: 30 14% 97%;
-    --foreground: 20 14% 8%;
+    --background: 210 20% 98%;
+    --foreground: 216 62% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 20 14% 8%;
+    --card-foreground: 216 62% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 8%;
-    --muted: 30 10% 95%;
-    --muted-foreground: 25 7% 36%;
-    --secondary: 30 10% 94%;
-    --secondary-foreground: 20 14% 12%;
-    --accent: var(--brand-50);         /* soft brand tint (hover, chips) */
+    --popover-foreground: 216 62% 16%;
+    --muted: 214 25% 94%;
+    --muted-foreground: 215 15% 42%;
+    --secondary: 214 25% 92%;
+    --secondary-foreground: 216 62% 16%;
+    --accent: var(--brand-50);         /* soft gold tint */
     --accent-foreground: var(--brand-800);
-    --border: 30 10% 89%;
-    --input: 30 10% 85%;
+    --border: 214 20% 88%;
+    --input: 214 20% 84%;
     --ring: var(--brand-500);
 
     /* ── Primary action (filled buttons, active tab) ── */
-    --primary: var(--brand-600);
-    --primary-foreground: 0 0% 100%;
-    --primary-text: var(--brand-600);  /* orange text on page background */
+    --primary: var(--brand-500);
+    --primary-foreground: 216 62% 14%; /* Navy text on gold button */
+    --primary-text: var(--brand-700);
 
     /* ── Status colours: base (filled), soft (tinted background) + soft text ── */
     --success: 152 70% 27%;
     --success-foreground: 0 0% 100%;
     --success-soft: 141 79% 92%;
     --success-soft-foreground: 156 73% 22%;
-    --warning: 28 90% 35%;
-    --warning-foreground: 0 0% 100%;
-    --warning-soft: 48 96% 89%;
-    --warning-soft-foreground: 26 83% 22%;
+    --warning: 38 90% 45%;
+    --warning-foreground: 216 62% 14%;
+    --warning-soft: 44 95% 90%;
+    --warning-soft-foreground: 36 90% 24%;
     --destructive: 0 74% 42%;
     --destructive-foreground: 0 0% 100%;
     --destructive-soft: 0 93% 94%;
     --destructive-soft-foreground: 0 74% 32%;
-    --info: 200 98% 33%;
+    --info: 216 70% 40%;
     --info-foreground: 0 0% 100%;
-    --info-soft: 204 94% 94%;
-    --info-soft-foreground: 201 90% 25%;
-    --highlight: 263 70% 50%;          /* violet accent (store, premium, extras) */
-    --highlight-foreground: 0 0% 100%;
-    --highlight-soft: 251 91% 95%;
-    --highlight-soft-foreground: 263 70% 38%;
+    --info-soft: 214 90% 94%;
+    --info-soft-foreground: 216 70% 25%;
+    --highlight: 42 78% 50%;
+    --highlight-foreground: 216 62% 14%;
+    --highlight-soft: 45 100% 95%;
+    --highlight-soft-foreground: 38 80% 30%;
 
     /* ── Leaderboard medals: light → dark stops of each medal, and its text colour ── */
     --medal-gold-from: 45 96% 64%;  --medal-gold-to: 36 92% 44%;  --medal-gold-text: 32 95% 30%;
@@ -93,11 +93,11 @@
     --medal-bronze-from: 27 80% 62%; --medal-bronze-to: 19 75% 36%; --medal-bronze-text: 19 80% 32%;
 
     /* ── Gradients (hero cards, filled tiles, logo) ── */
-    --gradient-brand: linear-gradient(135deg, hsl(var(--brand-800)) 0%, hsl(var(--brand-700)) 55%, hsl(var(--brand-600)) 100%);
+    --gradient-brand: linear-gradient(135deg, hsl(38 80% 45%) 0%, hsl(var(--brand-500)) 100%);
     --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-50)) 0%, hsl(var(--brand-100)) 100%);
-    --gradient-dark: linear-gradient(135deg, hsl(var(--ink)) 0%, hsl(20 12% 11%) 55%, hsl(var(--brand-950)) 100%);
-    --gradient-logo-from: hsl(var(--brand-500));
-    --gradient-logo-to: hsl(var(--brand-300));
+    --gradient-dark: linear-gradient(135deg, hsl(216 62% 16%) 0%, hsl(216 55% 12%) 100%);
+    --gradient-logo-from: hsl(var(--brand-400));
+    --gradient-logo-to: hsl(var(--brand-600));
 
     /* ── Class poster colours (generated banners when a class has no uploaded image) ── */
     --gradient-class-theory: linear-gradient(135deg, hsl(var(--brand-700)) 0%, hsl(var(--brand-800)) 50%, hsl(var(--brand-950)) 100%);
@@ -106,9 +106,9 @@
     --gradient-class-extra: linear-gradient(135deg, hsl(345 83% 41%) 0%, hsl(343 80% 35%) 50%, hsl(343 88% 16%) 100%);
     --gradient-class-free: linear-gradient(135deg, hsl(215 25% 27%) 0%, hsl(217 33% 17%) 50%, hsl(229 84% 5%) 100%);
 
-    /* ── Public landing page (always light) ── */
-    --landing-bg: 40 27% 98%;
-    --landing-hero: 0 0% 8%;   /* matches the backdrop of the YouTube channel banner image */
+    /* ── Public landing page ── */
+    --landing-bg: 210 25% 98%;
+    --landing-hero: 216 62% 16%;   /* Navy Blue #102544 */
 
     /* ── Other companies' brand colours (WhatsApp, Facebook, YouTube buttons) ── */
     --whatsapp: 173 77% 31%;
@@ -118,54 +118,54 @@
     --youtube: 0 100% 45%;
 
     /* ── Logo tile & shell ── */
-    --logo-tile: var(--ink);
-    --portal-head: 20 10% 6%;
+    --logo-tile: var(--brand-500);
+    --portal-head: 216 62% 14%;    /* Navy Blue */
     --radius: 0.9rem;
   }
 
   .dark {
-    --background: 0 0% 0%;             /* true black, no gradient */
-    --foreground: 30 15% 95%;
-    --card: 0 0% 7%;
-    --card-foreground: 30 15% 95%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 30 15% 95%;
-    --muted: 0 0% 11%;
-    --muted-foreground: 30 8% 68%;
-    --secondary: 0 0% 13%;
-    --secondary-foreground: 30 15% 95%;
-    --accent: 22 40% 12%;              /* dark brand tint — keep the hue in step with --brand-* */
+    --background: 216 62% 8%;             /* Deep Navy near-black */
+    --foreground: 210 20% 96%;
+    --card: 216 55% 12%;                  /* Rich Navy Card */
+    --card-foreground: 210 20% 96%;
+    --popover: 216 55% 12%;
+    --popover-foreground: 210 20% 96%;
+    --muted: 216 40% 16%;
+    --muted-foreground: 215 20% 68%;
+    --secondary: 216 40% 16%;
+    --secondary-foreground: 210 20% 96%;
+    --accent: 42 40% 15%;                 /* Dark gold tint */
     --accent-foreground: var(--brand-300);
-    --border: 0 0% 17%;
-    --input: 0 0% 21%;
+    --border: 216 40% 20%;
+    --input: 216 40% 24%;
     --ring: var(--brand-400);
 
-    --primary: var(--brand-600);
-    --primary-foreground: 0 0% 100%;
+    --primary: var(--brand-500);
+    --primary-foreground: 216 62% 12%;
     --primary-text: var(--brand-400);
 
     --success: 152 60% 31%;
     --success-foreground: 0 0% 100%;
     --success-soft: 152 50% 13%;
     --success-soft-foreground: 152 60% 70%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 30 60% 6%;
-    --warning-soft: 38 60% 13%;
+    --warning: 42 90% 50%;
+    --warning-foreground: 216 62% 12%;
+    --warning-soft: 42 60% 14%;
     --warning-soft-foreground: 43 96% 65%;
     --destructive: 0 72% 52%;
     --destructive-foreground: 0 0% 100%;
     --destructive-soft: 0 50% 15%;
     --destructive-soft-foreground: 0 90% 76%;
-    --info: 199 89% 48%;
+    --info: 216 80% 52%;
     --info-foreground: 0 0% 100%;
-    --info-soft: 200 60% 13%;
-    --info-soft-foreground: 199 92% 74%;
-    --highlight: 263 70% 58%;
-    --highlight-foreground: 0 0% 100%;
-    --highlight-soft: 263 40% 16%;
-    --highlight-soft-foreground: 255 92% 80%;
+    --info-soft: 216 60% 14%;
+    --info-soft-foreground: 216 90% 75%;
+    --highlight: 42 80% 55%;
+    --highlight-foreground: 216 62% 12%;
+    --highlight-soft: 42 40% 16%;
+    --highlight-soft-foreground: 43 90% 78%;
 
-    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-500) / .12) 0%, hsl(var(--brand-700) / .12) 100%);
+    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--brand-500) / .15) 0%, hsl(var(--brand-700) / .15) 100%);
     --medal-gold-text: 45 93% 62%; --medal-silver-text: 220 9% 78%; --medal-bronze-text: 27 85% 64%;
-    --portal-head: 20 14% 4%;
+    --portal-head: 216 62% 10%;
   }

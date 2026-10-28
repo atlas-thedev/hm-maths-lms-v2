@@ -33,8 +33,8 @@ export function LogoMark({ className, tone = "brand", onDark = false }: { classN
 
   if (tone === "tile") {
     return (
-      <span className={cn("grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-logo-tile shadow-lg shadow-black/30 ring-1 ring-white/10", className)} aria-hidden="true">
-        <LogoMark tone="brand" onDark className="h-[64%] w-[64%] drop-shadow-[0_0_8px_hsl(var(--brand-500)/.45)]" />
+      <span className={cn("grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-brand-500 shadow-md shadow-brand-500/25 ring-1 ring-black/10", className)} aria-hidden="true">
+        <LogoMark tone="current" className="h-[64%] w-[64%] text-brand-950" />
       </span>
     );
   }
