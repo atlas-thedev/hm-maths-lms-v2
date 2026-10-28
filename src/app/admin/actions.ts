@@ -27,6 +27,7 @@ const bool = (fd: FormData, k: string) => fd.get(k) === "on" || fd.get(k) === "t
 const fail = (e: { message: string } | null, fallback: string): ActionState => ({ error: e?.message ? `${fallback}: ${e.message}` : fallback });
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const minutesOrNull = (fd: FormData, k: string) => { const n = optInt(fd, k); return n === null || Number.isNaN(n) ? null : n; };
 const isHttps = (u: string) => /^https:\/\/\S+$/.test(u);
 
@@ -66,9 +67,18 @@ export async function saveClassAction(_p: ActionState, fd: FormData): Promise<Ac
   if (!(CLASS_TYPES as readonly string[]).includes(class_type)) return { error: await m("classType") };
   if (town && !townKeys(await getCenters()).includes(town)) return { error: await m("invalidCenter") };
   if (!Number.isFinite(fee) || fee < 0) return { error: await m("fee") };
-  if (row.start_time && !TIME_RE.test(row.start_time)) return { error: await m("time") };
-  if (row.duration_minutes < 15 || row.duration_minutes > 600) return { error: await m("durationRange") };
-  if (row.schedule_days.length && !row.start_time) return { error: await m("startTimeRequired") };
+
+  // For Combos: no fixed lecture time required
+  if (class_type === "Combo") {
+    row.schedule_days = [];
+    row.start_time = null;
+    row.duration_minutes = 120;
+  } else {
+    if (row.start_time && !TIME_RE.test(row.start_time)) return { error: await m("time") };
+    if (row.duration_minutes < 15 || row.duration_minutes > 600) return { error: await m("durationRange") };
+    if (row.schedule_days.length && !row.start_time) return { error: await m("startTimeRequired") };
+  }
+
   const defaultLink = optStr(fd, "default_live_url");
   if (defaultLink && !isHttps(defaultLink)) return { error: await m("liveHttps") };
   const saveLink = async (classId: string) => defaultLink
@@ -80,6 +90,15 @@ export async function saveClassAction(_p: ActionState, fd: FormData): Promise<Ac
     if (error) return fail(error, await m("fail.saveClass"));
     const { error: linkErr } = await saveLink(id);
     if (linkErr) return fail(linkErr, await m("fail.saveClass"));
+
+    if (class_type === "Combo") {
+      const comboItemIds = fd.getAll("combo_items").map(String).filter((x) => UUID_RE.test(x));
+      await db.from("combo_items").delete().eq("combo_id", id);
+      if (comboItemIds.length > 0) {
+        await db.from("combo_items").insert(comboItemIds.map((cid) => ({ combo_id: id, class_id: cid })));
+      }
+    }
+
     revalidatePath("/admin/classes", "layout");
     revalidatePath("/", "layout");
     return { ok: true, message: await m("classSaved") };
@@ -87,6 +106,14 @@ export async function saveClassAction(_p: ActionState, fd: FormData): Promise<Ac
   const { data, error } = await db.from("classes").insert(row).select("id").single();
   if (error) return fail(error, await m("fail.createClass"));
   await saveLink(data.id);
+
+  if (class_type === "Combo") {
+    const comboItemIds = fd.getAll("combo_items").map(String).filter((x) => UUID_RE.test(x));
+    if (comboItemIds.length > 0) {
+      await db.from("combo_items").insert(comboItemIds.map((cid) => ({ combo_id: data.id, class_id: cid })));
+    }
+  }
+
   revalidatePath("/", "layout");
   redirect(`/admin/classes/${data.id}`);
 }
@@ -208,6 +235,37 @@ export async function reviewEnrollmentAction(_p: ActionState, fd: FormData): Pro
   }
   const { error } = await db.from("enrollments").update(updatePayload).eq("id", str(fd, "id"));
   if (error) return fail(error, await m("fail.update"));
+
+  if (decision === "approved") {
+    const { data: enrollmentRow } = await db
+      .from("enrollments")
+      .select("student_id, class_id, month, slip_url, bank_ref, notes, attendance_mode")
+      .eq("id", str(fd, "id"))
+      .maybeSingle();
+
+    if (enrollmentRow) {
+      const { data: items } = await db.from("combo_items").select("class_id").eq("combo_id", enrollmentRow.class_id);
+      if (items && items.length > 0) {
+        for (const item of items) {
+          await db.from("enrollments").upsert(
+            {
+              student_id: enrollmentRow.student_id,
+              class_id: item.class_id,
+              month: enrollmentRow.month,
+              status: "approved",
+              admin_note: `Combo Pack (${enrollmentRow.class_id})`,
+              slip_url: enrollmentRow.slip_url,
+              bank_ref: enrollmentRow.bank_ref,
+              notes: enrollmentRow.notes,
+              attendance_mode: enrollmentRow.attendance_mode,
+            },
+            { onConflict: "student_id,class_id,month" },
+          );
+        }
+      }
+    }
+  }
+
   revalidatePath("/admin", "layout");
   return { ok: true, message: decision === "approved" ? await m("approved") : await m("rejected") };
 }
@@ -232,6 +290,17 @@ export async function grantAccessAction(_p: ActionState, fd: FormData): Promise<
     { onConflict: "student_id,class_id,month" },
   );
   if (error) return fail(error, await m("fail.grant"));
+
+  const { data: items } = await db.from("combo_items").select("class_id").eq("combo_id", classId);
+  if (items && items.length > 0) {
+    for (const item of items) {
+      await db.from("enrollments").upsert(
+        { student_id: student.id, class_id: item.class_id, month, status: "approved", amount: 0, admin_note: `Combo Pack (${classId})` },
+        { onConflict: "student_id,class_id,month" },
+      );
+    }
+  }
+
   revalidatePath("/admin", "layout");
   return { ok: true, message: await m("granted", { name: student.full_name }) };
 }
@@ -464,7 +533,6 @@ export async function reviewOrderAction(_p: ActionState, fd: FormData): Promise<
 }
 
 // ────────────────────────────── Events ──────────────────────────────
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Posters are uploaded to the public class-banners bucket under "events/". */
 const POSTER_RE = /^\/api\/storage\/public\/class-banners\/events\/[A-Za-z0-9_.-]+$/;
 

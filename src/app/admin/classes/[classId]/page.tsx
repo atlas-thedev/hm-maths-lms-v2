@@ -16,15 +16,19 @@ export default async function AdminClassPage({ params }: { params: Promise<{ cla
   const { classId } = await params;
   const { db } = await requireOwner();
   const [t, tc, f, sched] = await Promise.all([getT("admin.class"), getT("common"), getFormat(), getScheduleLabel()]);
-  const [{ data: cls }, { data: lessonData }, { count }, { data: def }, { data: linkRows }] = await Promise.all([
+  const [{ data: cls }, { data: lessonData }, { count }, { data: def }, { data: linkRows }, { data: classesData }, { data: comboItemRows }] = await Promise.all([
     db.from("classes").select("*").eq("id", classId).maybeSingle(),
     db.from("lessons").select("*").eq("class_id", classId).order("month", { ascending: false }).order("live_start_time", { ascending: true, nullsFirst: false }).order("week_number").order("sort_order"),
     db.from("enrollments").select("id", { count: "exact", head: true }).eq("class_id", classId).eq("status", "approved").eq("month", currentMonth()),
     db.from("class_live_defaults").select("live_url").eq("class_id", classId).maybeSingle(),
     db.from("lesson_live_links").select("lesson_id, live_url, lessons!inner(class_id)").eq("lessons.class_id", classId),
+    db.from("classes").select("id, title, class_type, target_year").neq("class_type", "Combo").neq("id", classId).eq("is_active", true).order("target_year", { ascending: false }).order("title"),
+    db.from("combo_items").select("class_id").eq("combo_id", classId),
   ]);
   if (!cls) notFound();
   const c = cls as ClassRow;
+  const availableClasses = (classesData ?? []) as { id: string; title: string; class_type: string; target_year: number | null }[];
+  const initialComboItemIds = (comboItemRows ?? []).map((r) => r.class_id as string);
   const lessons = (lessonData ?? []) as Lesson[];
   const links: Record<string, string> = Object.fromEntries((linkRows ?? []).map((r) => [r.lesson_id as string, r.live_url as string]));
   const defaultLink = (def?.live_url as string | undefined) ?? null;
@@ -59,34 +63,38 @@ export default async function AdminClassPage({ params }: { params: Promise<{ cla
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1fr]">
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base"><CalendarDays className="h-4 w-4 text-teal-700" /> {t("timetable")}</CardTitle>
-              <CardDescription>{t("timetableHint")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {ready && (
-                <div className="flex flex-wrap items-center gap-2 rounded-xl bg-muted/50 p-3 text-sm">
-                  <span className="font-semibold">{timetable}</span>
-                  {defaultLink
-                    ? <Badge variant="default"><Link2 />{tc(`schedule.platforms.${livePlatform(defaultLink) ?? "other"}`)}</Badge>
-                    : <Badge variant="warning">{t("noDefaultLink")}</Badge>}
-                  <a href="#timetable" className="ml-auto text-xs font-semibold text-primary hover:underline">{t("editTimetable")}</a>
-                </div>
-              )}
-              <GenerateSessionsForm classId={classId} ready={ready} defaultTitle={tc(`classTypes.${c.class_type}`)} />
-            </CardContent>
-          </Card>
+          {c.class_type !== "Combo" && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base"><CalendarDays className="h-4 w-4 text-teal-700" /> {t("timetable")}</CardTitle>
+                  <CardDescription>{t("timetableHint")}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {ready && (
+                    <div className="flex flex-wrap items-center gap-2 rounded-xl bg-muted/50 p-3 text-sm">
+                      <span className="font-semibold">{timetable}</span>
+                      {defaultLink
+                        ? <Badge variant="default"><Link2 />{tc(`schedule.platforms.${livePlatform(defaultLink) ?? "other"}`)}</Badge>
+                        : <Badge variant="warning">{t("noDefaultLink")}</Badge>}
+                      <a href="#timetable" className="ml-auto text-xs font-semibold text-primary hover:underline">{t("editTimetable")}</a>
+                    </div>
+                  )}
+                  <GenerateSessionsForm classId={classId} ready={ready} defaultTitle={tc(`classTypes.${c.class_type}`)} />
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">{t("addSession")}</CardTitle>
-              <CardDescription>{t("addSessionHint")}</CardDescription>
-            </CardHeader>
-            <CardContent><LessonForm classId={classId} defaults={defaults} defaultType="extra" /></CardContent>
-          </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">{t("addSession")}</CardTitle>
+                  <CardDescription>{t("addSessionHint")}</CardDescription>
+                </CardHeader>
+                <CardContent><LessonForm classId={classId} defaults={defaults} defaultType="extra" /></CardContent>
+              </Card>
+            </>
+          )}
 
-          <Card><CardHeader><CardTitle className="text-base">{t("details")}</CardTitle></CardHeader><CardContent><ClassForm cls={c} defaultLiveUrl={defaultLink} /></CardContent></Card>
+          <Card><CardHeader><CardTitle className="text-base">{t("details")}</CardTitle></CardHeader><CardContent><ClassForm cls={c} defaultLiveUrl={defaultLink} availableClasses={availableClasses} initialComboItemIds={initialComboItemIds} /></CardContent></Card>
         </div>
 
         <div className="space-y-6">

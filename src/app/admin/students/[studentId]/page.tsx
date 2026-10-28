@@ -134,7 +134,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
   const meta = [tc(`attempts.${student.attempt ?? 1}`), student.al_year ? tc("alBatch", { year: student.al_year }) : null].filter(Boolean).join(" · ");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-2 sm:pt-4">
       {/* ── Top Navigation & Quick Actions ── */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
         <Link href="/admin/students" className={buttonVariants({ variant: "outline", size: "sm" })}>

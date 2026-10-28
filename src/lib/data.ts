@@ -22,6 +22,15 @@ export async function getClassAccess(db: DbClient, uid: string, classId: string,
   } else {
     const { data } = await db.from("enrollments").select("month").eq("student_id", uid).eq("class_id", classId).eq("status", "approved");
     months = (data ?? []).map((r) => r.month as string);
+    // Also check if student has access via an approved parent combo pack
+    const { data: comboLinks } = await db.from("combo_items").select("combo_id").eq("class_id", classId);
+    if (comboLinks && comboLinks.length > 0) {
+      const comboIds = comboLinks.map((x) => x.combo_id as string);
+      const { data: comboEnrollments } = await db.from("enrollments").select("month").eq("student_id", uid).in("class_id", comboIds).eq("status", "approved");
+      if (comboEnrollments && comboEnrollments.length > 0) {
+        months = [...new Set([...months, ...comboEnrollments.map((r) => r.month as string)])];
+      }
+    }
   }
   months.sort().reverse();
   return { cls: c, months };

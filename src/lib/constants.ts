@@ -2,7 +2,7 @@
 export const TOWNS = ["Panadura", "Horana", "Mathugama", "Kalutara", "Online"] as const;
 export type Town = string;
 
-export const CLASS_TYPES = ["Theory", "Revision", "Paper Class", "Extra Class", "Free Seminar"] as const;
+export const CLASS_TYPES = ["Theory", "Revision", "Paper Class", "Combo", "Extra Class", "Free Seminar"] as const;
 export type ClassType = (typeof CLASS_TYPES)[number];
 
 export const NOTICE_TAGS = ["General", "Urgent", "Exam Notice"] as const;

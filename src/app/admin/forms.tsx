@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Ban, CalendarPlus, Check, KeyRound, Link2, Pin, PinOff, RotateCcw, Send, Trash2, Truck, X } from "lucide-react";
+import { Ban, CalendarPlus, Check, KeyRound, Link2, Pin, PinOff, RotateCcw, Send, ShieldAlert, ShieldCheck, Trash2, Truck, X } from "lucide-react";
 import { toast } from "sonner";
 import { ActionForm } from "@/components/action-form";
 import { FileUpload } from "@/components/file-upload";
@@ -64,7 +64,19 @@ function DurationSelect({ id, name, value, onChange, allowDefault, defaultMinute
 }
 
 // ───────────── Classes ─────────────
-export function ClassForm({ cls, defaultLiveUrl }: { cls?: ClassRow; defaultLiveUrl?: string | null }) {
+export type ClassOption = { id: string; title: string; class_type: string; target_year: number | null };
+
+export function ClassForm({
+  cls,
+  defaultLiveUrl,
+  availableClasses = [],
+  initialComboItemIds = [],
+}: {
+  cls?: ClassRow;
+  defaultLiveUrl?: string | null;
+  availableClasses?: ClassOption[];
+  initialComboItemIds?: string[];
+}) {
   const { t, tc } = useForms();
   const townKeys = useTownKeys();
   const [type, setType] = useState<string>(cls?.class_type ?? "Theory");
@@ -78,6 +90,10 @@ export function ClassForm({ cls, defaultLiveUrl }: { cls?: ClassRow; defaultLive
   const [year, setYear] = useState<string>(cls?.target_year ? String(cls.target_year) : "");
   const [town, setTown] = useState<string>(cls?.town ?? "");
   const isFree = free || type === "Free Seminar";
+  const isCombo = type === "Combo";
+  const [selectedCombo, setSelectedCombo] = useState<string[]>(initialComboItemIds);
+  const toggleCombo = (id: string) => setSelectedCombo((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
   const dayNames = tc.raw<string[]>("schedule.days") ?? [];
   const preview = scheduleLabel({ schedule_days: days, start_time: start || null, duration_minutes: Number(duration), schedule: note },
     dayNames, (d) => tc("schedule.every", { days: d }), tc("schedule.and"));
@@ -102,38 +118,67 @@ export function ClassForm({ cls, defaultLiveUrl }: { cls?: ClassRow; defaultLive
         <Input id="fee" name="fee" type="number" min={0} step={50} defaultValue={cls?.fee ?? 2500} disabled={isFree} />
       </Field>
 
-      {/* Weekly timetable */}
-      <fieldset id="timetable" className="scroll-mt-24 space-y-4 rounded-2xl border bg-muted/30 p-4">
-        <legend className="px-1 font-display text-sm font-semibold">{t("class.timetable")}</legend>
-        <div className="space-y-1.5">
-          <p className="text-sm font-medium">{t("class.days")}</p>
-          <div className="grid grid-cols-7 gap-1.5">
-            {WEEK_DAYS.map((d) => (
-              <label key={d} className="cursor-pointer">
-                <input type="checkbox" name="schedule_days" value={d} checked={days.includes(d)} onChange={() => toggle(d)} className="peer sr-only" />
-                <span className="flex h-10 items-center justify-center rounded-lg border bg-background text-xs font-semibold transition hover:border-teal-500/50 peer-checked:border-teal-600 peer-checked:bg-teal-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-ring sm:text-sm">
-                  {dayNames[d]}
-                </span>
-              </label>
-            ))}
+      {/* When type is Combo, show bundled classes selector. When normal class, show Timetable */}
+      {isCombo ? (
+        <fieldset className="scroll-mt-24 space-y-3 rounded-2xl border border-teal-200 bg-teal-50/40 p-4 dark:border-teal-900/50 dark:bg-teal-950/20">
+          <legend className="px-1 font-display text-sm font-semibold text-teal-800 dark:text-teal-300">
+            Combo පැකේජයට ඇතුළත් පන්ති (Bundled Classes)
+          </legend>
+          <p className="text-xs text-muted-foreground">
+            ශිෂ්‍යයෙකු මෙම Combo පැකේජය ලබාගත් විට, ඔහුට ස්වයංක්‍රීයව ප්‍රවේශය හිමිවන පන්ති පහතින් තෝරන්න. එක් එක් පන්තියේ කාලසටහන ඒ ඒ පන්තියට අනුව අදාළ වේ.
+          </p>
+          {availableClasses.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              {availableClasses.map((item) => {
+                const checked = selectedCombo.includes(item.id);
+                return (
+                  <label key={item.id} className={cn("flex items-start gap-2.5 p-3 rounded-xl border text-sm cursor-pointer transition select-none", checked ? "border-teal-600 bg-white shadow-sm ring-1 ring-teal-500/20 dark:bg-slate-900" : "bg-card/70 hover:border-border")}>
+                    <input type="checkbox" name="combo_items" value={item.id} checked={checked} onChange={() => toggleCombo(item.id)} className="mt-0.5 h-4 w-4 rounded accent-teal-600" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-foreground text-xs sm:text-sm leading-snug">{item.title}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{item.target_year ? `${item.target_year} A/L · ` : ""}{tc(`classTypes.${item.class_type}`)}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground italic">ඇතුළත් කිරීමට වෙනත් පන්ති හමු නොවීය.</p>
+          )}
+        </fieldset>
+      ) : (
+        <fieldset id="timetable" className="scroll-mt-24 space-y-4 rounded-2xl border bg-muted/30 p-4">
+          <legend className="px-1 font-display text-sm font-semibold">{t("class.timetable")}</legend>
+          <div className="space-y-1.5">
+            <p className="text-sm font-medium">{t("class.days")}</p>
+            <div className="grid grid-cols-7 gap-1.5">
+              {WEEK_DAYS.map((d) => (
+                <label key={d} className="cursor-pointer">
+                  <input type="checkbox" name="schedule_days" value={d} checked={days.includes(d)} onChange={() => toggle(d)} className="peer sr-only" />
+                  <span className="flex h-10 items-center justify-center rounded-lg border bg-background text-xs font-semibold transition hover:border-teal-500/50 peer-checked:border-teal-600 peer-checked:bg-teal-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-ring sm:text-sm">
+                    {dayNames[d]}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Field label={t("class.startTime")} htmlFor="start_time"><Input id="start_time" name="start_time" type="time" value={start} onChange={(e) => setStart(e.target.value)} required={days.length > 0} /></Field>
-          <Field label={t("class.duration")} htmlFor="duration_minutes"><DurationSelect id="duration_minutes" name="duration_minutes" value={duration} onChange={setDuration} /></Field>
-        </div>
-        <Field label={t("class.defaultLink")} htmlFor="default_live_url" hint={t("class.defaultLinkHint")}>
-          <div className="relative">
-            <Input id="default_live_url" name="default_live_url" type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://youtube.com/live/… · https://zoom.us/j/…" className="pr-32" />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2"><PlatformHint url={link} /></span>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label={t("class.startTime")} htmlFor="start_time"><Input id="start_time" name="start_time" type="time" value={start} onChange={(e) => setStart(e.target.value)} required={days.length > 0} /></Field>
+            <Field label={t("class.duration")} htmlFor="duration_minutes"><DurationSelect id="duration_minutes" name="duration_minutes" value={duration} onChange={setDuration} /></Field>
           </div>
-        </Field>
-        <Field label={t("class.note")} htmlFor="schedule"><Input id="schedule" name="schedule" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("class.notePh")} /></Field>
-        <div className="rounded-xl border border-dashed border-teal-500/40 bg-background px-3 py-2.5 text-sm">
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("class.preview")} </span>
-          <span className="font-medium">{preview ?? t("class.noDays")}</span>
-        </div>
-      </fieldset>
+          <Field label={t("class.defaultLink")} htmlFor="default_live_url" hint={t("class.defaultLinkHint")}>
+            <div className="relative">
+              <Input id="default_live_url" name="default_live_url" type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://youtube.com/live/… · https://zoom.us/j/…" className="pr-32" />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2"><PlatformHint url={link} /></span>
+            </div>
+          </Field>
+          <Field label={t("class.note")} htmlFor="schedule"><Input id="schedule" name="schedule" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("class.notePh")} /></Field>
+          <div className="rounded-xl border border-dashed border-teal-500/40 bg-background px-3 py-2.5 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("class.preview")} </span>
+            <span className="font-medium">{preview ?? t("class.noDays")}</span>
+          </div>
+        </fieldset>
+      )}
 
       <Field label={t("class.banner")}>
         <BannerBuilder initialConfig={cls?.banner_config ?? null} initialPhoto={cls?.banner_url ?? null} uploadLabel={t("class.bannerUpload")}
@@ -452,13 +497,20 @@ export function DeleteUserButton({ id, name, compact = false }: { id: string; na
   );
 }
 
-export function RoleButton({ id, role }: { id: string; role: string }) {
+export function RoleButton({ id, role, compact }: { id: string; role: string; compact?: boolean }) {
   const { t } = useForms();
   const next = role === "admin" ? "student" : "admin";
+  const label = next === "admin" ? t("students.makeAdmin") : t("students.makeStudent");
   return (
     <ActionForm action={A.setRoleAction} confirm={next === "admin" ? t("students.makeAdminConfirm") : t("students.makeStudentConfirm")}>
       <input type="hidden" name="id" value={id} /><input type="hidden" name="role" value={next} />
-      <SubmitButton variant="ghost" size="sm">{next === "admin" ? t("students.makeAdmin") : t("students.makeStudent")}</SubmitButton>
+      {compact ? (
+        <SubmitButton variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" title={label} aria-label={label}>
+          {next === "admin" ? <ShieldCheck className="h-4 w-4 text-primary" /> : <ShieldAlert className="h-4 w-4 text-warning" />}
+        </SubmitButton>
+      ) : (
+        <SubmitButton variant="ghost" size="sm">{label}</SubmitButton>
+      )}
     </ActionForm>
   );
 }

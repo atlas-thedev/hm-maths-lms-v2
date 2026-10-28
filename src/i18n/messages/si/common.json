@@ -29,9 +29,10 @@
   "alBatch": "{year} උසස් පෙළ",
   "dash": "—",
   "classTypes": {
-    "Theory": "වාද (Theory)",
+    "Theory": "සිද්ධාන්ත (Theory)",
     "Revision": "පුනරීක්ෂණ (Revision)",
-    "Paper Class": "ප්‍රශ්න පත්‍ර පන්තිය",
+    "Paper Class": "ප්‍රශ්න පත්‍ර (Paper Class)",
+    "Combo": "Combo පැකේජය (Package)",
     "Extra Class": "අමතර පන්තිය",
     "Free Seminar": "නොමිලේ සම්මන්ත්‍රණය"
   },

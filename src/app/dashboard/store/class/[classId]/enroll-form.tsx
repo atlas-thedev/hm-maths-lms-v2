@@ -26,13 +26,13 @@ export function EnrollForm({ classId, userId, months, defaultMonth }: { classId:
         </Select>
       </Field>
 
-      <Field label="පන්තියට සම්බන්ධ වන ආකාරය (Attendance Mode)" htmlFor="attendance_mode">
+      <Field label="පන්තියට සම්බන්ධ වන ආකාරය (Attendance Mode)" htmlFor="attendance_mode" hint="භෞතික පන්ති තෝරාගන්නා සියලු සිසුන්ටද Online Live පන්ති සහ Full Recordings ස්වයංක්‍රීයව හිමිවේ.">
         <Select id="attendance_mode" name="attendance_mode" defaultValue="online">
-          <option value="online">Online පමණක් (Online Live & Recordings)</option>
-          <option value="physical_panadura">භෞතිකව (Physical) — සක්යා (පානදුර)</option>
-          <option value="physical_horana">භෞතිකව (Physical) — විදුල (හොරණ)</option>
-          <option value="physical_mathugama">භෞතිකව (Physical) — පැනෝලා (මතුගම)</option>
-          <option value="physical_kalutara">භෞතිකව (Physical) — රසන්‍යා (කළුතර)</option>
+          <option value="online">Online පමණක් (Online Live & Full Recordings)</option>
+          <option value="physical_panadura">භෞතිකව (Physical + Full Online Access) — සක්යා (පානදුර)</option>
+          <option value="physical_horana">භෞතිකව (Physical + Full Online Access) — විදුල (හොරණ)</option>
+          <option value="physical_mathugama">භෞතිකව (Physical + Full Online Access) — පැනෝලා (මතුගම)</option>
+          <option value="physical_kalutara">භෞතිකව (Physical + Full Online Access) — රසන්‍යා (කළුතර)</option>
         </Select>
       </Field>
 

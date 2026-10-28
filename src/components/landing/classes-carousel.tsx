@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, CalendarClock, MapPin } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarClock } from "lucide-react";
 import { ClassBanner, type BannerClass } from "@/components/class-banner";
 import { useT } from "@/i18n/client";
 import { cn } from "@/lib/utils";
@@ -53,22 +53,13 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
                       <span className="rounded-full bg-teal-50 px-2.5 py-1 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">{tc(`classTypes.${c.type}`)}</span>
                       {c.year ? <span className="rounded-full bg-brand-50 px-2.5 py-1 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">{tc("alBatch", { year: c.year })}</span> : null}
                     </div>
-                    <h3 className="mt-4 font-display text-xl font-bold text-ink group-hover:text-teal-600 dark:text-white">{c.title}</h3>
-                    {c.lines.length ? (
-                      <>
-                        <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-slate-600">{t("thisMonth")}</p>
-                        <ul className="mt-2 space-y-1.5">
-                          {c.lines.map((l, k) => (
-                            <li key={k} className="flex gap-2 text-sm text-slate-600 dark:text-slate-300"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-teal-500 to-brand-400" />{l}</li>
-                          ))}
-                        </ul>
-                      </>
+                    <h3 className="mt-3.5 font-display text-lg font-bold text-ink group-hover:text-teal-600 dark:text-white line-clamp-2">{c.title}</h3>
+                    {c.schedule ? (
+                      <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                        <p className="flex items-center gap-1.5"><CalendarClock className="h-3.5 w-3.5 text-teal-600 shrink-0" /><span className="line-clamp-1">{c.schedule}</span></p>
+                      </div>
                     ) : null}
-                    <div className="mt-4 space-y-1 text-xs text-slate-600 dark:text-slate-400">
-                      {c.town ? <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{tc(`towns.${c.town}`)}</p> : null}
-                      {c.schedule ? <p className="flex items-center gap-1.5"><CalendarClock className="h-3.5 w-3.5" /><span className="line-clamp-1">{c.schedule}</span></p> : null}
-                    </div>
-                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-100 pt-3 dark:border-white/5">
                       <span className="whitespace-nowrap font-display text-lg font-bold text-ink dark:text-white">
                         {!c.id ? null : c.isFree ? t("free") : t("perMonth", { amount: `LKR ${c.fee.toLocaleString("en-LK")}` })}
                       </span>

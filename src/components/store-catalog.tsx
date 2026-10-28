@@ -52,11 +52,11 @@ export async function StoreCatalog({ classes, products, owned, filter, basePath,
   const matchesType = (c: ClassRow) => {
     if (filter.type === "all") return true;
     const titleLower = c.title.toLowerCase();
-    const isCombo = titleLower.includes("+") || titleLower.includes("full pack") || titleLower.includes("combo");
+    const isCombo = c.class_type === "Combo" || titleLower.includes("+") || titleLower.includes("full pack") || titleLower.includes("combo");
     if (filter.type === "combo") return isCombo;
-    if (filter.type === "theory") return titleLower.includes("theory") || c.class_type === "Theory";
-    if (filter.type === "revision") return titleLower.includes("revision") || c.class_type === "Revision";
-    if (filter.type === "paper") return titleLower.includes("paper") || c.class_type === "Paper Class";
+    if (filter.type === "theory") return (titleLower.includes("theory") || c.class_type === "Theory") && !isCombo;
+    if (filter.type === "revision") return (titleLower.includes("revision") || c.class_type === "Revision") && !isCombo;
+    if (filter.type === "paper") return (titleLower.includes("paper") || c.class_type === "Paper Class") && !isCombo;
     return true;
   };
 
