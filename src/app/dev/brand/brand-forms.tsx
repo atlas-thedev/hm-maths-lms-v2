@@ -43,8 +43,8 @@ export function BrandForm({ initial, builtIn }: { initial: BrandInitial; builtIn
             <Field label="Teacher / owner name" htmlFor="b-owner" hint="Used in Google results and the page footer."><Input id="b-owner" name="owner" defaultValue={initial.owner} required minLength={2} maxLength={60} /></Field>
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <PhotoField name="logoUrl" label="Logo · light mode" hint="Used on white pages, in the browser tab and on Google. Square PNG or WebP with a clear background works best. Leave it to keep the built-in “hm” mark." current={initial.logoUrl} builtIn="/brand/logo-light.svg" />
-            <PhotoField name="logoDarkUrl" label="Logo · dark mode (optional)" hint="Shown when a visitor uses dark mode, and on the dark tile. Leave it empty to use the light-mode logo everywhere." current={initial.logoDarkUrl} builtIn="/brand/logo-dark.svg" dark />
+            <PhotoField name="logoUrl" label="Logo · light mode" hint="Used on white pages, in the browser tab and on Google. Square PNG or WebP with a clear background works best. Leave it to keep the built-in “hm” mark." current={initial.logoUrl} builtIn={null} />
+            <PhotoField name="logoDarkUrl" label="Logo · dark mode (optional)" hint="Shown when a visitor uses dark mode, and on the dark tile. Leave it empty to use the light-mode logo everywhere." current={initial.logoDarkUrl} builtIn={null} dark />
           </div>
           <label className="flex items-start gap-2.5 text-sm">
             <input type="checkbox" name="logoOnTile" defaultChecked={initial.logoOnTile} className="mt-0.5 h-4 w-4 accent-[hsl(var(--primary))]" />
