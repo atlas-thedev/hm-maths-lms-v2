@@ -1,13 +1,27 @@
 -- Migration 0021: Class Attendance Unique Index & Master Classes Seed
 -- Safe to re-run.
 
+set client_encoding to 'UTF8';
+
 -- 1. Update attendance unique constraint so students can attend multiple classes on the same day
 alter table public.attendance drop constraint if exists attendance_student_id_day_key;
 drop index if exists public.attendance_student_day_class_uniq;
 create unique index if not exists attendance_student_day_class_uniq
   on public.attendance (student_id, day, coalesce(class_id, '00000000-0000-0000-0000-000000000000'::uuid));
 
--- 2. Insert or update the 8 master classes with complete schedules and fees
+-- 2. Clear old mojibake/placeholder rows for these classes before inserting clean UTF-8
+delete from public.classes where title in (
+  '2027 A/L Combined Maths - Theory',
+  '2027 A/L Combined Maths - Revision',
+  '2027 A/L Combined Maths - Paper Class',
+  '2027 A/L Combined Maths - Revision + Paper Class',
+  '2027 A/L Combined Maths - Full Pack (Theory + Revision + Paper)',
+  '2028 A/L Combined Maths - Theory',
+  '2028 A/L Combined Maths - Paper Class',
+  '2028 A/L Combined Maths - Theory + Paper Class'
+);
+
+-- 3. Insert the 8 master classes with complete schedules and fees
 insert into public.classes (title, class_type, target_year, town, fee, schedule, description, is_active, is_free)
 values
   (
