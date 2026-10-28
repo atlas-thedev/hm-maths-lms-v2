@@ -9,7 +9,7 @@ export async function generateMetadata() {
   return { title: (await getT("portal.store"))("title") };
 }
 
-export default async function PublicStorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string }> }) {
+export default async function PublicStorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string; type?: string }> }) {
   const [{ db, user, profile }, t, sp] = await Promise.all([getSession(), getT("portal.store"), searchParams]);
   const filter = parseStoreFilter(sp, profile?.al_year ?? null);
   const [{ data: classes }, { data: products }] = await Promise.all([

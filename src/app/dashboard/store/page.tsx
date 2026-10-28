@@ -9,7 +9,7 @@ export async function generateMetadata() {
   return { title: (await getT("portal.nav"))("store") };
 }
 
-export default async function StorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string }> }) {
+export default async function StorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string; type?: string }> }) {
   const sp = await searchParams;
   const { db, user, profile } = await requireUser();
   // Opens on the student's own exam year; "All years" and Online / Physical are one tap away.

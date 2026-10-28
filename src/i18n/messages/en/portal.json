@@ -163,9 +163,14 @@
       "allYears": "All years",
       "yours": "yours",
       "mode": "Class type",
+      "type": "Class type",
       "all": "All",
       "online": "Online",
-      "physical": "Physical"
+      "physical": "Physical",
+      "theory": "Theory",
+      "revision": "Revision",
+      "paper": "Paper Class",
+      "combo": "Combos & Packs"
     },
     "sections": {
       "online": "Online classes",

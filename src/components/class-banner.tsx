@@ -58,7 +58,7 @@ export function useBannerContent(cls: BannerClass, override?: Partial<BannerConf
 }
 
 /** Class poster: a template (its month always the current one), an uploaded banner, or a generated gradient with a maths symbol. */
-export function ClassBanner({ cls, className, shape = "wide" }: { cls: BannerClass; className?: string; shape?: BannerShape }) {
+export function ClassBanner({ cls, className, shape = "wide", showTitle = false }: { cls: BannerClass; className?: string; shape?: BannerShape; showTitle?: boolean }) {
   const content = useBannerContent(cls);
   if (content) {
     return (
@@ -77,7 +77,9 @@ export function ClassBanner({ cls, className, shape = "wide" }: { cls: BannerCla
           <span className="absolute -right-2 -top-6 select-none font-display text-[9rem] font-black leading-none text-white/15">
             {SYMBOLS[cls.class_type] ?? "∫"}
           </span>
-          <span className="absolute bottom-3 left-4 right-24 line-clamp-2 font-display text-lg font-extrabold leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,.45)]">{cls.title}</span>
+          {showTitle && (
+            <span className="absolute bottom-3 left-4 right-24 line-clamp-2 font-display text-lg font-extrabold leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,.45)]">{cls.title}</span>
+          )}
         </>
       )}
     </div>

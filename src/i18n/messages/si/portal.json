@@ -163,9 +163,14 @@
       "allYears": "සියලු වර්ෂ",
       "yours": "ඔබේ",
       "mode": "පන්ති වර්ගය",
+      "type": "පන්ති වර්ගය",
       "all": "සියල්ල",
       "online": "Online",
-      "physical": "භෞතික"
+      "physical": "භෞතික",
+      "theory": "Theory",
+      "revision": "Revision",
+      "paper": "Paper Class",
+      "combo": "Combos / පැකේජ"
     },
     "sections": {
       "online": "Online පන්ති",

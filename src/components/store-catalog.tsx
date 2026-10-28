@@ -1,29 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, CheckCircle2, Clock, MapPin, Package, Wifi } from "lucide-react";
+import { BookOpen, CheckCircle2, Clock, GraduationCap, Package } from "lucide-react";
 import type { ClassRow, Product } from "@/lib/types";
 import { ClassCard } from "@/components/class-card";
 import { Badge, ChipLink, EmptyState, buttonVariants, cardVariants } from "@/components/ui";
 import { getT } from "@/i18n/server";
 import { AL_YEARS } from "@/lib/constants";
-import { getCenters } from "@/lib/settings";
 import { cn, formatLKR } from "@/lib/utils";
 
 /** Per-class state for the signed-in student: has access this month, or a slip waiting for review. */
 export type ClassOwnership = Record<string, "owned" | "pending">;
 
-export const STORE_MODES = ["all", "online", "physical"] as const;
-export type StoreMode = (typeof STORE_MODES)[number];
+export const CLASS_TYPES = ["all", "theory", "revision", "paper", "combo"] as const;
+export type ClassTypeFilter = (typeof CLASS_TYPES)[number];
 /** year = null → every exam year. */
-export type StoreFilter = { tab: "classes" | "books"; year: number | null; mode: StoreMode };
+export type StoreFilter = { tab: "classes" | "books"; year: number | null; type: ClassTypeFilter };
 
-/** Reads ?tab, ?year (a year or "all") and ?mode from the URL; the year defaults to the student's batch. */
-export function parseStoreFilter(sp: { tab?: string; year?: string; mode?: string }, defaultYear: number | null): StoreFilter {
+/** Reads ?tab, ?year (a year or "all") and ?type/?mode from the URL; the year defaults to the student's batch. */
+export function parseStoreFilter(sp: { tab?: string; year?: string; type?: string; mode?: string }, defaultYear: number | null): StoreFilter {
   const tab = sp.tab === "books" ? "books" : "classes";
-  const mode = (STORE_MODES as readonly string[]).includes(sp.mode ?? "") ? (sp.mode as StoreMode) : "all";
+  const raw = sp.type ?? sp.mode ?? "";
+  const type: ClassTypeFilter = (CLASS_TYPES as readonly string[]).includes(raw) ? (raw as ClassTypeFilter) : "all";
   const y = Number(sp.year);
   const year = sp.year === "all" ? null : Number.isInteger(y) && y >= 2020 && y <= 2040 ? y : defaultYear;
-  return { tab, year, mode };
+  return { tab, year, type };
 }
 
 export async function StoreCatalog({ classes, products, owned, filter, basePath, myYear = null }: {
@@ -33,22 +33,52 @@ export async function StoreCatalog({ classes, products, owned, filter, basePath,
   /** The signed-in student's exam year (marked "your batch" in the year filter). */
   myYear?: number | null;
 }) {
-  const [t, tc, centers] = await Promise.all([getT("portal.store"), getT("common"), getCenters()]);
-  const PHYSICAL = centers.map((c) => c.key);
+  const [t, tc] = await Promise.all([getT("portal.store"), getT("common")]);
   const paid = classes.filter((c) => !c.is_free);
-  const href = (patch: Partial<{ tab: string; year: string; mode: string }>) => {
-    const p = new URLSearchParams({ tab: filter.tab, year: filter.year === null ? "all" : String(filter.year), mode: filter.mode, ...patch });
+  const href = (patch: Partial<{ tab: string; year: string; type: string }>) => {
+    const p = new URLSearchParams({
+      tab: filter.tab,
+      year: filter.year === null ? "all" : String(filter.year),
+      type: filter.type,
+      ...patch,
+    });
     return `${basePath}?${p}`;
   };
 
   // Exam year: the class's batch, or classes open to every batch (no target year).
   const years = [...new Set([...AL_YEARS, ...paid.map((c) => c.target_year).filter((y): y is number => !!y)])].sort();
   const forYear = paid.filter((c) => filter.year === null || !c.target_year || c.target_year === filter.year);
-  const sections: { key: string; title: string; icon: typeof Wifi; items: ClassRow[] }[] = [
-    ...(filter.mode !== "physical" ? [{ key: "online", title: t("sections.online"), icon: Wifi, items: forYear.filter((c) => c.town === "Online") }] : []),
-    ...(filter.mode !== "online" ? PHYSICAL.map((town) => ({ key: town, title: t("sections.center", { town: tc(`towns.${town}`) }), icon: MapPin, items: forYear.filter((c) => c.town === town) })) : []),
-    ...(filter.mode === "all" ? [{ key: "other", title: t("sections.other"), icon: BookOpen, items: forYear.filter((c) => !c.town) }] : []),
-  ].filter((s) => s.items.length);
+
+  const matchesType = (c: ClassRow) => {
+    if (filter.type === "all") return true;
+    const titleLower = c.title.toLowerCase();
+    const isCombo = titleLower.includes("+") || titleLower.includes("full pack") || titleLower.includes("combo");
+    if (filter.type === "combo") return isCombo;
+    if (filter.type === "theory") return titleLower.includes("theory") || c.class_type === "Theory";
+    if (filter.type === "revision") return titleLower.includes("revision") || c.class_type === "Revision";
+    if (filter.type === "paper") return titleLower.includes("paper") || c.class_type === "Paper Class";
+    return true;
+  };
+
+  const filtered = forYear.filter(matchesType);
+
+  const batchYears = [...new Set(filtered.map((c) => c.target_year).filter((y): y is number => !!y))].sort((a, b) => b - a);
+  const otherClasses = filtered.filter((c) => !c.target_year);
+
+  const sections = [
+    ...batchYears.map((yr) => ({
+      key: `batch-${yr}`,
+      title: tc("alBatch", { year: yr }),
+      icon: GraduationCap,
+      items: filtered.filter((c) => c.target_year === yr),
+    })),
+    ...(otherClasses.length > 0 ? [{
+      key: "other",
+      title: t("sections.other") || "වෙනත් පන්ති",
+      icon: BookOpen,
+      items: otherClasses,
+    }] : []),
+  ];
 
   return (
     <div className="space-y-8">
@@ -74,9 +104,11 @@ export async function StoreCatalog({ classes, products, owned, filter, basePath,
               ))}
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("filters.mode")}</span>
-              {STORE_MODES.map((m) => (
-                <ChipLink key={m} href={href({ mode: m })} active={filter.mode === m} data-testid={`filter-mode-${m}`}>{t(`filters.${m}`)}</ChipLink>
+              <span className="mr-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("filters.type")}</span>
+              {CLASS_TYPES.map((typeKey) => (
+                <ChipLink key={typeKey} href={href({ type: typeKey })} active={filter.type === typeKey} data-testid={`filter-type-${typeKey}`}>
+                  {t(`filters.${typeKey}`)}
+                </ChipLink>
               ))}
             </div>
           </div>
@@ -84,7 +116,7 @@ export async function StoreCatalog({ classes, products, owned, filter, basePath,
             <EmptyState icon={BookOpen} title={t("noClasses")} description={t("noClassesText")} />
           ) : !sections.length ? (
             <EmptyState icon={BookOpen} title={t("noMatch")} description={t("noMatchText")}>
-              <Link href={href({ year: "all", mode: "all" })} className={buttonVariants({ size: "sm", variant: "outline" })}>{t("clearFilters")}</Link>
+              <Link href={href({ year: "all", type: "all" })} className={buttonVariants({ size: "sm", variant: "outline" })}>{t("clearFilters")}</Link>
             </EmptyState>
           ) : sections.map(({ key, title, icon: Icon, items }) => (
             <div key={key} className="space-y-3" data-testid={`store-section-${key}`}>

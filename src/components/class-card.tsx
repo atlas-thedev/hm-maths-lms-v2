@@ -22,9 +22,14 @@ export async function ClassCard({ cls, href, footer }: { cls: ClassRow; href?: s
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="font-display font-semibold leading-snug group-hover:text-primary">{cls.title}</h3>
-        {cls.description ? <p className="line-clamp-2 whitespace-pre-line text-sm text-muted-foreground">{cls.description}</p> : null}
+        {cls.description ? <p className="line-clamp-3 whitespace-pre-line text-sm text-muted-foreground">{cls.description}</p> : null}
         <div className="mt-auto space-y-1 pt-2 text-xs text-muted-foreground">
-          {cls.town ? <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{t(`towns.${cls.town}`)}</p> : null}
+          {cls.town ? (
+            <p className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5" />
+              {cls.town === "Online" ? "භෞතික & Online" : t(`towns.${cls.town}`)}
+            </p>
+          ) : null}
           {timetable ? <p className="flex items-center gap-1.5"><CalendarClock className="h-3.5 w-3.5" /><span className="line-clamp-1">{timetable}</span></p> : null}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t pt-3">
