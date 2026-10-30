@@ -15,10 +15,12 @@ export async function ClassCard({ cls, href, footer }: { cls: ClassRow; href?: s
     <div className={cn(cardVariants({ variant: "interactive" }), "group flex h-full flex-col overflow-hidden")}>
       <div className="relative">
         <ClassBanner cls={cls} />
-        <div className="absolute left-3 top-3 flex gap-1.5">
-          <Badge variant="overlay">{t(`classTypes.${cls.class_type}`)}</Badge>
-          {cls.target_year ? <Badge variant="overlay-light">{t("alBatch", { year: cls.target_year })}</Badge> : null}
-        </div>
+        {!cls.banner_config && cls.banner_url ? (
+          <div className="absolute left-3 top-3 flex gap-1.5">
+            <Badge variant="overlay">{t(`classTypes.${cls.class_type}`)}</Badge>
+            {cls.target_year ? <Badge variant="overlay-light">{t("alBatch", { year: cls.target_year })}</Badge> : null}
+          </div>
+        ) : null}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="font-display font-semibold leading-snug group-hover:text-primary">{cls.title}</h3>

@@ -18,6 +18,49 @@ export interface BannerConfig {
 
 export const DEFAULT_BANNER_CONFIG: BannerConfig = { template: "attention", headlineMode: "month", headline: "", badge: "", subtitle: "", tagline: "" };
 
+/** Smart default template configuration based on class type and title. */
+export function getDefaultBannerConfig(classType?: string | null, title?: string | null): BannerConfig {
+  switch (classType) {
+    case "Revision":
+      return {
+        template: "midnight",
+        headlineMode: "month",
+        headline: "",
+        badge: "REVISION",
+        subtitle: "Combined Maths Revision",
+        tagline: "විභාග ඉලක්කගත වේගවත් පුනරීක්ෂණය",
+      };
+    case "Paper Class":
+      return {
+        template: "paper",
+        headlineMode: "month",
+        headline: "",
+        badge: "PAPER CLASS",
+        subtitle: "ප්‍රශ්න පත්‍ර සාකච්ඡාව",
+        tagline: "විභාග මට්ටමේ ප්‍රශ්න පත්‍ර සාකච්ඡාව",
+      };
+    case "Combo":
+      return {
+        template: title?.toLowerCase().includes("full") ? "sunrise" : "attention",
+        headlineMode: "month",
+        headline: "",
+        badge: title?.toLowerCase().includes("full") ? "FULL PACK" : "COMBO PACK",
+        subtitle: title?.replace(/^\d{4}\s*A\/L\s*Combined\s*Maths\s*-\s*/i, "") || "Combo Pack",
+        tagline: "සියලුම පන්ති එකම පැකේජයකින්",
+      };
+    case "Theory":
+    default:
+      return {
+        template: "brand",
+        headlineMode: "month",
+        headline: "",
+        badge: "THEORY",
+        subtitle: "Combined Maths Theory",
+        tagline: "A සාමාර්ථයක් සහතික කෙරෙන අසමසම සිද්ධාන්ත පන්තිය",
+      };
+  }
+}
+
 const t = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
 /** Validates whatever the form or the database hands over; returns null for "no template". */

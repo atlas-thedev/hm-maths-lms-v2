@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { ClassBannerArt } from "@/components/banner/class-banner-art";
 import { useBrand, useLocale, useT } from "@/i18n/client";
-import { colomboMonth, normalizeBannerConfig, timeRange, type BannerConfig, type BannerContent, type BannerShape } from "@/lib/banner";
+import { colomboMonth, getDefaultBannerConfig, normalizeBannerConfig, timeRange, type BannerConfig, type BannerContent, type BannerShape } from "@/lib/banner";
 import { sortDays } from "@/lib/schedule";
 import { cn } from "@/lib/utils";
 
@@ -13,9 +13,10 @@ const GRADIENTS: Record<string, string> = {
   "Paper Class": "bg-class-paper",
   "Extra Class": "bg-class-extra",
   "Free Seminar": "bg-class-free",
+  Combo: "bg-class-revision",
 };
-const SYMBOLS: Record<string, string> = { Theory: "∫", Revision: "Σ", "Paper Class": "π", "Extra Class": "√", "Free Seminar": "∞" };
-const TYPE_LABEL: Record<string, string> = { Theory: "Theory", Revision: "Revision", "Paper Class": "Paper Class", "Extra Class": "Extra Class", "Free Seminar": "Free Seminar" };
+const SYMBOLS: Record<string, string> = { Theory: "∫", Revision: "Σ", "Paper Class": "π", "Extra Class": "√", "Free Seminar": "∞", Combo: "⚡" };
+const TYPE_LABEL: Record<string, string> = { Theory: "Theory", Revision: "Revision", "Paper Class": "Paper Class", "Extra Class": "Extra Class", "Free Seminar": "Free Seminar", Combo: "Combo Pack" };
 
 /** What the banner needs from a class. A full class row fits; the home page carousel passes just these. */
 export interface BannerClass {
@@ -31,7 +32,7 @@ export function useBannerContent(cls: BannerClass, override?: Partial<BannerConf
   const hero = useT("landing.home.hero");
   const locale = useLocale();
   const brand = useBrand();
-  const base = normalizeBannerConfig(cls.banner_config);
+  const base = normalizeBannerConfig(cls.banner_config) ?? (!cls.banner_url ? getDefaultBannerConfig(cls.class_type, cls.title) : null);
   const config = override ? normalizeBannerConfig({ ...(base ?? {}), ...override }) : base;
   if (!config) return null;
   const months = tc.raw<string[]>("months") ?? [];
@@ -48,7 +49,7 @@ export function useBannerContent(cls: BannerClass, override?: Partial<BannerConf
     badge: config.badge,
     subtitle: config.subtitle || cls.title,
     venue: isOnline ? "" : item?.place ?? "",
-    town: cls.town ? (isOnline ? tc("towns.Online") : item?.town ?? tc(`towns.${cls.town}`)) : "",
+    town: cls.town ? (isOnline ? (locale === "si" ? "භෞතික & Online" : "Physical & Online") : item?.town ?? tc(`towns.${cls.town}`)) : "",
     time: timeRange(cls.start_time, cls.duration_minutes, locale),
     days: sortDays(cls.schedule_days ?? []).map((d) => dayNames[d] ?? "").filter(Boolean).join(" · "),
     tagline: config.tagline || hero("tagline"),
