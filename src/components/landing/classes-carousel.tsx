@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, CalendarClock } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ClassBanner, type BannerClass } from "@/components/class-banner";
 import { useT } from "@/i18n/client";
 import { cn } from "@/lib/utils";
@@ -56,14 +56,16 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
                     <h3 className="mt-3.5 font-display text-base sm:text-lg font-bold text-ink group-hover:text-teal-600 dark:text-white line-clamp-2 h-[3.25rem] flex items-start">
                       {c.title}
                     </h3>
-                    <div className="mt-2 text-xs text-slate-500 dark:text-slate-400 h-5 flex items-center">
-                      {c.schedule ? (
-                        <p className="flex items-center gap-1.5 truncate">
-                          <CalendarClock className="h-3.5 w-3.5 text-teal-600 shrink-0" />
-                          <span className="truncate">{c.schedule}</span>
-                        </p>
-                      ) : null}
-                    </div>
+                    {c.lines.length ? (
+                      <div className="mt-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("thisMonth")}</p>
+                        <ul className="mt-1.5 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                          {c.lines.map((l, k) => (
+                            <li key={k} className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-teal-500 to-brand-400" />{l}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                     <div className="mt-auto border-t border-slate-100 pt-3 dark:border-white/5 flex items-center justify-between gap-2">
                       <span className="whitespace-nowrap font-display text-base sm:text-lg font-bold text-ink dark:text-white">
                         {!c.id ? null : c.isFree ? t("free") : (
