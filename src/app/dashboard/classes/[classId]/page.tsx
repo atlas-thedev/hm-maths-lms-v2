@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarDays, Download, FileText, Lock, PlayCircle, Radio } from "lucide-react";
+import { ArrowDown, ArrowLeft, CalendarDays, Download, FileText, Lock, PlayCircle, Radio } from "lucide-react";
 import { isStaffRole, requireUser } from "@/lib/auth";
 import { getClassAccess, getLiveLinks, liveWindow } from "@/lib/data";
 import { ClassBanner } from "@/components/class-banner";
 import { LiveCountdown } from "@/components/live-countdown";
+import { MonthSwitcher } from "@/components/month-switcher";
 import { RecordingGrid, type RecordingItem } from "@/components/recording-grid";
 import { Badge } from "@/components/ui/badge";
+import { IconTile } from "@/components/ui/icon-tile";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/misc";
@@ -57,14 +59,29 @@ export default async function ClassroomPage({ params, searchParams }: {
   // Recordings come first; the live block jumps to the top only while a class is live, and is hidden
   // when the month has no upcoming sessions.
   const liveOpen = liveSessions.some((x) => x.w!.open);
-  type Jump = { href: string; label: string; icon: typeof Radio; count: number; tone: string };
-  const liveJump: Jump = { href: "#live", label: t("live"), icon: Radio, count: liveSessions.length, tone: "text-destructive" };
-  const sections: Jump[] = [
-    ...(liveOpen ? [liveJump] : []),
-    { href: "#recordings", label: t("recordings"), icon: PlayCircle, count: recordings.length, tone: "text-primary" },
-    { href: "#materials", label: t("pdfs"), icon: FileText, count: materials.length, tone: "text-success-soft-foreground" },
-    ...(!liveOpen && liveSessions.length ? [liveJump] : []),
+  const nextLive = liveSessions.find((x) => !x.w!.cancelled) ?? null;
+  // Section tiles: what each part of the page holds, at a glance. Empty ones are shown muted and don't link.
+  type Tile = { href: string; label: string; icon: typeof Radio; value: string; sub: string; empty: boolean; tone: "danger" | "brand" | "success"; hot?: boolean };
+  const liveTile: Tile = {
+    href: "#live", label: t("live"), icon: Radio, tone: "danger", hot: liveOpen, empty: !nextLive,
+    value: liveOpen ? t("tiles.liveNow") : nextLive ? f.dateTime(nextLive.l.live_start_time) : t("tiles.noLive"),
+    sub: liveSessions.length ? t("tiles.sessions", { n: liveSessions.length }) : t("tiles.noLiveSub"),
+  };
+  const tiles: Tile[] = [
+    ...(liveOpen ? [liveTile] : []),
+    {
+      href: "#recordings", label: t("recordings"), icon: PlayCircle, tone: "brand", empty: !recordings.length,
+      value: recordings.length ? t("tiles.videos", { n: recordings.length }) : t("tiles.notYet"),
+      sub: recordings.length ? t("tiles.latest", { date: f.date(recordings[0].live_start_time ?? recordings[0].created_at) }) : t("tiles.afterClass"),
+    },
+    {
+      href: "#materials", label: t("materials"), icon: FileText, tone: "success", empty: !materials.length,
+      value: materials.length ? t("tiles.pdfs", { n: materials.length }) : t("tiles.noPdfs"),
+      sub: materials.length ? t("tiles.download") : t("tiles.noPdfsSub"),
+    },
+    ...(!liveOpen ? [liveTile] : []),
   ];
+  const monthLabels = Object.fromEntries(months.map((m) => [m, f.month(m)]));
 
   const liveSection = (
         <section id="live" className="scroll-mt-20">
@@ -107,23 +124,32 @@ export default async function ClassroomPage({ params, searchParams }: {
             <h1 className="mt-2 font-display text-2xl font-bold">{cls.title}</h1>
             {timetable && <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground"><CalendarDays className="h-4 w-4" />{timetable}</p>}
           </div>
-          <nav aria-label={t("months")} className="flex flex-wrap gap-1.5">
-            {months.map((m) => (
-              <Link key={m} href={`?month=${m}`} className={cn(buttonVariants({ size: "sm", variant: m === month ? "default" : "outline" }))}>{f.month(m)}</Link>
-            ))}
-            {!cls.is_free && <Link href={`/dashboard/store/class/${classId}`} className={buttonVariants({ size: "sm", variant: "ghost" })}>{t("otherMonths")}</Link>}
-          </nav>
+          <div className="flex min-w-0 flex-col gap-2 sm:items-end">
+            {months.length > 1 && <MonthSwitcher months={months} current={month} labels={monthLabels} hrefBase={`/dashboard/classes/${classId}`} className="sm:justify-end" />}
+            {!cls.is_free && <Link href={`/dashboard/store/class/${classId}`} className="text-xs font-semibold text-primary hover:underline">{t("otherMonths")}</Link>}
+          </div>
         </div>
       </div>
 
-      <nav aria-label={t("jumpTo")} className="flex items-center gap-1 overflow-x-auto rounded-2xl border border-border/80 bg-card px-3 py-2 shadow-soft no-scrollbar dark:border-white/10">
-        <span className="mr-2 shrink-0 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t("jumpTo")}</span>
-        {sections.map(({ href, label, icon: I, count, tone }) => (
-          <a key={href} href={href} className="inline-flex min-h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 text-sm font-semibold transition hover:bg-accent">
-            <I className={cn("h-4 w-4", tone)} /><span className={tone}>{label}</span>
-            <span className="rounded-full bg-muted px-1.5 text-[11px] font-bold tabular-nums text-muted-foreground">{count}</span>
-          </a>
-        ))}
+      <nav aria-label={t("jumpTo")} className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {tiles.map(({ href, label, icon, value, sub, empty, tone, hot }) => {
+          const body = (
+            <>
+              <IconTile icon={icon} tone={empty ? "neutral" : tone} variant={hot ? "solid" : "soft"} className={cn(hot && "animate-pulse")} />
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold text-muted-foreground">{label}</span>
+                <span className={cn("block truncate font-display text-[15px] font-bold leading-snug", empty && "text-muted-foreground")}>{value}</span>
+                <span className="block truncate text-xs text-muted-foreground">{sub}</span>
+              </span>
+              {!empty && <ArrowDown className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-y-0.5 group-hover:text-primary" />}
+            </>
+          );
+          const cls = cn("group flex min-w-0 items-center gap-3 rounded-2xl border bg-card p-3.5 shadow-soft dark:border-white/10",
+            hot ? "border-destructive/40 ring-1 ring-destructive/20" : "border-border/80");
+          return empty
+            ? <div key={href} aria-disabled className={cn(cls, "opacity-70 shadow-none")}>{body}</div>
+            : <a key={href} href={href} className={cn(cls, "transition hover:-translate-y-0.5 hover:shadow-lg")}>{body}</a>;
+        })}
       </nav>
 
       {liveOpen && liveSection}

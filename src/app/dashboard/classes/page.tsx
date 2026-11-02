@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/auth";
 import { getMyEnrollments, liveWindow } from "@/lib/data";
 import { ClassBanner } from "@/components/class-banner";
 import { Badge } from "@/components/ui/badge";
-import { ChipGroup, ChipLink } from "@/components/ui/blocks";
+import { MonthSwitcher } from "@/components/month-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import { Alert, EmptyState, PageHeader } from "@/components/ui/misc";
 import type { Lesson } from "@/lib/types";
@@ -79,10 +79,8 @@ export default async function MyClassesPage({ searchParams }: { searchParams: Pr
       ) : (
         <>
           {months.length > 1 && (
-            <ChipGroup>
-              <ChipLink href="/dashboard/classes" active={!month} scroll={false}>{t("all")}</ChipLink>
-              {months.map((m) => <ChipLink key={m} href={`/dashboard/classes?month=${m}`} active={m === month} scroll={false}>{f.month(m)}</ChipLink>)}
-            </ChipGroup>
+            <MonthSwitcher months={months} current={month} allLabel={t("all")} hrefBase="/dashboard/classes"
+              labels={Object.fromEntries(months.map((m) => [m, f.month(m)]))} />
           )}
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3" data-testid="class-grid">
             {shown.map(({ e, open, left, recordings, tutes, liveNow, next }) => {

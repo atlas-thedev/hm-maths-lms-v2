@@ -125,8 +125,17 @@
       "all": "All payments",
       "classFee": "Class fee",
       "noFees": "No class fee payments yet.",
-      "noOrders": "No tute book orders yet.",
-      "note": "Note: {note}"
+      "noOrders": "No tutes on the way yet.",
+      "note": "Note: {note}",
+      "atClass": "Handed over at your class",
+      "status": {
+        "to_pack": "Being prepared",
+        "packed": "Packed",
+        "posted": "Posted",
+        "delivered": "Delivered",
+        "handed": "Received",
+        "returned": "Returned"
+      }
     },
     "free": {
       "title": "Free seminars",
@@ -223,8 +232,22 @@
     "live": "Live Class Hub",
     "recordings": "Lesson Recordings",
     "materials": "Class Materials",
-    "jumpTo": "Jump to",
+    "jumpTo": "Sections of this month",
     "pdfs": "PDFs",
+    "tiles": {
+      "liveNow": "Live now — join",
+      "noLive": "No live class scheduled",
+      "noLiveSub": "Dates appear here when they're set",
+      "sessions": "{n} upcoming sessions",
+      "videos": "{n} videos",
+      "notYet": "Not uploaded yet",
+      "latest": "Latest: {date}",
+      "afterClass": "Recordings appear after each class",
+      "pdfs": "{n} tutes (PDF)",
+      "noPdfs": "No tutes this month",
+      "noPdfsSub": "Not every month has a tute",
+      "download": "Tap to download"
+    },
     "allWeeks": "All",
     "video": "Video",
     "new": "New",
@@ -380,6 +403,10 @@
       "order_shipped": {
         "title": "Tute books on the way",
         "body": "{product} has been shipped, it will reach you soon."
+      },
+      "tute_posted": {
+        "title": "Your tute is on the way",
+        "body": "The {class} tute for {month} has been posted."
       },
       "update": {
         "title": "Site update"

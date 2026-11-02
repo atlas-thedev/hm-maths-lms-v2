@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import { requireOwner } from "@/lib/auth";
 import { ClassBanner } from "@/components/class-banner";
+import { MonthSwitcher } from "@/components/month-switcher";
 import {
-  Avatar, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, ChipGroup, ChipLink, IconTile, ProgressBar, StatCard, TabNav,
+  Avatar, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, IconTile, ProgressBar, StatCard, TabNav,
   buttonVariants, cardVariants, toneSoft, type TabNavItem,
 } from "@/components/ui";
 import type { ClassRow, Lesson } from "@/lib/types";
@@ -301,18 +302,12 @@ export default async function AdminClassPage({ params, searchParams }: {
     return (
       <div className="space-y-4">
         {months.length > 0 && (
-          <ChipGroup>
-            {months.map((m) => {
-              const ls = lessons.filter((l) => l.month === m);
-              const missing = ls.some((l) => missingRec.includes(l));
-              return (
-                <ChipLink key={m} href={tabHref("content", `&month=${m}`)} active={m === month} scroll={false}>
-                  {f.month(m)} <span className="opacity-70">{ls.length}</span>
-                  {missing && <span className="h-1.5 w-1.5 rounded-full bg-warning" aria-label={t("stats.recordingsHint", { n: 1 })} />}
-                </ChipLink>
-              );
-            })}
-          </ChipGroup>
+          <MonthSwitcher months={months} current={month} visible={4} hrefBase={tabHref("content")}
+            labels={Object.fromEntries(months.map((m) => {
+              const missing = lessons.some((l) => l.month === m && missingRec.includes(l));
+              return [m, `${f.month(m)}${missing ? " •" : ""}`];
+            }))}
+            counts={Object.fromEntries(months.map((m) => [m, lessons.filter((l) => l.month === m).length]))} />
         )}
         <details className={cn(cardVariants(), "group")} open={!lessons.length}>
           <summary className="flex cursor-pointer list-none items-center justify-between gap-2 p-4 font-display font-semibold">
@@ -335,10 +330,9 @@ export default async function AdminClassPage({ params, searchParams }: {
     return (
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <ChipGroup>
-            <ChipLink href={tabHref("students")} active={!month} scroll={false}>{t("students.all")}</ChipLink>
-            {months.map((m) => <ChipLink key={m} href={tabHref("students", `&month=${m}`)} active={m === month} scroll={false}>{f.month(m)}</ChipLink>)}
-          </ChipGroup>
+          <MonthSwitcher months={months} current={month} allLabel={t("students.all")} hrefBase={tabHref("students")}
+            labels={Object.fromEntries(months.map((m) => [m, f.month(m)]))} />
+
           <Link href="/admin/payments" className={buttonVariants({ size: "sm", variant: "outline", className: "shrink-0" })}><Users /> {t("students.grant")}</Link>
         </div>
         {rows.length ? (

@@ -82,6 +82,28 @@
     "photoSaved": "Profile photo updated.",
     "photoRemoved": "Profile photo removed."
   },
+  "delivery": {
+    "notFound": "That parcel wasn't found.",
+    "status": "Unknown status.",
+    "nothing": "Nothing to change.",
+    "failed": "Could not save the parcel.",
+    "saved": "Parcel saved.",
+    "pickSome": "Select at least one parcel.",
+    "bulkDone": "{n} parcels updated.",
+    "skipped": "Marked as no tute this month.",
+    "unskipped": "This month has a tute again, its parcels are back.",
+    "ownerOnly": "Only the Owner can change this.",
+    "postsOn": "This class posts tutes again.",
+    "postsOff": "This class won't post tutes; its waiting parcels were skipped.",
+    "set": {
+      "to_pack": "Back to To pack.",
+      "packed": "Marked as packed.",
+      "posted": "Marked as posted, the student has been told.",
+      "delivered": "Marked as delivered.",
+      "returned": "Marked as returned.",
+      "skipped": "Skipped."
+    }
+  },
   "admin": {
     "titleRequired": "Title is required.",
     "classType": "Select a class type.",

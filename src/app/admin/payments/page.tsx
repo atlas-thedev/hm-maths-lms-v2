@@ -1,12 +1,14 @@
 import type { Profile } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { CreditCard, ExternalLink } from "lucide-react";
+import { Suspense } from "react";
+import { ChevronDown, CreditCard, ExternalLink } from "lucide-react";
+import { FilterToolbar } from "@/components/filter-toolbar";
 import { WhatsAppIcon } from "@/components/brand-icons";
 import { requireAdmin } from "@/lib/auth";
-import { Card, CardContent, CardHeader, CardTitle, EmptyState, PageHeader, buttonVariants, cardVariants } from "@/components/ui";
+import { EmptyState, PageHeader, buttonVariants, cardVariants } from "@/components/ui";
 import { StatusBadge } from "@/components/status-badge";
-import { cn, formatLKR, whatsappLink } from "@/lib/utils";
+import { cn, currentMonth, formatLKR, shiftMonth, whatsappLink } from "@/lib/utils";
 import { getFormat, getT } from "@/i18n/server";
 import { GrantAccessForm, ReviewButtons } from "../forms";
 
@@ -22,17 +24,42 @@ type Row = { student_id: string;
   classes: { title: string; fee: number } | null;
 };
 
-export default async function PaymentsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const { status: s } = await searchParams;
-  const status = STATUSES.find((x) => x === s) ?? "pending";
+const UUID_RE = /^[0-9a-f-]{36}$/i;
+
+export default async function PaymentsPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string; month?: string; class?: string }> }) {
+  const sp = await searchParams;
+  const status = STATUSES.find((x) => x === sp.status) ?? "pending";
+  // Filters: ?month=YYYY-MM, ?class=<id>, ?q= name / Student ID / mobile / NIC / bank reference.
+  const month = /^\d{4}-\d{2}$/.test(sp.month ?? "") ? sp.month! : "";
+  const classId = UUID_RE.test(sp.class ?? "") ? sp.class! : "";
+  // Keep only characters that are safe inside a PostgREST filter value.
+  const q = (sp.q ?? "").replace(/[^\p{L}\p{N}\s@.+-]/gu, "").trim().slice(0, 40);
   const { db } = await requireAdmin();
   const [t, tc, f] = await Promise.all([getT("admin.payments"), getT("common"), getFormat()]);
+  let matchIds: string[] | null = null;
+  if (q) {
+    const like = `*${q}*`;
+    const { data: hits } = await db.from("profiles").select("id")
+      .or(`full_name.ilike.${like},student_id.ilike.${like},mobile.ilike.${like},nic.ilike.${like}`).limit(300);
+    matchIds = (hits ?? []).map((h) => h.id as string);
+  }
+  let query = db.from("enrollments").select("id, student_id, month, status, slip_url, amount, bank_ref, admin_note, reviewed_by, reviewed_at, access_until, created_at, profiles:profiles!enrollments_student_id_fkey(full_name, mobile, nic, student_id, town), classes(title, fee)")
+    .eq("status", status);
+  if (month) query = query.eq("month", month);
+  if (classId) query = query.eq("class_id", classId);
+  if (q) query = query.or(matchIds?.length ? `student_id.in.(${matchIds.join(",")}),bank_ref.ilike.*${q}*` : `bank_ref.ilike.*${q}*`);
   const [{ data }, { data: classes }] = await Promise.all([
-    db.from("enrollments").select("id, student_id, month, status, slip_url, amount, bank_ref, admin_note, reviewed_by, reviewed_at, access_until, created_at, profiles:profiles!enrollments_student_id_fkey(full_name, mobile, nic, student_id, town), classes(title, fee)")
-      .eq("status", status).order("created_at", { ascending: status === "pending" }).limit(100),
+    query.order("created_at", { ascending: status === "pending" }).limit(month || classId || q ? 300 : 100),
     db.from("classes").select("id, title").eq("is_free", false).order("title"),
   ]);
   const rows = (data ?? []) as unknown as Row[];
+  const filtered = !!(month || classId || q);
+  const cur = currentMonth();
+  const monthOptions = Array.from({ length: 26 }, (_, i) => shiftMonth(cur, 1 - i));
+  const keep = (patch: Record<string, string>) => {
+    const p = new URLSearchParams({ ...(q ? { q } : {}), ...(month ? { month } : {}), ...(classId ? { class: classId } : {}), ...patch });
+    return `?${p}`;
+  };
   // Delivery addresses + reviewer names (select * keeps this working even before the 0003 migration adds the columns).
   const ids = [...new Set(rows.flatMap((r) => [r.student_id, r.reviewed_by]).filter(Boolean))] as string[];
   const { data: addrRows } = ids.length ? await db.from("profiles").select("*").in("id", ids) : { data: [] };
@@ -46,15 +73,32 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
   return (
     <div className="space-y-6">
       <PageHeader title={t("title")} description={t("subtitle")}>
-        {STATUSES.map((x) => <Link key={x} href={`?status=${x}`} className={buttonVariants({ size: "sm", variant: x === status ? "default" : "outline", })}>{tc(`status.${x}`)}</Link>)}
+        {STATUSES.map((x) => <Link key={x} href={keep({ status: x })} className={buttonVariants({ size: "sm", variant: x === status ? "default" : "outline", })}>{tc(`status.${x}`)}</Link>)}
       </PageHeader>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">{t("grantTitle")}</CardTitle></CardHeader>
-        <CardContent><GrantAccessForm classes={classes ?? []} /></CardContent>
-      </Card>
+      <details className={cn(cardVariants(), "group")}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 p-4 font-display text-base font-semibold sm:p-5">
+          {t("grantTitle")}
+          <ChevronDown className="h-4 w-4 shrink-0 transition group-open:rotate-180" />
+        </summary>
+        <div className="border-t p-4 sm:p-5"><GrantAccessForm classes={classes ?? []} /></div>
+      </details>
 
-      {!rows.length ? <EmptyState icon={CreditCard} title={t("empty", { status: tc(`status.${status}`) })} /> : (
+      <div className="space-y-2">
+        <Suspense fallback={<div className="h-11 rounded-xl bg-muted/60" />}>
+          <FilterToolbar testId="payments-filters" searchLabel={t("filters.search")} searchPlaceholder={t("filters.searchPh")} clearLabel={t("filters.clear")}
+            selects={[
+              { param: "month", label: t("month"), value: month, options: [{ value: "", label: t("filters.allMonths") }, ...monthOptions.map((m) => ({ value: m, label: f.month(m) }))] },
+              { param: "class", label: t("class"), value: classId, options: [{ value: "", label: t("filters.allClasses") }, ...((classes ?? []) as { id: string; title: string }[]).map((c) => ({ value: c.id, label: c.title }))] },
+            ]} />
+        </Suspense>
+        <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          {t("filters.count", { n: rows.length, status: tc(`status.${status}`) })}
+          {filtered && <Link href={`?status=${status}`} className="font-semibold text-primary hover:underline">{t("filters.reset")}</Link>}
+        </p>
+      </div>
+
+      {!rows.length ? <EmptyState icon={CreditCard} title={filtered ? t("filters.none") : t("empty", { status: tc(`status.${status}`) })} /> : (
         <div className="space-y-4">
           {rows.map((r) => {
             const url = r.slip_url ? urlFor.get(r.slip_url) : null;

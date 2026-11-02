@@ -25,6 +25,7 @@ const KIND_META: Record<NotificationKind, { group: Item["group"]; icon: LucideIc
   order_approved: { group: "delivery", icon: Package, tone: "info" },
   order_rejected: { group: "delivery", icon: XCircle, tone: "danger" },
   order_shipped: { group: "delivery", icon: Truck, tone: "brand" },
+  tute_posted: { group: "delivery", icon: Truck, tone: "brand" },
   update: { group: "updates", icon: Megaphone, tone: "brand" },
 };
 
@@ -52,7 +53,10 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       key: `n-${n.id}`, at: n.created_at, unread: !n.read_at, group: m.group, icon: m.icon, tone: m.tone, link: n.link,
       title: n.kind === "update" ? (n.title ?? t("kinds.update.title")) : t(`kinds.${n.kind}.title`),
       body: n.kind === "update" ? n.body : t(`kinds.${n.kind}.body`, vars),
-      note: n.kind.endsWith("_rejected") ? n.data.note : null,
+      // Rejections show the reason; posted parcels show courier + tracking number.
+      note: n.kind.endsWith("_rejected") ? n.data.note
+        : n.kind === "tute_posted" ? [n.data.courier, n.data.tracking].filter(Boolean).join(" · ") || null
+        : n.kind === "order_shipped" ? n.data.note : null,
     };
   };
   const items: Item[] = [

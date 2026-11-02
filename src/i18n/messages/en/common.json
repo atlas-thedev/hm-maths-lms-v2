@@ -198,6 +198,11 @@
     "student": "If you are a student, please contact the class on WhatsApp.",
     "logout": "Log out and try again"
   },
+  "monthSwitcher": {
+    "label": "Months",
+    "more": "More months ({n})",
+    "pick": "Pick a month"
+  },
   "months": [
     "January",
     "February",

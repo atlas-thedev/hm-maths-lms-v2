@@ -36,7 +36,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     getMyEnrollments(db, user.id),
     getNotices(db, 3),
     getUpcomingLive(db, 4),
-    db.from("orders").select("id, status, quantity, admin_note, created_at, products(title)").eq("student_id", user.id).order("created_at", { ascending: false }).limit(3),
+    // Parcels on their way to me: class tutes and tute-book orders (newest first).
+    db.from("deliveries").select("id, kind, status, method, month, courier, tracking_no, classes(title), orders(quantity, products(title))")
+      .eq("student_id", user.id).neq("status", "skipped").order("created_at", { ascending: false }).limit(4),
     getPaperStats(db),
     getMyPapers(db, user.id, profile.al_year ?? null),
     db.from("classes").select("*, lessons(count)").eq("is_free", true).eq("is_active", true).order("created_at", { ascending: false }).limit(4),
@@ -55,8 +57,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const results = sat.map((p, i) => ({ title: p.title, value: Math.round(pct(p.mine!.marks, p.total_marks)), label: t("paperN", { n: i + 1 }) }));
   const avg = stats?.avg_pct ?? 0;
   const last = stats?.last ?? null;
-  type Ord = { id: string; status: string; quantity: number; admin_note: string | null; created_at: string; products: { title: string } | null };
-  const ords = (orders.data ?? []) as unknown as Ord[];
+  type Parcel = {
+    id: string; kind: "class_tute" | "order"; status: string; method: "post" | "class"; month: string | null; courier: string | null; tracking_no: string | null;
+    classes: { title: string } | null; orders: { quantity: number; products: { title: string } | null } | null;
+  };
+  const parcels = (orders.data ?? []) as unknown as Parcel[];
+  const parcelTitle = (p: Parcel) => p.kind === "order"
+    ? `${p.orders?.products?.title ?? t("order")}${p.orders && p.orders.quantity > 1 ? ` × ${p.orders.quantity}` : ""}`
+    : `${p.classes?.title ?? ""}${p.month ? ` · ${f.month(p.month)}` : ""}`;
+  const parcelTone = (s: string) => (s === "delivered" ? "success" : s === "returned" ? "destructive" : s === "posted" ? "default" : "warning") as "success" | "destructive" | "default" | "warning";
 
   const tiles: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
     { href: "/dashboard/classes", label: t("tiles.classes"), hint: t("tiles.classesHint", { n: thisMonth.length }), icon: BookOpen },
@@ -142,11 +151,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <div className="min-w-0">
               <CardSubheading icon={Truck}>{t("payDelivery.delivery")}</CardSubheading>
               <div className="space-y-2">
-                {ords.length ? ords.map((o) => (
-                  <ListRow key={o.id} className="bg-muted/40" icon={o.status === "shipped" ? Truck : ShoppingBag} tone={o.status === "shipped" ? "brand" : "neutral"}
-                    title={`${o.products?.title ?? t("order")}${o.quantity > 1 ? ` × ${o.quantity}` : ""}`}
-                    subtitle={o.status === "rejected" && o.admin_note ? <span className="text-destructive-soft-foreground">{t("payDelivery.note", { note: o.admin_note })}</span> : undefined}
-                    trailing={<StatusBadge status={o.status} />} />
+                {parcels.length ? parcels.map((p) => (
+                  <ListRow key={p.id} className="bg-muted/40" icon={p.status === "posted" || p.status === "delivered" ? Truck : p.kind === "order" ? ShoppingBag : BookOpen}
+                    tone={p.status === "posted" ? "brand" : p.status === "delivered" ? "success" : "neutral"}
+                    title={parcelTitle(p)}
+                    subtitle={p.tracking_no || p.courier
+                      ? <span className="font-mono">{[p.courier, p.tracking_no].filter(Boolean).join(" · ")}</span>
+                      : p.method === "class" ? t("payDelivery.atClass") : undefined}
+                    trailing={<Badge variant={parcelTone(p.status)}>{t(`payDelivery.status.${p.method === "class" && p.status === "delivered" ? "handed" : p.status}`)}</Badge>} />
                 )) : <p className="py-2 text-sm text-muted-foreground">{t("payDelivery.noOrders")}</p>}
               </div>
             </div>

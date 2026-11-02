@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity, Code2, Images, Link2, MapPin, Palette, Tag, Type, Power, Shapes, UsersRound, Wrench,
   ArrowLeft, Bell, BookOpen, CalendarDays, ChevronDown, ChevronRight, ClipboardList, CreditCard, FileText, Flame, GraduationCap, HelpCircle, Home,
-  LayoutDashboard, LogOut, Megaphone, Menu, Moon, Package, Phone, PlayCircle, Radio, ScanLine, ShieldCheck, ShoppingBag, Sun, Trophy, User, Users, X, type LucideIcon,
+  LayoutDashboard, LogOut, Megaphone, Menu, Moon, Package, Phone, PlayCircle, Radio, ScanLine, ShieldCheck, ShoppingBag, Sun, Trophy, Truck, User, Users, X, type LucideIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { LogoMark } from "@/components/logo";
@@ -28,6 +28,7 @@ const ICONS = {
   payments: CreditCard, store: ShoppingBag, notices: Bell, profile: User, students: Users, megaphone: Megaphone,
   package: Package, grad: GraduationCap, home: Home, events: CalendarDays, channels: Radio, contact: Phone, faq: HelpCircle, qr: ScanLine, shield: ShieldCheck,
   images: Images, map: MapPin, link: Link2, type: Type, brand: Tag, code: Code2, palette: Palette, power: Power, activity: Activity, wrench: Wrench, kit: Shapes, team: UsersRound,
+  delivery: Truck,
 } satisfies Record<string, LucideIcon>;
 export type IconKey = keyof typeof ICONS;
 

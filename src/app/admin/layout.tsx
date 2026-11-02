@@ -11,9 +11,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const isOwner = isOwnerRole(profile.role);
   const isDev = isDeveloperRole(profile.role);
   const [t, tg, tt, ann] = await Promise.all([getT("admin.nav"), getT("admin.navGroups"), getT("admin.tabs"), getAnnouncementSettings()]);
-  const [{ count: pending }, { count: pendingOrders }, avatar] = await Promise.all([
+  const [{ count: pending }, { count: pendingOrders }, { count: toPack }, avatar] = await Promise.all([
     db.from("enrollments").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    db.from("deliveries").select("id", { count: "exact", head: true }).in("status", ["to_pack", "packed"]),
     profile.avatar_path ? db.storage.from("avatars").createSignedUrl(profile.avatar_path, 3600) : null,
   ]);
   const groups: ShellGroup[] = [
@@ -23,6 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       ...(isDev ? [{ href: "/dev", label: t("developer"), icon: "code" } as ShellItem] : []),
       { href: "/admin/attendance", label: t("attendance"), tab: tt("attendance"), icon: "qr" },
       { href: "/admin/payments", label: t("payments"), tab: tt("payments"), icon: "payments", badge: pending ?? 0 },
+      { href: "/admin/deliveries", label: t("deliveries"), icon: "delivery", badge: toPack ?? 0 },
       { href: "/admin/classes", label: t("classes"), icon: "classes" },
       { href: "/admin/students", label: t("students"), tab: tt("students"), icon: "students" },
     ] },

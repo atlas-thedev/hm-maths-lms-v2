@@ -548,7 +548,9 @@ export async function reviewOrderAction(_p: ActionState, fd: FormData): Promise<
   const { db } = await requireAdmin();
   const status = str(fd, "decision");
   if (!["approved", "rejected", "shipped"].includes(status)) return { error: await m("invalidStatus") };
-  const { error } = await db.from("orders").update({ status, admin_note: optStr(fd, "admin_note") }).eq("id", str(fd, "id"));
+  // An empty note box keeps the existing note (it used to wipe a tracking number added at approval).
+  const note = optStr(fd, "admin_note");
+  const { error } = await db.from("orders").update(note ? { status, admin_note: note } : { status }).eq("id", str(fd, "id"));
   if (error) return fail(error, await m("fail.updateOrder"));
   revalidatePath("/admin", "layout");
   return { ok: true, message: await m(`order.${status}`) };

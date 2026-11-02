@@ -83,7 +83,7 @@ export interface Enrollment {
   created_at: string;
 }
 
-export type NotificationKind = "payment_approved" | "payment_rejected" | "order_approved" | "order_rejected" | "order_shipped" | "update";
+export type NotificationKind = "payment_approved" | "payment_rejected" | "order_approved" | "order_rejected" | "order_shipped" | "tute_posted" | "update";
 
 export interface AppNotification {
   id: string;
@@ -92,7 +92,7 @@ export interface AppNotification {
   title: string | null;
   body: string | null;
   link: string | null;
-  data: { class?: string; month?: string; product?: string; note?: string | null } & Record<string, unknown>;
+  data: { class?: string; month?: string; product?: string; note?: string | null; courier?: string | null; tracking?: string | null } & Record<string, unknown>;
   read_at: string | null;
   created_at: string;
 }

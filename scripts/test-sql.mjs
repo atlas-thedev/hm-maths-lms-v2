@@ -668,5 +668,73 @@ await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,mon
 assert.ok(Math.abs(days(acc.access_until) - 3) < 0.01);
 console.log("✓ 0023: staff can grant an old month for a chosen length (and change it)");
 
+// ---- 0024: tute deliveries
+const sql24 = readFileSync(new URL("../db/migrations/0024_tute_deliveries.sql", import.meta.url), "utf8");
+await db.exec(sql24);
+await db.exec(sql24);
+const tuteOf = async (sid, month) => (await q(`select * from public.deliveries where kind='class_tute' and student_id=$1 and class_id=$2 and month=$3`, [sid, paid.id, month]))[0];
+const cur24 = (await q(`select to_char(now() at time zone 'Asia/Colombo','YYYY-MM') as m`))[0].m;
+assert.ok(await tuteOf(S1, "2027-03"), "backfill queues approved future months");
+assert.equal(await tuteOf(S1, "2026-10"), undefined, "backfill leaves past months alone");
+console.log(`✓ 0024: backfill queued approved months from ${cur24} on, idempotent`);
+
+const [en6] = await as(S1, () => q(`insert into public.enrollments (student_id,class_id,month,slip_url) values ($1,$2,'2027-05',$3) returning id`, [S1, paid.id, `${S1}/t.jpg`]));
+assert.equal(await tuteOf(S1, "2027-05"), undefined, "nothing to send while the slip is pending");
+await as(OWNER, () => q(`update public.enrollments set status='approved' where id=$1`, [en6.id]));
+let d = await tuteOf(S1, "2027-05");
+assert.equal(d.status, "to_pack"); assert.equal(d.method, "post"); assert.match(d.address ?? "", /New Rd\nPanadura 12500\nKalutara/); assert.equal(d.phone, "0771234567");
+await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,month,status,admin_note) values ($1,$2,'2027-05','approved','[භෞතිකව: පානදුර (සක්යා)] HM-2025-1')`, [S3, paid.id]));
+d = await tuteOf(S3, "2027-05");
+assert.equal(d.method, "class"); assert.equal(d.note, "භෞතිකව: පානදුර (සක්යා)");
+console.log("✓ 0024: approving a slip queues the tute (post with the profile address, or hand over at a physical class)");
+
+assert.equal((await as(S2, () => q(`select * from public.deliveries`))).length, 0);
+assert.ok((await as(S1, () => q(`select * from public.deliveries`))).every((r) => r.student_id === S1));
+await as(S1, () => q(`update public.deliveries set status='delivered' where student_id=$1`, [S1]));
+assert.equal((await tuteOf(S1, "2027-05")).status, "to_pack");
+await fails(as(S1, () => q(`insert into public.tute_skips (class_id, month) values ($1,'2027-06')`, [paid.id])), "student marking a month without tute");
+console.log("✓ 0024: students see only their own parcels and can't change them");
+
+await as(OWNER, () => q(`insert into public.tute_skips (class_id, month, note) values ($1,'2027-05','Exam month')`, [paid.id]));
+assert.equal((await tuteOf(S1, "2027-05")).status, "skipped");
+assert.equal((await tuteOf(S3, "2027-05")).status, "skipped");
+await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,month,status) values ($1,$2,'2027-05','approved')`, [S2, paid.id]));
+assert.equal(await tuteOf(S2, "2027-05"), undefined, "no parcel for a month without tute");
+await as(OWNER, () => q(`delete from public.tute_skips where class_id=$1 and month='2027-05'`, [paid.id]));
+assert.equal((await tuteOf(S1, "2027-05")).status, "to_pack");
+assert.equal((await tuteOf(S2, "2027-05")).status, "to_pack", "students approved meanwhile are added back");
+console.log("✓ 0024: a month without tute skips its parcels; undoing it brings them (and new students) back");
+
+const s1May = (await tuteOf(S1, "2027-05")).id;
+await as(OWNER, () => q(`update public.deliveries set status='posted', courier='SL Post', tracking_no='RR123LK' where id=$1`, [s1May]));
+d = await tuteOf(S1, "2027-05");
+assert.ok(d.posted_at); assert.equal(d.updated_by, OWNER);
+const [tn] = await q(`select data from public.notifications where user_id=$1 and kind='tute_posted' order by created_at desc limit 1`, [S1]);
+assert.equal(tn.data.tracking, "RR123LK"); assert.equal(tn.data.month, "2027-05");
+await as(OWNER, () => q(`update public.deliveries set status='delivered' where id=$1`, [d.id]));
+assert.ok((await tuteOf(S1, "2027-05")).delivered_at);
+console.log("✓ 0024: posting a tute stamps the time and notifies the student with the tracking number");
+
+const [o2] = await as(S1, () => q(`insert into public.orders (student_id,product_id,quantity,delivery_address,slip_url) values ($1,$2,1,'No 5, Temple Rd, Horana',$3) returning id`, [S1, prod.id, `${S1}/o3.jpg`]));
+assert.equal((await q(`select count(*)::int as n from public.deliveries where order_id=$1`, [o2.id]))[0].n, 0);
+await as(OWNER, () => q(`update public.orders set status='approved' where id=$1`, [o2.id]));
+let [od] = await q(`select * from public.deliveries where order_id=$1`, [o2.id]);
+assert.equal(od.status, "to_pack"); assert.equal(od.address, "No 5, Temple Rd, Horana");
+await as(OWNER, () => q(`update public.deliveries set status='posted', tracking_no='CP998' where id=$1`, [od.id]));
+const [o2r] = await q(`select status, admin_note from public.orders where id=$1`, [o2.id]);
+assert.equal(o2r.status, "shipped"); assert.equal(o2r.admin_note, "CP998");
+assert.equal((await q(`select count(*)::int as n from public.notifications where user_id=$1 and kind='order_shipped' and data->>'note'='CP998'`, [S1]))[0].n, 1);
+const [o3] = await as(S1, () => q(`insert into public.orders (student_id,product_id,quantity,delivery_address,slip_url) values ($1,$2,1,'No 7, Main St, Kalutara',$3) returning id`, [S1, prod.id, `${S1}/o4.jpg`]));
+await as(OWNER, () => q(`update public.orders set status='shipped', admin_note='EX55' where id=$1`, [o3.id]));
+[od] = await q(`select status, tracking_no from public.deliveries where order_id=$1`, [o3.id]);
+assert.equal(od.status, "posted"); assert.equal(od.tracking_no, "EX55");
+console.log("✓ 0024: tute-book orders join the same queue; posting either side marks the order shipped");
+
+await as(OWNER, () => q(`update public.classes set posts_tutes=false where id=$1`, [paid.id]));
+await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,month,status) values ($1,$2,'2027-07','approved')`, [S2, paid.id]));
+assert.equal(await tuteOf(S2, "2027-07"), undefined);
+await as(OWNER, () => q(`update public.classes set posts_tutes=true where id=$1`, [paid.id]));
+console.log("✓ 0024: a class that doesn't post tutes queues nothing");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);
