@@ -150,6 +150,8 @@
       "gallery": "Could not save the gallery"
     },
     "granted": "Access granted to {name}.",
+    "grantedUntil": "Access granted to {name} until {date}.",
+    "accessUntil": "Choose an access length (a date after today).",
     "tempPassword": "Temporary password: {temp}",
     "roleSet": "Role set to {role}.",
     "order": {

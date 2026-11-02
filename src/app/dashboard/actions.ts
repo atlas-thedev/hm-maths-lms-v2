@@ -8,7 +8,7 @@ import { townKeys } from "@/lib/centers";
 import { getCenters } from "@/lib/settings";
 import type { ActionState } from "@/lib/types";
 import { getT } from "@/i18n/server";
-import { currentMonth, normalizeMobile, shiftMonth } from "@/lib/utils";
+import { accessOpen, currentMonth, normalizeMobile, shiftMonth } from "@/lib/utils";
 
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
@@ -36,9 +36,10 @@ export async function submitEnrollmentAction(_p: ActionState, fd: FormData): Pro
     .eq("student_id", user.id).eq("class_id", classId).eq("status", "pending").limit(1);
   if (pending?.length) return { error: t("pendingExists") };
 
-  const { data: existing } = await db.from("enrollments").select("id, status")
+  const { data: existing } = await db.from("enrollments").select("id, status, access_until")
     .eq("student_id", user.id).eq("class_id", classId).eq("month", month).maybeSingle();
-  if (existing?.status === "approved") return { error: t("alreadyAccess") };
+  // An approved month can be bought again once its access has run out.
+  if (existing && accessOpen(existing)) return { error: t("alreadyAccess") };
 
   const modeLabels: Record<string, string> = {
     online: "Online",

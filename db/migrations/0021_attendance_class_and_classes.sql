@@ -9,21 +9,12 @@ drop index if exists public.attendance_student_day_class_uniq;
 create unique index if not exists attendance_student_day_class_uniq
   on public.attendance (student_id, day, coalesce(class_id, '00000000-0000-0000-0000-000000000000'::uuid));
 
--- 2. Clear old mojibake/placeholder rows for these classes before inserting clean UTF-8
-delete from public.classes where title in (
-  '2027 A/L Combined Maths - Theory',
-  '2027 A/L Combined Maths - Revision',
-  '2027 A/L Combined Maths - Paper Class',
-  '2027 A/L Combined Maths - Revision + Paper Class',
-  '2027 A/L Combined Maths - Full Pack (Theory + Revision + Paper)',
-  '2028 A/L Combined Maths - Theory',
-  '2028 A/L Combined Maths - Paper Class',
-  '2028 A/L Combined Maths - Theory + Paper Class'
-);
-
--- 3. Insert the 8 master classes with complete schedules and fees
+-- 2. Insert the 8 master classes with complete schedules and fees — only the ones that don't exist yet.
+-- (This file used to DELETE these classes first. Deploys re-run every migration, and enrollments / lessons
+-- cascade on class delete, so every deploy would have wiped all students' access and recordings.)
 insert into public.classes (title, class_type, target_year, town, fee, schedule, description, is_active, is_free)
-values
+select v.title, v.class_type, v.target_year, v.town, v.fee, v.schedule, v.description, v.is_active, v.is_free
+from (values
   (
     '2027 A/L Combined Maths - Theory',
     'Theory',
@@ -152,4 +143,5 @@ values
     true,
     false
   )
-on conflict do nothing;
+) as v (title, class_type, target_year, town, fee, schedule, description, is_active, is_free)
+where not exists (select 1 from public.classes c where c.title = v.title);

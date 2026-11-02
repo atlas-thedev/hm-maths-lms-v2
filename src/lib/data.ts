@@ -27,13 +27,15 @@ export async function getClassAccess(db: DbClient, uid: string, classId: string,
     const { data } = await db.from("lessons").select("month").in("class_id", targetClassIds);
     months = [...new Set((data ?? []).map((r) => r.month as string))];
   } else {
-    const { data } = await db.from("enrollments").select("month").eq("student_id", uid).in("class_id", targetClassIds).eq("status", "approved");
+    // Only months whose access hasn't run out (same rule as has_class_access in the database).
+    const stillOpen = `access_until.is.null,access_until.gt."${new Date().toISOString()}"`;
+    const { data } = await db.from("enrollments").select("month").eq("student_id", uid).in("class_id", targetClassIds).eq("status", "approved").or(stillOpen);
     months = [...new Set((data ?? []).map((r) => r.month as string))];
     // Also check if student has access via an approved parent combo pack
     const { data: comboLinks } = await db.from("combo_items").select("combo_id").eq("class_id", classId);
     if (comboLinks && comboLinks.length > 0) {
       const comboIds = comboLinks.map((x) => x.combo_id as string);
-      const { data: comboEnrollments } = await db.from("enrollments").select("month").eq("student_id", uid).in("class_id", comboIds).eq("status", "approved");
+      const { data: comboEnrollments } = await db.from("enrollments").select("month").eq("student_id", uid).in("class_id", comboIds).eq("status", "approved").or(stillOpen);
       if (comboEnrollments && comboEnrollments.length > 0) {
         months = [...new Set([...months, ...comboEnrollments.map((r) => r.month as string)])];
       }

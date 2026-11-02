@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, CheckCircle2, Clock, GraduationCap, Package } from "lucide-react";
+import { Suspense } from "react";
+import { BookOpen, CheckCircle2, Clock, Package } from "lucide-react";
 import type { ClassRow, Product } from "@/lib/types";
 import { ClassCard } from "@/components/class-card";
-import { Badge, ChipLink, EmptyState, buttonVariants, cardVariants } from "@/components/ui";
+import { StoreToolbar } from "@/components/store-toolbar";
+import { EmptyState, buttonVariants, cardVariants } from "@/components/ui";
 import { getT } from "@/i18n/server";
 import { AL_YEARS } from "@/lib/constants";
 import { cn, formatLKR } from "@/lib/utils";
@@ -13,17 +15,17 @@ export type ClassOwnership = Record<string, "owned" | "pending">;
 
 export const CLASS_TYPES = ["all", "theory", "revision", "paper", "combo"] as const;
 export type ClassTypeFilter = (typeof CLASS_TYPES)[number];
-/** year = null → every exam year. */
-export type StoreFilter = { tab: "classes" | "books"; year: number | null; type: ClassTypeFilter };
+/** year = null → every exam year. q = search text ("" = none). */
+export type StoreFilter = { tab: "classes" | "books"; year: number | null; type: ClassTypeFilter; q: string };
 
-/** Reads ?tab, ?year (a year or "all") and ?type/?mode from the URL; the year defaults to the student's batch. */
-export function parseStoreFilter(sp: { tab?: string; year?: string; type?: string; mode?: string }, defaultYear: number | null): StoreFilter {
+/** Reads ?tab, ?year (a year or "all"), ?type/?mode and ?q from the URL; the year defaults to the student's batch. */
+export function parseStoreFilter(sp: { tab?: string; year?: string; type?: string; mode?: string; q?: string }, defaultYear: number | null): StoreFilter {
   const tab = sp.tab === "books" ? "books" : "classes";
   const raw = sp.type ?? sp.mode ?? "";
   const type: ClassTypeFilter = (CLASS_TYPES as readonly string[]).includes(raw) ? (raw as ClassTypeFilter) : "all";
   const y = Number(sp.year);
   const year = sp.year === "all" ? null : Number.isInteger(y) && y >= 2020 && y <= 2040 ? y : defaultYear;
-  return { tab, year, type };
+  return { tab, year, type, q: (sp.q ?? "").trim().slice(0, 60) };
 }
 
 export async function StoreCatalog({ classes, products, owned, filter, basePath, myYear = null }: {
@@ -33,7 +35,7 @@ export async function StoreCatalog({ classes, products, owned, filter, basePath,
   /** The signed-in student's exam year (marked "your batch" in the year filter). */
   myYear?: number | null;
 }) {
-  const [t, tc] = await Promise.all([getT("portal.store"), getT("common")]);
+  const t = await getT("portal.store");
   const paid = classes.filter((c) => !c.is_free);
   const href = (patch: Partial<{ tab: string; year: string; type: string }>) => {
     const p = new URLSearchParams({
@@ -60,80 +62,56 @@ export async function StoreCatalog({ classes, products, owned, filter, basePath,
     return true;
   };
 
-  const filtered = forYear.filter(matchesType);
-
-  const batchYears = [...new Set(filtered.map((c) => c.target_year).filter((y): y is number => !!y))].sort((a, b) => b - a);
-  const otherClasses = filtered.filter((c) => !c.target_year);
-
-  const sections = [
-    ...batchYears.map((yr) => ({
-      key: `batch-${yr}`,
-      title: tc("alBatch", { year: yr }),
-      icon: GraduationCap,
-      items: filtered.filter((c) => c.target_year === yr),
-    })),
-    ...(otherClasses.length > 0 ? [{
-      key: "other",
-      title: t("sections.other") || "වෙනත් පන්ති",
-      icon: BookOpen,
-      items: otherClasses,
-    }] : []),
-  ];
+  const needle = filter.q.toLowerCase();
+  // One grid: newest batch first, then by title (each card shows its batch, so no per-year headings).
+  const filtered = forYear.filter(matchesType)
+    .filter((c) => !needle || `${c.title} ${c.description ?? ""}`.toLowerCase().includes(needle))
+    .sort((a, b) => (b.target_year ?? 0) - (a.target_year ?? 0) || a.title.localeCompare(b.title));
+  const pill = "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm backdrop-blur";
 
   return (
-    <div className="space-y-8">
-      <nav className="flex flex-wrap gap-2" aria-label={t("title")} data-testid="store-tabs">
-        <ChipLink href={href({ tab: "classes" })} active={filter.tab === "classes"}><BookOpen className="h-3.5 w-3.5" /> {t("tabs.classes")}</ChipLink>
-        <ChipLink href={href({ tab: "books" })} active={filter.tab === "books"}><Package className="h-3.5 w-3.5" /> {t("tabs.books")}</ChipLink>
-      </nav>
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        {/* Classes / Tute books — a segmented switch, like a shop's Classes | Shop toggle. */}
+        <nav className="inline-flex shrink-0 self-start rounded-xl bg-muted p-1" aria-label={t("title")} data-testid="store-tabs">
+          {([["classes", BookOpen, t("tabs.classes")], ["books", Package, t("tabs.books")]] as const).map(([key, Icon, label]) => (
+            <Link key={key} href={href({ tab: key })} aria-current={filter.tab === key ? "page" : undefined}
+              className={cn("inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3.5 text-sm font-semibold transition",
+                filter.tab === key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+              <Icon className="h-4 w-4" /> {label}
+            </Link>
+          ))}
+        </nav>
+        {filter.tab === "classes" && (
+          <Suspense fallback={<div className="h-11 flex-1 rounded-xl bg-muted/60" />}>
+            <StoreToolbar types={CLASS_TYPES} years={years} myYear={myYear} className="flex-1" />
+          </Suspense>
+        )}
+      </div>
 
       {filter.tab === "classes" ? (
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-1 font-display text-xl font-bold text-slate-900 dark:text-white">{t("classesTitle")}</h2>
-            <p className="text-sm text-muted-foreground">{t("classesText")}</p>
-          </div>
-          <div className="space-y-3 rounded-2xl bg-muted/50 p-3 sm:p-4" data-testid="store-filters">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("filters.year")}</span>
-              <ChipLink href={href({ year: "all" })} active={filter.year === null} data-testid="filter-year-all">{t("filters.allYears")}</ChipLink>
-              {years.map((y) => (
-                <ChipLink key={y} href={href({ year: String(y) })} active={filter.year === y} data-testid={`filter-year-${y}`}>
-                  {tc("alBatch", { year: y })}{y === myYear ? ` · ${t("filters.yours")}` : ""}
-                </ChipLink>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("filters.type")}</span>
-              {CLASS_TYPES.map((typeKey) => (
-                <ChipLink key={typeKey} href={href({ type: typeKey })} active={filter.type === typeKey} data-testid={`filter-type-${typeKey}`}>
-                  {t(`filters.${typeKey}`)}
-                </ChipLink>
-              ))}
-            </div>
-          </div>
+        <section className="space-y-4">
           {!paid.length ? (
             <EmptyState icon={BookOpen} title={t("noClasses")} description={t("noClassesText")} />
-          ) : !sections.length ? (
+          ) : !filtered.length ? (
             <EmptyState icon={BookOpen} title={t("noMatch")} description={t("noMatchText")}>
-              <Link href={href({ year: "all", type: "all" })} className={buttonVariants({ size: "sm", variant: "outline" })}>{t("clearFilters")}</Link>
+              <Link href={`${basePath}?tab=classes&year=all&type=all`} className={buttonVariants({ size: "sm", variant: "outline" })}>{t("clearFilters")}</Link>
             </EmptyState>
-          ) : sections.map(({ key, title, icon: Icon, items }) => (
-            <div key={key} className="space-y-3" data-testid={`store-section-${key}`}>
-              <h3 className="flex items-center gap-2 font-display text-base font-bold"><Icon className="h-4 w-4 text-primary" /> {title}
-                <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">{items.length}</span></h3>
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((c) => (
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">{t("count", { n: filtered.length })}</p>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3" data-testid="store-grid">
+                {filtered.map((c) => (
                   <ClassCard key={c.id} cls={c} href={owned?.[c.id] === "owned" ? `/dashboard/classes/${c.id}` : `/dashboard/store/class/${c.id}`}
-                    footer={owned?.[c.id] === "owned" ? (
-                      <span className="flex items-center gap-2"><Badge variant="success" className="whitespace-nowrap"><CheckCircle2 /> {t("owned")}</Badge><span className={buttonVariants({ size: "sm", variant: "outline" })}>{t("open")}</span></span>
+                    badge={owned?.[c.id] === "owned" ? (
+                      <span className={cn(pill, "bg-success text-white")}><CheckCircle2 className="h-3.5 w-3.5" /> {t("owned")}</span>
                     ) : owned?.[c.id] === "pending" ? (
-                      <Badge variant="warning" className="whitespace-nowrap"><Clock /> {t("pending")}</Badge>
-                    ) : <span className={buttonVariants({ size: "sm" })}>{t("enroll")}</span>} />
+                      <span className={cn(pill, "bg-warning text-white")}><Clock className="h-3.5 w-3.5" /> {t("pending")}</span>
+                    ) : undefined} />
                 ))}
               </div>
-            </div>
-          ))}
+            </>
+          )}
         </section>
       ) : (
         <section>

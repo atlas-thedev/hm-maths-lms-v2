@@ -22,6 +22,11 @@ export const LIVE_UNLOCK_MINUTES = 20;
 export const LIVE_DURATION_MINUTES = 120;
 /** The join link stays open this long after the scheduled end (classes often run over). */
 export const LIVE_GRACE_MINUTES = 30;
+/** A paid month stays open this many days after approval (set in the database: db/migrations/0023_access_expiry.sql). */
+export const ACCESS_DAYS = 40;
+/** Access length choices when staff grant a month by hand (days). */
+export const GRANT_DAY_OPTIONS = [7, 14, 30, 40, 60, 90, 180, 365] as const;
+
 /** Class length choices in the admin forms (minutes). */
 export const DURATION_OPTIONS = [60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360] as const;
 /** Week starts on Monday in the day picker; values are JS/Postgres day numbers (0 = Sunday). */

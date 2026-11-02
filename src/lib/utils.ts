@@ -21,6 +21,16 @@ export function shiftMonth(month: string, delta: number): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
+/** An approved enrollment still opens its month (access_until null = approved before expiry existed). */
+export function accessOpen(e: { status: string; access_until?: string | null }, now = Date.now()): boolean {
+  return e.status === "approved" && (!e.access_until || new Date(e.access_until).getTime() > now);
+}
+
+/** Whole days until an ISO time (1 during its last day, 0 once passed). */
+export function daysUntil(iso: string, now = Date.now()): number {
+  return Math.max(0, Math.ceil((new Date(iso).getTime() - now) / 86_400_000));
+}
+
 /** Dates are always formatted with en-LK numerals; month names come from the i18n files (common.months). */
 const dateLocale = (_locale?: string) => "en-LK";
 

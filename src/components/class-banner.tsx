@@ -25,8 +25,11 @@ export interface BannerClass {
   start_time?: string | null; duration_minutes?: number | null; schedule_days?: number[] | null;
 }
 
-/** Turns a class into the words on its banner, in the visitor's language, with the CURRENT month filled in. */
-export function useBannerContent(cls: BannerClass, override?: Partial<BannerConfig>): BannerContent | null {
+/**
+ * Turns a class into the words on its banner, in the visitor's language, with the CURRENT month filled in —
+ * or `month` ("YYYY-MM") when the banner belongs to a paid month (My Classes).
+ */
+export function useBannerContent(cls: BannerClass, override?: Partial<BannerConfig>, month?: string): BannerContent | null {
   const tc = useT("common");
   const centers = useT("landing.home.centers");
   const hero = useT("landing.home.hero");
@@ -40,7 +43,8 @@ export function useBannerContent(cls: BannerClass, override?: Partial<BannerConf
   const items = centers.raw<{ key: string; place: string; town: string }[]>("items") ?? [];
   const isOnline = cls.town === "Online";
   const item = cls.town ? items.find((i) => i.key === cls.town) : undefined;
-  const headline = config.headlineMode === "month" ? (months[colomboMonth()] ?? "") : config.headlineMode === "custom" ? config.headline : "";
+  const monthIndex = month && /^\d{4}-\d{2}$/.test(month) ? Number(month.slice(5, 7)) - 1 : colomboMonth();
+  const headline = config.headlineMode === "month" ? (months[monthIndex] ?? "") : config.headlineMode === "custom" ? config.headline : "";
   return {
     config, headline, locale,
     year: cls.target_year ? String(cls.target_year) : "",
@@ -59,8 +63,12 @@ export function useBannerContent(cls: BannerClass, override?: Partial<BannerConf
 }
 
 /** Class poster: a template (its month always the current one), an uploaded banner, or a generated gradient with a maths symbol. */
-export function ClassBanner({ cls, className, shape = "wide", showTitle = false }: { cls: BannerClass; className?: string; shape?: BannerShape; showTitle?: boolean }) {
-  const content = useBannerContent(cls);
+export function ClassBanner({ cls, className, shape = "wide", showTitle = false, month }: {
+  cls: BannerClass; className?: string; shape?: BannerShape; showTitle?: boolean;
+  /** "YYYY-MM": show this month on a month template instead of the current one. */
+  month?: string;
+}) {
+  const content = useBannerContent(cls, undefined, month);
   if (content) {
     return (
       <div className={cn("relative aspect-[16/7] overflow-hidden", className)}>

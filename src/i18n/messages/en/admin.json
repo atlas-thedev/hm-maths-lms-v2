@@ -57,7 +57,9 @@
   "payments": {
     "title": "Bank Slip Approval Center",
     "subtitle": "Approving a slip immediately unlocks that class month for the student.",
-    "grantTitle": "Grant access manually (cash paid at class)",
+    "grantTitle": "Grant access manually (cash paid at class, or an old month)",
+    "accessUntil": "Access until",
+    "noExpiry": "No expiry (approved before the 40-day rule)",
     "empty": "No slips found ({status})",
     "waApproved": "Hi {name}, your payment for {class} ({month}) has been approved. Log in to HM Maths to watch your classes.",
     "waRegarding": "Hi {name}, regarding your HM Maths payment for {class} ({month}).",
@@ -195,7 +197,14 @@
     "grant": {
       "student": "Student ID / mobile / NIC",
       "studentPh": "20271234",
-      "submit": "Grant access"
+      "submit": "Grant access",
+      "length": "Access length",
+      "days": "{n} days",
+      "default": "default",
+      "custom": "Until a date…",
+      "until": "Open until (inclusive)",
+      "preview": "{month} will be open until {date}.",
+      "pickDate": "Pick the last day of access."
     },
     "notice": {
       "title": "Title",

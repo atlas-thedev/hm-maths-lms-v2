@@ -611,5 +611,62 @@ await as(OWNER, () => q(`update public.classes set banner_config = '{"template":
 assert.equal((await q(`select count(*)::int as n from public.classes where banner_config->>'template' = 'attention'`))[0].n, 1);
 console.log("✓ 0020: classes.banner_config holds the banner template");
 
+// ---- 0021 / 0022: deploys re-run them, so they must never delete classes (enrollments + lessons cascade)
+const sql21 = readFileSync(new URL("../db/migrations/0021_attendance_class_and_classes.sql", import.meta.url), "utf8");
+const sql22 = readFileSync(new URL("../db/migrations/0022_combo_classes.sql", import.meta.url), "utf8");
+const countClasses = async () => (await q(`select count(*)::int as n from public.classes`))[0].n;
+const classesBefore = await countClasses();
+await db.exec(sql21);
+assert.equal(await countClasses(), classesBefore + 8);
+const [seeded] = await q(`select id from public.classes where title = '2027 A/L Combined Maths - Theory'`);
+await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,month,status) values ($1,$2,'2026-10','approved')`, [S2, seeded.id]));
+await db.exec(sql21);
+assert.equal(await countClasses(), classesBefore + 8);
+assert.equal((await q(`select count(*)::int as n from public.enrollments where class_id=$1`, [seeded.id]))[0].n, 1);
+await db.exec(sql22);
+await db.exec(sql22);
+assert.equal((await q(`select count(*)::int as n from public.combo_items`))[0].n, 0);
+console.log("✓ 0021/0022: re-running keeps classes + their enrollments, combo pairs skip missing classes");
+
+// ---- 0023: paid access lasts 40 days from approval
+const sql23 = readFileSync(new URL("../db/migrations/0023_access_expiry.sql", import.meta.url), "utf8");
+await db.exec(sql23);
+await db.exec(sql23);
+const days = (ts) => (new Date(ts).getTime() - Date.now()) / 86_400_000;
+l = (await as(S1, () => q(`select title from public.lessons where class_id=$1`, [paid.id]))).map(x => x.title);
+assert.ok(l.includes("Differentiation") && l.includes("Integration"), l.join(", "));
+console.log("✓ 0023: months approved before the change keep access (no expiry)");
+
+await as(OWNER, () => q(`insert into public.lessons (class_id, month, week_number, title, youtube_url) values ($1,'2027-03',1,'Limits','https://youtu.be/lim')`, [paid.id]));
+const [en4] = await as(S1, () => q(`insert into public.enrollments (student_id,class_id,month,slip_url,access_until) values ($1,$2,'2027-03',$3, now() + interval '900 days') returning id, access_until`, [S1, paid.id, `${S1}/m.jpg`]));
+assert.equal(en4.access_until, null);
+await as(OWNER, () => q(`update public.enrollments set status='approved' where id=$1`, [en4.id]));
+let [acc] = await q(`select access_until from public.enrollments where id=$1`, [en4.id]);
+assert.ok(Math.abs(days(acc.access_until) - 40) < 0.01, `expected ~40 days, got ${days(acc.access_until)}`);
+assert.ok((await as(S1, () => q(`select 1 from public.lessons where title='Limits'`))).length === 1);
+console.log("✓ 0023: approval opens the month for 40 days (a student can't set their own date)");
+
+await q(`update public.enrollments set access_until = now() - interval '1 day' where id=$1`, [en4.id]);
+assert.equal((await as(S1, () => q(`select 1 from public.lessons where title='Limits'`))).length, 0);
+assert.equal((await as(S1, () => q(`select public.has_class_access($1, '2027-03') as ok`, [paid.id])))[0].ok, false);
+console.log("✓ 0023: after access_until the month's lessons are locked");
+
+await as(S1, () => q(`update public.enrollments set slip_url=$2 where id=$1`, [en4.id, `${S1}/m2.jpg`]));
+[acc] = await q(`select status, access_until from public.enrollments where id=$1`, [en4.id]);
+assert.equal(acc.status, "pending"); assert.equal(acc.access_until, null);
+await as(OWNER, () => q(`update public.enrollments set status='approved' where id=$1`, [en4.id]));
+[acc] = await q(`select access_until from public.enrollments where id=$1`, [en4.id]);
+assert.ok(Math.abs(days(acc.access_until) - 40) < 0.01);
+await fails(as(S1, () => q(`update public.enrollments set slip_url=$2 where id=$1 returning id`, [en4.id, `${S1}/m3.jpg`]).then((r) => { if (!r.length) throw new Error("no row"); })), "re-submitting a month that is still open");
+console.log("✓ 0023: an expired month can be bought again → a fresh 40 days");
+
+const [en5] = await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,month,status,access_until) values ($1,$2,'2026-09','approved', now() + interval '7 days') returning access_until`, [S1, paid.id]));
+assert.ok(Math.abs(days(en5.access_until) - 7) < 0.01);
+await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,month,status,access_until) values ($1,$2,'2026-09','approved', now() + interval '3 days')
+  on conflict (student_id,class_id,month) do update set status = excluded.status, access_until = excluded.access_until`, [S1, paid.id]));
+[acc] = await q(`select access_until from public.enrollments where student_id=$1 and class_id=$2 and month='2026-09'`, [S1, paid.id]);
+assert.ok(Math.abs(days(acc.access_until) - 3) < 0.01);
+console.log("✓ 0023: staff can grant an old month for a chosen length (and change it)");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);

@@ -59,6 +59,7 @@
     "pending": "Pending",
     "approved": "Approved",
     "rejected": "Rejected",
+    "expired": "Expired",
     "shipped": "Shipped",
     "in_progress": "In progress",
     "submitted": "Submitted",

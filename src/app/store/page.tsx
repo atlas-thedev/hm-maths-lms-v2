@@ -17,7 +17,7 @@ export async function generateMetadata() {
   };
 }
 
-export default async function PublicStorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string; type?: string }> }) {
+export default async function PublicStorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string; type?: string; q?: string }> }) {
   const [{ db, user, profile }, t, sp] = await Promise.all([getSession(), getT("portal.store"), searchParams]);
   const filter = parseStoreFilter(sp, profile?.al_year ?? null);
   const [{ data: classes }, { data: products }] = await Promise.all([

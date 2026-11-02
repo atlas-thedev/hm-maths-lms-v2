@@ -154,6 +154,10 @@
     "owned": "You have this",
     "pending": "Awaiting approval",
     "open": "Open class",
+    "search": "Search classes",
+    "searchPlaceholder": "Search classes…",
+    "clearSearch": "Clear search",
+    "count": "{n} classes",
     "tabs": {
       "classes": "Classes",
       "books": "Tute books"
@@ -165,6 +169,7 @@
       "mode": "Class type",
       "type": "Class type",
       "all": "All",
+      "allTypes": "All types",
       "online": "Online",
       "physical": "Physical",
       "theory": "Theory",
@@ -188,7 +193,16 @@
     "empty": "Seems like you haven't registered to a class yet.",
     "emptyText": "Upload your bank slip from the Store. Your class unlocks here once the admin approves it.",
     "goStore": "Go to Store",
+    "all": "All",
     "month": {
+      "active": "Active",
+      "expired": "Expired",
+      "daysLeft": "{n} days left",
+      "lastDay": "Last day",
+      "accessUntil": "Access until {date}",
+      "ended": "Access ended on {date}",
+      "renew": "Buy again",
+      "physicalOnline": "Physical & Online",
       "recording": "1 recording",
       "recordings": "{n} recordings",
       "tute": "1 tute",
@@ -210,6 +224,11 @@
     "live": "Live Class Hub",
     "recordings": "Lesson Recordings",
     "materials": "Class Materials",
+    "jumpTo": "Jump to",
+    "pdfs": "PDFs",
+    "allWeeks": "All",
+    "video": "Video",
+    "new": "New",
     "week": "Week {n}",
     "noRecordings": "Recordings will appear here after each class.",
     "pdfTute": "PDF tute",
@@ -526,7 +545,17 @@
     "reason": "Reason: {note}",
     "stepPay": "Pay",
     "stepUpload": "Upload slip",
-    "stepAccess": "Get access"
+    "stepAccess": "Get access",
+    "accessUntil": "Open until {date}",
+    "accessEnded": "Access ended on {date}",
+    "tiles": {
+      "mode": "Zoom + Video",
+      "modeHint": "Live class & recordings",
+      "days": "{n} days",
+      "daysHint": "Access from approval",
+      "year": "A/L batch",
+      "allYears": "All years"
+    }
   },
   "order": {
     "amount": "{price} × quantity (+ courier if applicable)",

@@ -17,7 +17,7 @@ const STATUSES = ["pending", "approved", "rejected"] as const;
 
 type Row = { student_id: string;
   id: string; month: string; status: string; slip_url: string | null; amount: number | null; bank_ref: string | null; admin_note: string | null;
-  reviewed_by: string | null; reviewed_at: string | null; created_at: string;
+  reviewed_by: string | null; reviewed_at: string | null; access_until: string | null; created_at: string;
   profiles: { full_name: string; mobile: string | null; nic: string | null; student_id: string | null; town: string } | null;
   classes: { title: string; fee: number } | null;
 };
@@ -28,7 +28,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
   const { db } = await requireAdmin();
   const [t, tc, f] = await Promise.all([getT("admin.payments"), getT("common"), getFormat()]);
   const [{ data }, { data: classes }] = await Promise.all([
-    db.from("enrollments").select("id, student_id, month, status, slip_url, amount, bank_ref, admin_note, reviewed_by, reviewed_at, created_at, profiles:profiles!enrollments_student_id_fkey(full_name, mobile, nic, student_id, town), classes(title, fee)")
+    db.from("enrollments").select("id, student_id, month, status, slip_url, amount, bank_ref, admin_note, reviewed_by, reviewed_at, access_until, created_at, profiles:profiles!enrollments_student_id_fkey(full_name, mobile, nic, student_id, town), classes(title, fee)")
       .eq("status", status).order("created_at", { ascending: status === "pending" }).limit(100),
     db.from("classes").select("id, title").eq("is_free", false).order("title"),
   ]);
@@ -90,6 +90,10 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
                     <div><dt className="text-xs text-muted-foreground">{t("month")}</dt><dd className="font-medium">{f.month(r.month)}</dd></div>
                     <div><dt className="text-xs text-muted-foreground">{t("amount")}</dt><dd className={cn("font-medium", mismatch && "text-warning")}>{r.amount !== null ? formatLKR(r.amount) : tc("dash")}</dd></div>
                     <div><dt className="text-xs text-muted-foreground">{t("submitted")}</dt><dd>{f.dateTime(r.created_at)}</dd></div>
+                    {r.status === "approved" && (
+                      <div className="col-span-2"><dt className="text-xs text-muted-foreground">{t("accessUntil")}</dt>
+                        <dd className={cn("font-medium", r.access_until && new Date(r.access_until).getTime() <= Date.now() && "text-destructive")}>{r.access_until ? f.dateTime(r.access_until) : t("noExpiry")}</dd></div>
+                    )}
                     {r.bank_ref && <div className="col-span-2"><dt className="text-xs text-muted-foreground">{t("reference")}</dt><dd className="font-mono">{r.bank_ref}</dd></div>}
                     <div className="col-span-2 sm:col-span-4"><dt className="text-xs text-muted-foreground">{t("delivery")}</dt><dd className="text-sm">{addrOf.get(r.student_id) || tc("dash")}</dd></div>
                     {r.admin_note && <div className="col-span-2"><dt className="text-xs text-muted-foreground">{t("note")}</dt><dd>{r.admin_note}</dd></div>}

@@ -78,6 +78,8 @@ export interface Enrollment {
   bank_ref: string | null;
   admin_note: string | null;
   reviewed_at: string | null;
+  /** When this approved month stops opening (approval + ACCESS_DAYS, or a date staff picked). null = no expiry. */
+  access_until: string | null;
   created_at: string;
 }
 

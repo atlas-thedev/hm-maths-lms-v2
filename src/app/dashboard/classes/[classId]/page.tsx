@@ -1,11 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, CalendarDays, Download, FileText, Lock, PlayCircle, Radio } from "lucide-react";
 import { isStaffRole, requireUser } from "@/lib/auth";
 import { getClassAccess, getLiveLinks, liveWindow } from "@/lib/data";
 import { ClassBanner } from "@/components/class-banner";
 import { LiveCountdown } from "@/components/live-countdown";
+import { RecordingGrid, type RecordingItem } from "@/components/recording-grid";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,17 +40,29 @@ export default async function ClassroomPage({ params, searchParams }: {
     .sort((a, b) => (a.l.live_start_time! < b.l.live_start_time! ? -1 : 1));
   const links = await getLiveLinks(db, liveSessions.filter((x) => x.w!.open).map((x) => x.l.id));
   const timetable = sched(cls);
-  const recordings = lessons.filter((l) => l.youtube_url);
+  // Newest recording first: the one a student is most likely looking for.
+  const recordings = lessons.filter((l) => l.youtube_url).reverse();
   const materials = lessons.filter((l) => l.tute_pdf_url);
-  const weeks = [...new Set(recordings.map((l) => l.week_number))].sort((a, b) => a - b);
+  const weekAgo = now - 7 * 86_400_000;
+  const recordingItems: RecordingItem[] = recordings.map((l) => {
+    const id = youtubeId(l.youtube_url);
+    return {
+      id: l.id, href: `/dashboard/classes/${l.class_id}/lessons/${l.id}`, title: l.title, description: l.description,
+      week: l.week_number, tag: t("week", { n: l.week_number }), thumb: id ? youtubeThumb(id) : null,
+      date: f.date(l.live_start_time ?? l.created_at), isNew: new Date(l.created_at).getTime() > weekAgo,
+    };
+  });
   const watermark = { userId: profile.id, mobile: profile.mobile, studentId: profile.student_id };
   // Recordings come first; the live block jumps to the top only while a class is live, and is hidden
   // when the month has no upcoming sessions.
   const liveOpen = liveSessions.some((x) => x.w!.open);
-  const sections: [string, string, typeof Radio][] = [
-    ...(liveOpen ? [["#live", t("live"), Radio] as [string, string, typeof Radio]] : []),
-    ["#recordings", t("recordings"), PlayCircle], ["#materials", t("materials"), FileText],
-    ...(!liveOpen && liveSessions.length ? [["#live", t("live"), Radio] as [string, string, typeof Radio]] : []),
+  type Jump = { href: string; label: string; icon: typeof Radio; count: number; tone: string };
+  const liveJump: Jump = { href: "#live", label: t("live"), icon: Radio, count: liveSessions.length, tone: "text-destructive" };
+  const sections: Jump[] = [
+    ...(liveOpen ? [liveJump] : []),
+    { href: "#recordings", label: t("recordings"), icon: PlayCircle, count: recordings.length, tone: "text-primary" },
+    { href: "#materials", label: t("pdfs"), icon: FileText, count: materials.length, tone: "text-success-soft-foreground" },
+    ...(!liveOpen && liveSessions.length ? [liveJump] : []),
   ];
 
   const liveSection = (
@@ -87,7 +99,7 @@ export default async function ClassroomPage({ params, searchParams }: {
         <ArrowLeft className="h-4 w-4" /> {cls.is_free ? t("backFree") : t("back")}
       </Link>
       <div className="overflow-hidden rounded-2xl bg-card shadow-soft">
-        <ClassBanner cls={cls} shape="strip" className="aspect-[16/4] sm:aspect-[16/3]" />
+        <ClassBanner cls={cls} month={month} shape="strip" className="aspect-[16/4] sm:aspect-[16/3]" />
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex flex-wrap gap-2"><Badge>{tc(`classTypes.${cls.class_type}`)}</Badge>{cls.town && <Badge variant="secondary">{tc(`towns.${cls.town}`)}</Badge>}</div>
@@ -103,47 +115,37 @@ export default async function ClassroomPage({ params, searchParams }: {
         </div>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto text-sm">
-        {sections.map(([href, label, I]) => (
-          <a key={href} href={href} className={buttonVariants({ variant: "outline", size: "sm", className: "bg-card" })}><I />{label}</a>
+      <nav aria-label={t("jumpTo")} className="flex items-center gap-1 overflow-x-auto rounded-2xl border border-border/80 bg-card px-3 py-2 shadow-soft no-scrollbar dark:border-white/10">
+        <span className="mr-2 shrink-0 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t("jumpTo")}</span>
+        {sections.map(({ href, label, icon: I, count, tone }) => (
+          <a key={href} href={href} className="inline-flex min-h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 text-sm font-semibold transition hover:bg-accent">
+            <I className={cn("h-4 w-4", tone)} /><span className={tone}>{label}</span>
+            <span className="rounded-full bg-muted px-1.5 text-[11px] font-bold tabular-nums text-muted-foreground">{count}</span>
+          </a>
         ))}
-      </div>
-
+      </nav>
 
       {liveOpen && liveSection}
 
       <section id="recordings" className="scroll-mt-20">
-        <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold"><PlayCircle className="h-5 w-5 text-primary" /> {t("recordings")}</h2>
-        {weeks.length ? (
-          <div className="space-y-6">
-            {weeks.map((wk) => (
-              <div key={wk}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("week", { n: wk })}</h3>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {recordings.filter((l) => l.week_number === wk).map((l) => {
-                    const id = youtubeId(l.youtube_url);
-                    return (
-                      <Link key={l.id} href={`/dashboard/classes/${l.class_id}/lessons/${l.id}`} className="group overflow-hidden rounded-2xl bg-card shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg">
-                        <div className="relative aspect-video bg-muted">
-                          {id && <Image src={youtubeThumb(id)} alt="" fill sizes="400px" className="object-cover" />}
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/25 transition [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"><PlayCircle className="h-12 w-12 text-white" /></div>
-                        </div>
-                        <div className="p-4"><p className="font-semibold group-hover:text-primary">{l.title}</p>
-                          {l.description && <p className="line-clamp-1 text-xs text-muted-foreground">{l.description}</p>}</div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground shadow-soft">{t("noRecordings")}</p>}
+        <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent"><PlayCircle className="h-4 w-4 text-primary" /></span>
+          {t("recordings")}
+          <span className="rounded-full bg-muted px-2 text-xs font-bold tabular-nums text-muted-foreground">{recordings.length}</span>
+        </h2>
+        {recordingItems.length
+          ? <RecordingGrid items={recordingItems} />
+          : <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground shadow-soft">{t("noRecordings")}</p>}
       </section>
 
       <section id="materials" className="scroll-mt-20">
-        <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold"><FileText className="h-5 w-5 text-success-soft-foreground" /> {t("materials")}</h2>
+        <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-success-soft"><FileText className="h-4 w-4 text-success-soft-foreground" /></span>
+          {t("materials")}
+          <span className="rounded-full bg-muted px-2 text-xs font-bold tabular-nums text-muted-foreground">{materials.length}</span>
+        </h2>
         {materials.length ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {materials.map((l) => (
               <div key={l.id} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
                 <div className="rounded-lg bg-destructive/10 p-2.5 text-destructive"><FileText className="h-5 w-5" /></div>

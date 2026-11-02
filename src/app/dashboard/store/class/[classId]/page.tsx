@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowRight, CalendarClock, CheckCircle2, Clock3, Info, MapPin, Truck, XCircle } from "lucide-react";
+import { ArrowRight, CalendarClock, CheckCircle2, Clock3, GraduationCap, Info, MapPin, Truck, Video, XCircle } from "lucide-react";
+import { ACCESS_DAYS } from "@/lib/constants";
 import { requireUser } from "@/lib/auth";
 import { ClassBanner } from "@/components/class-banner";
 import { BankDetails } from "@/components/bank-details";
 import { Badge, ButtonLink, Card, CardContent, CardHeader, CardTitle, IconTile, cardVariants } from "@/components/ui";
 import { StatusBadge } from "@/components/status-badge";
 import type { ClassRow } from "@/lib/types";
-import { cn, currentMonth, formatLKR, shiftMonth } from "@/lib/utils";
+import { accessOpen, cn, currentMonth, formatLKR, shiftMonth } from "@/lib/utils";
 import { getFormat, getScheduleLabel, getT } from "@/i18n/server";
 import { EnrollForm, type MonthOption } from "./enroll-form";
 import { WithdrawForm } from "./withdraw-form";
@@ -22,7 +23,9 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
   const cls = data as ClassRow;
   if (cls.is_free) redirect(`/dashboard/classes/${classId}`);
 
-  const { data: mine } = await db.from("enrollments").select("id, month, status, admin_note, created_at").eq("student_id", user.id).eq("class_id", classId);
+  const { data: mineRaw } = await db.from("enrollments").select("id, month, status, admin_note, access_until, created_at").eq("student_id", user.id).eq("class_id", classId);
+  // An approved month whose 40 days ran out shows as "expired" and can be bought again.
+  const mine = (mineRaw ?? []).map((e) => ({ ...e, status: e.status === "approved" && !accessOpen(e) ? "expired" : e.status as string }));
   let targetClassIds = [classId];
   if (cls.class_type === "Combo") {
     const { data: comboChildren } = await db.from("combo_items").select("class_id").eq("combo_id", classId);
@@ -32,7 +35,7 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
   }
   const { data: lessonMonths } = await db.from("lessons").select("month").in("class_id", targetClassIds);
   // Offer next month, the current month, the previous 6 months, plus any older months with archived recordings.
-  const status = new Map((mine ?? []).map((e) => [e.month as string, e.status as string]));
+  const status = new Map(mine.map((e) => [e.month as string, e.status]));
   const cur = currentMonth();
   const baseValues = [shiftMonth(cur, 1), cur, ...Array.from({ length: 8 }, (_, i) => shiftMonth(cur, -(i + 1)))];
   const values = [...new Set([...baseValues, ...(lessonMonths ?? []).map((r) => r.month as string)])].sort().reverse();
@@ -42,14 +45,20 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
     status: status.get(v),
   }));
   const firstOpen = months.find((m) => m.value === wanted && m.status !== "approved" && m.status !== "pending")
-    ?? months.find((m) => m.value === cur && !m.status) ?? months.find((m) => !m.status || m.status === "rejected") ?? months[1];
-  const sorted = [...(mine ?? [])].sort((a, b) => (a.month < b.month ? 1 : -1));
+    ?? months.find((m) => m.value === cur && (!m.status || m.status === "expired"))
+    ?? months.find((m) => !m.status || m.status === "rejected" || m.status === "expired") ?? months[1];
+  const sorted = [...mine].sort((a, b) => (a.month < b.month ? 1 : -1));
   const pending = sorted.find((e) => e.status === "pending");
-  // "Owned" = approved for the current or next month.
-  const owned = sorted.find((e) => e.status === "approved" && e.month >= cur);
-  const lastRejected = !pending && [...(mine ?? [])].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
+  // "Owned" = access still open (approval + 40 days); months approved before that rule count from this month on.
+  const owned = sorted.find((e) => e.status === "approved" && (e.access_until || e.month >= cur));
+  const lastRejected = !pending && [...mine].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
   const rejected = lastRejected && lastRejected.status === "rejected" ? lastRejected : null;
-  const open = months.some((m) => !m.status || m.status === "rejected");
+  const open = months.some((m) => !m.status || m.status === "rejected" || m.status === "expired");
+  const tiles: { icon: typeof Video; label: string; hint: string }[] = [
+    { icon: Video, label: t("tiles.mode"), hint: t("tiles.modeHint") },
+    { icon: Clock3, label: t("tiles.days", { n: ACCESS_DAYS }), hint: t("tiles.daysHint") },
+    { icon: GraduationCap, label: cls.target_year ? String(cls.target_year) : t("tiles.allYears"), hint: t("tiles.year") },
+  ];
 
   const delivery = (
     <div className="flex items-start gap-3 rounded-2xl border border-primary/15 bg-accent/60 p-3 text-sm">
@@ -78,7 +87,16 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
               {cls.town && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" />{tc(`towns.${cls.town}`)}</span>}
               {sched(cls) && <span className="flex items-center gap-1.5"><CalendarClock className="h-4 w-4" />{sched(cls)}</span>}
             </div>
-            <p className="font-display text-xl font-bold">{tc("perMonth", { amount: formatLKR(cls.fee) })}</p>
+            <div className="grid grid-cols-3 gap-2 pt-1 sm:gap-3">
+              {tiles.map(({ icon: I, label, hint }) => (
+                <div key={hint} className="rounded-xl border border-border/80 bg-muted/50 p-3 dark:border-white/10">
+                  <I className="h-4 w-4 text-primary" />
+                  <p className="mt-1.5 text-sm font-semibold leading-tight">{label}</p>
+                  <p className="text-[11px] text-muted-foreground">{hint}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-display text-xl font-bold">{formatLKR(cls.fee)} <span className="text-sm font-medium text-muted-foreground">· {t("tiles.days", { n: ACCESS_DAYS })}</span></p>
           </div>
         </div>
         <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm space-y-2">
@@ -92,13 +110,18 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
           </ul>
         </div>
         <Card><CardContent className="pt-5 sm:pt-5"><BankDetails amount={formatLKR(cls.fee)} /></CardContent></Card>
-        {(mine ?? []).length > 0 && (
+        {mine.length > 0 && (
           <Card>
             <CardHeader><CardTitle className="text-base">{t("yourMonths")}</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              {(mine ?? []).sort((a, b) => (a.month < b.month ? 1 : -1)).map((e) => (
-                <div key={e.month} className="flex items-center justify-between rounded-lg border p-3 text-sm">
-                  <span>{f.month(e.month)}</span>
+              {sorted.map((e) => (
+                <div key={e.month} className="flex items-center justify-between gap-3 rounded-lg border p-3 text-sm">
+                  <span className="min-w-0">
+                    <span className="block">{f.month(e.month)}</span>
+                    {e.access_until && (e.status === "approved" || e.status === "expired") && (
+                      <span className="block text-xs text-muted-foreground">{t(e.status === "expired" ? "accessEnded" : "accessUntil", { date: f.date(e.access_until) })}</span>
+                    )}
+                  </span>
                   <span className="flex items-center gap-2">{e.admin_note && <span className="text-xs text-muted-foreground">{e.admin_note}</span>}<StatusBadge status={e.status} /></span>
                 </div>
               ))}

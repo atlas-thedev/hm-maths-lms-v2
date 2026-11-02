@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { randomInt } from "node:crypto";
 import { canDeleteAccount, isOwnerRole, requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/db/admin";
-import { AL_YEARS, CLASS_TYPES, NOTICE_TAGS } from "@/lib/constants";
+import { AL_YEARS, CLASS_TYPES, GRANT_DAY_OPTIONS, NOTICE_TAGS } from "@/lib/constants";
 import { townKeys } from "@/lib/centers";
 import { normalizeBannerConfig } from "@/lib/banner";
 import { getCenters } from "@/lib/settings";
@@ -237,9 +237,11 @@ export async function reviewEnrollmentAction(_p: ActionState, fd: FormData): Pro
   if (error) return fail(error, await m("fail.update"));
 
   if (decision === "approved") {
+    // (This used to also select `notes, attendance_mode`, which enrollments doesn't have, so the query failed
+    // and combo months were never copied to the child classes.)
     const { data: enrollmentRow } = await db
       .from("enrollments")
-      .select("student_id, class_id, month, slip_url, bank_ref, notes, attendance_mode")
+      .select("student_id, class_id, month, slip_url, bank_ref, access_until")
       .eq("id", str(fd, "id"))
       .maybeSingle();
 
@@ -256,8 +258,7 @@ export async function reviewEnrollmentAction(_p: ActionState, fd: FormData): Pro
               admin_note: `Combo Pack (${enrollmentRow.class_id})`,
               slip_url: enrollmentRow.slip_url,
               bank_ref: enrollmentRow.bank_ref,
-              notes: enrollmentRow.notes,
-              attendance_mode: enrollmentRow.attendance_mode,
+              access_until: enrollmentRow.access_until,
             },
             { onConflict: "student_id,class_id,month" },
           );
@@ -270,7 +271,24 @@ export async function reviewEnrollmentAction(_p: ActionState, fd: FormData): Pro
   return { ok: true, message: decision === "approved" ? await m("approved") : await m("rejected") };
 }
 
-/** Grant access without a slip (cash payments at physical centers). */
+/**
+ * Access end for a hand grant: "days" is one of GRANT_DAY_OPTIONS, or "custom" with an "until" date (open until
+ * the end of that day, Sri Lanka time). Returns null when the choice is invalid or not in the future.
+ */
+function grantUntil(fd: FormData): string | null {
+  const days = str(fd, "days");
+  if (days === "custom") {
+    const until = str(fd, "until");
+    if (!DATE_RE.test(until)) return null;
+    const end = new Date(`${until}T23:59:59+05:30`);
+    return Number.isNaN(end.getTime()) || end.getTime() <= Date.now() ? null : end.toISOString();
+  }
+  const n = Number(days);
+  if (!(GRANT_DAY_OPTIONS as readonly number[]).includes(n)) return null;
+  return new Date(Date.now() + n * 86_400_000).toISOString();
+}
+
+/** Grant access without a slip (cash payments at physical centers, or an old month for a chosen length). */
 export async function grantAccessAction(_p: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireAdmin();
   const who = toStudentId(str(fd, "student")).toUpperCase().replace(/[^A-Z0-9/-]/g, "").slice(0, 30);
@@ -278,6 +296,8 @@ export async function grantAccessAction(_p: ActionState, fd: FormData): Promise<
   const classId = str(fd, "class_id");
   const month = str(fd, "month");
   if (!MONTH_RE.test(month)) return { error: await m("month") };
+  const accessUntil = grantUntil(fd);
+  if (!accessUntil) return { error: await m("accessUntil") };
   const mobile = normalizeMobile(who);
   const { data: hits } = mobile
     ? await db.from("profiles").select("id, full_name").eq("mobile", mobile).limit(1)
@@ -286,7 +306,7 @@ export async function grantAccessAction(_p: ActionState, fd: FormData): Promise<
   if (!student) return { error: await m("noStudent") };
   const { data: cls } = await db.from("classes").select("fee").eq("id", classId).maybeSingle();
   const { error } = await db.from("enrollments").upsert(
-    { student_id: student.id, class_id: classId, month, status: "approved", amount: cls?.fee ?? null, admin_note: "Paid at class (cash)" },
+    { student_id: student.id, class_id: classId, month, status: "approved", amount: cls?.fee ?? null, admin_note: "Paid at class (cash)", access_until: accessUntil },
     { onConflict: "student_id,class_id,month" },
   );
   if (error) return fail(error, await m("fail.grant"));
@@ -295,14 +315,16 @@ export async function grantAccessAction(_p: ActionState, fd: FormData): Promise<
   if (items && items.length > 0) {
     for (const item of items) {
       await db.from("enrollments").upsert(
-        { student_id: student.id, class_id: item.class_id, month, status: "approved", amount: 0, admin_note: `Combo Pack (${classId})` },
+        { student_id: student.id, class_id: item.class_id, month, status: "approved", amount: 0, admin_note: `Combo Pack (${classId})`, access_until: accessUntil },
         { onConflict: "student_id,class_id,month" },
       );
     }
   }
 
   revalidatePath("/admin", "layout");
-  return { ok: true, message: await m("granted", { name: student.full_name }) };
+  revalidatePath("/dashboard", "layout");
+  const until = new Intl.DateTimeFormat("en-LK", { timeZone: "Asia/Colombo", year: "numeric", month: "short", day: "numeric" }).format(new Date(accessUntil));
+  return { ok: true, message: await m("grantedUntil", { name: student.full_name, date: until }) };
 }
 
 // ───────────────────────────── Notices ─────────────────────────────

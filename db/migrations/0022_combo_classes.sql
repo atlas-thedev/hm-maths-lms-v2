@@ -47,24 +47,21 @@ UPDATE public.classes SET class_type = 'Combo', schedule_days = '{}', start_time
 UPDATE public.classes SET class_type = 'Combo', schedule_days = '{}', start_time = NULL WHERE id = '5520ef8d-7019-445e-ab3a-5970f391bd30';
 UPDATE public.classes SET class_type = 'Combo', schedule_days = '{}', start_time = NULL WHERE id = 'cf87be3c-4c21-4d11-87fe-96e39888d8b7';
 
--- 2028 Theory + Paper Class (cee372b5...) -> 2028 Theory (3dc18520...) + 2028 Paper (82566b86...)
+-- Pairs whose classes exist only (these are production class IDs; a fresh or test database doesn't have them).
 INSERT INTO public.combo_items (combo_id, class_id)
-VALUES 
+SELECT v.combo_id::uuid, v.class_id::uuid
+FROM (VALUES
+  -- 2028 Theory + Paper Class (cee372b5...) -> 2028 Theory (3dc18520...) + 2028 Paper (82566b86...)
   ('cee372b5-e898-4703-8265-2fdd2bdfd1e8', '3dc18520-ebb2-49f2-8efd-e74ff688e82b'),
-  ('cee372b5-e898-4703-8265-2fdd2bdfd1e8', '82566b86-a2b3-4202-aa17-49a057a4e3ce')
-ON CONFLICT DO NOTHING;
-
--- 2027 Revision + Paper Class (5520ef8d...) -> 2027 Revision (63c4d864...) + 2027 Paper (6e630bbd...)
-INSERT INTO public.combo_items (combo_id, class_id)
-VALUES 
+  ('cee372b5-e898-4703-8265-2fdd2bdfd1e8', '82566b86-a2b3-4202-aa17-49a057a4e3ce'),
+  -- 2027 Revision + Paper Class (5520ef8d...) -> 2027 Revision (63c4d864...) + 2027 Paper (6e630bbd...)
   ('5520ef8d-7019-445e-ab3a-5970f391bd30', '63c4d864-e393-41e5-b1a8-21276d25a366'),
-  ('5520ef8d-7019-445e-ab3a-5970f391bd30', '6e630bbd-080a-4c9b-8566-a1e5702e8685')
-ON CONFLICT DO NOTHING;
-
--- 2027 Full Pack (cf87be3c...) -> 2027 Theory (874143e4...) + 2027 Revision (63c4d864...) + 2027 Paper (6e630bbd...)
-INSERT INTO public.combo_items (combo_id, class_id)
-VALUES 
+  ('5520ef8d-7019-445e-ab3a-5970f391bd30', '6e630bbd-080a-4c9b-8566-a1e5702e8685'),
+  -- 2027 Full Pack (cf87be3c...) -> 2027 Theory (874143e4...) + 2027 Revision (63c4d864...) + 2027 Paper (6e630bbd...)
   ('cf87be3c-4c21-4d11-87fe-96e39888d8b7', '874143e4-0e17-4462-a755-e051bf9db22e'),
   ('cf87be3c-4c21-4d11-87fe-96e39888d8b7', '63c4d864-e393-41e5-b1a8-21276d25a366'),
   ('cf87be3c-4c21-4d11-87fe-96e39888d8b7', '6e630bbd-080a-4c9b-8566-a1e5702e8685')
+) AS v (combo_id, class_id)
+WHERE EXISTS (SELECT 1 FROM public.classes c WHERE c.id = v.combo_id::uuid)
+  AND EXISTS (SELECT 1 FROM public.classes c WHERE c.id = v.class_id::uuid)
 ON CONFLICT DO NOTHING;

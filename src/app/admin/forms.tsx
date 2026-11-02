@@ -6,7 +6,7 @@ import { ActionForm } from "@/components/action-form";
 import { FileUpload } from "@/components/file-upload";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { AL_YEARS, CLASS_TYPES, DURATION_OPTIONS, NOTICE_TAGS, WEEK_DAYS } from "@/lib/constants";
+import { ACCESS_DAYS, AL_YEARS, CLASS_TYPES, DURATION_OPTIONS, GRANT_DAY_OPTIONS, NOTICE_TAGS, WEEK_DAYS } from "@/lib/constants";
 import type { ActionState, ClassRow, Exam, Lesson, Product } from "@/lib/types";
 import { cn, currentMonth, formatMonth, isoToColomboLocal, shiftMonth } from "@/lib/utils";
 import { formatDuration, livePlatform, scheduleLabel } from "@/lib/schedule";
@@ -353,14 +353,62 @@ export function OrderButtons({ id, status }: { id: string; status: string }) {
   );
 }
 
+/** Next month, this month and the previous 24, so old months can be granted too. */
+const grantMonths = () => {
+  const cur = currentMonth();
+  return Array.from({ length: 26 }, (_, i) => shiftMonth(cur, 1 - i));
+};
+
+/**
+ * Cash / old-month access: student, class, month, and how long it stays open (ACCESS_DAYS by default, or a date).
+ * Month and length are controlled so the picked values always show; a success clears only the student field.
+ */
 export function GrantAccessForm({ classes }: { classes: Pick<ClassRow, "id" | "title">[] }) {
   const { t, fm } = useForms();
+  const [month, setMonth] = useState(currentMonth);
+  const [days, setDays] = useState(String(ACCESS_DAYS));
+  const [until, setUntil] = useState("");
+  const [student, setStudent] = useState("");
+  const end = days === "custom"
+    ? (until ? new Date(`${until}T23:59:59+05:30`) : null)
+    : new Date(Date.now() + Number(days) * 86_400_000);
+  const endLabel = end && !Number.isNaN(end.getTime())
+    ? new Intl.DateTimeFormat("en-LK", { timeZone: "Asia/Colombo", year: "numeric", month: "short", day: "numeric" }).format(end)
+    : null;
+  const minDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Colombo" }).format(new Date(Date.now() + 86_400_000));
   return (
-    <ActionForm action={A.grantAccessAction} className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr_160px_auto] sm:items-end" resetOnSuccess>
-      <Field label={t("grant.student")} htmlFor="grant-student"><Input id="grant-student" name="student" placeholder={t("grant.studentPh")} required /></Field>
-      <Field label={t("class.label")} htmlFor="grant-class"><Select id="grant-class" name="class_id" required>{classes.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}</Select></Field>
-      <Field label={t("month")} htmlFor="grant-month"><Select id="grant-month" name="month" defaultValue={currentMonth()}>{monthOptions().map((m) => <option key={m} value={m}>{fm(m)}</option>)}</Select></Field>
-      <SubmitButton>{t("grant.submit")}</SubmitButton>
+    <ActionForm action={A.grantAccessAction} className="space-y-3" onSuccess={() => setStudent("")}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_1.4fr_1fr_1fr]">
+        <Field label={t("grant.student")} htmlFor="grant-student">
+          <Input id="grant-student" name="student" placeholder={t("grant.studentPh")} value={student} onChange={(e) => setStudent(e.target.value)} required />
+        </Field>
+        <Field label={t("class.label")} htmlFor="grant-class">
+          <Select id="grant-class" name="class_id" required>{classes.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}</Select>
+        </Field>
+        <Field label={t("month")} htmlFor="grant-month">
+          <Select id="grant-month" name="month" value={month} onChange={(e) => setMonth(e.target.value)}>
+            {grantMonths().map((m) => <option key={m} value={m}>{fm(m)}</option>)}
+          </Select>
+        </Field>
+        <Field label={t("grant.length")} htmlFor="grant-days">
+          <Select id="grant-days" name="days" value={days} onChange={(e) => setDays(e.target.value)}>
+            {GRANT_DAY_OPTIONS.map((d) => <option key={d} value={d}>{t("grant.days", { n: d })}{d === ACCESS_DAYS ? ` · ${t("grant.default")}` : ""}</option>)}
+            <option value="custom">{t("grant.custom")}</option>
+          </Select>
+        </Field>
+      </div>
+      {days === "custom" && (
+        <Field label={t("grant.until")} htmlFor="grant-until" className="sm:max-w-xs">
+          <Input id="grant-until" name="until" type="date" min={minDate} value={until} onChange={(e) => setUntil(e.target.value)} required />
+        </Field>
+      )}
+      <div className="flex flex-col gap-3 rounded-xl bg-muted/60 p-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CalendarPlus className="h-4 w-4 shrink-0 text-primary" />
+          {endLabel ? t("grant.preview", { month: fm(month), date: endLabel }) : t("grant.pickDate")}
+        </p>
+        <SubmitButton className="sm:w-auto">{t("grant.submit")}</SubmitButton>
+      </div>
     </ActionForm>
   );
 }
