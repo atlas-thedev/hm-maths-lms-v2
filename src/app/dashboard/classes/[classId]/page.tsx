@@ -25,14 +25,14 @@ export default async function ClassroomPage({ params, searchParams }: {
   const [t, tc, f, sched] = await Promise.all([getT("portal.classroom"), getT("common"), getFormat(), getScheduleLabel()]);
   const access = await getClassAccess(db, user.id, classId, isStaffRole(profile.role));
   if (!access) notFound();
-  const { cls, months } = access;
+  const { cls, months, targetClassIds } = access;
   if (!months.length) {
     if (cls.is_free) return <EmptyState icon={PlayCircle} title={cls.title} description={t("comingSoon")} />;
     redirect(`/dashboard/store/class/${classId}`);
   }
   const month = requested && months.includes(requested) ? requested : months[0];
 
-  const { data } = await db.from("lessons").select("*").eq("class_id", classId).eq("month", month)
+  const { data } = await db.from("lessons").select("*").in("class_id", targetClassIds).eq("month", month)
     .order("week_number").order("sort_order").order("created_at");
   const lessons = (data ?? []) as Lesson[];
   const now = Date.now();
@@ -123,7 +123,7 @@ export default async function ClassroomPage({ params, searchParams }: {
                   {recordings.filter((l) => l.week_number === wk).map((l) => {
                     const id = youtubeId(l.youtube_url);
                     return (
-                      <Link key={l.id} href={`/dashboard/classes/${classId}/lessons/${l.id}`} className="group overflow-hidden rounded-2xl bg-card shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg">
+                      <Link key={l.id} href={`/dashboard/classes/${l.class_id}/lessons/${l.id}`} className="group overflow-hidden rounded-2xl bg-card shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg">
                         <div className="relative aspect-video bg-muted">
                           {id && <Image src={youtubeThumb(id)} alt="" fill sizes="400px" className="object-cover" />}
                           <div className="absolute inset-0 flex items-center justify-center bg-black/25 transition [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"><PlayCircle className="h-12 w-12 text-white" /></div>

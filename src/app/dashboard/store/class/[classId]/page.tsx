@@ -23,10 +23,19 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
   if (cls.is_free) redirect(`/dashboard/classes/${classId}`);
 
   const { data: mine } = await db.from("enrollments").select("id, month, status, admin_note, created_at").eq("student_id", user.id).eq("class_id", classId);
-  // Offer next month, the current month and the previous 6 months (archive packs).
+  let targetClassIds = [classId];
+  if (cls.class_type === "Combo") {
+    const { data: comboChildren } = await db.from("combo_items").select("class_id").eq("combo_id", classId);
+    if (comboChildren && comboChildren.length > 0) {
+      targetClassIds = [classId, ...comboChildren.map((x) => x.class_id as string)];
+    }
+  }
+  const { data: lessonMonths } = await db.from("lessons").select("month").in("class_id", targetClassIds);
+  // Offer next month, the current month, the previous 6 months, plus any older months with archived recordings.
   const status = new Map((mine ?? []).map((e) => [e.month as string, e.status as string]));
   const cur = currentMonth();
-  const values = [shiftMonth(cur, 1), cur, ...Array.from({ length: 6 }, (_, i) => shiftMonth(cur, -(i + 1)))];
+  const baseValues = [shiftMonth(cur, 1), cur, ...Array.from({ length: 8 }, (_, i) => shiftMonth(cur, -(i + 1)))];
+  const values = [...new Set([...baseValues, ...(lessonMonths ?? []).map((r) => r.month as string)])].sort().reverse();
   const months: MonthOption[] = values.map((v) => ({
     value: v,
     label: `${f.month(v)} ${v === cur ? t("current") : v > cur ? t("next") : t("archive")}`,

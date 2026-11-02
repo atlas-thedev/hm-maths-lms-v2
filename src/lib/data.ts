@@ -15,13 +15,20 @@ export async function getClassAccess(db: DbClient, uid: string, classId: string,
   const { data: cls } = await db.from("classes").select("*").eq("id", classId).maybeSingle();
   if (!cls) return null;
   const c = cls as ClassRow;
+  let targetClassIds = [classId];
+  if (c.class_type === "Combo") {
+    const { data: comboChildren } = await db.from("combo_items").select("class_id").eq("combo_id", classId);
+    if (comboChildren && comboChildren.length > 0) {
+      targetClassIds = [classId, ...comboChildren.map((x) => x.class_id as string)];
+    }
+  }
   let months: string[];
   if (c.is_free || isAdmin) {
-    const { data } = await db.from("lessons").select("month").eq("class_id", classId);
+    const { data } = await db.from("lessons").select("month").in("class_id", targetClassIds);
     months = [...new Set((data ?? []).map((r) => r.month as string))];
   } else {
-    const { data } = await db.from("enrollments").select("month").eq("student_id", uid).eq("class_id", classId).eq("status", "approved");
-    months = (data ?? []).map((r) => r.month as string);
+    const { data } = await db.from("enrollments").select("month").eq("student_id", uid).in("class_id", targetClassIds).eq("status", "approved");
+    months = [...new Set((data ?? []).map((r) => r.month as string))];
     // Also check if student has access via an approved parent combo pack
     const { data: comboLinks } = await db.from("combo_items").select("combo_id").eq("class_id", classId);
     if (comboLinks && comboLinks.length > 0) {
@@ -33,7 +40,7 @@ export async function getClassAccess(db: DbClient, uid: string, classId: string,
     }
   }
   months.sort().reverse();
-  return { cls: c, months };
+  return { cls: c, months, targetClassIds };
 }
 
 export async function getNotices(db: DbClient, limit = 50, tag?: string) {
