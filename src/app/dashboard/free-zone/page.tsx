@@ -35,7 +35,7 @@ export default async function FreeZonePage() {
               return {
                 id: l.id, href: `/dashboard/classes/${c.id}/lessons/${l.id}`, title: l.title, description: l.description,
                 week: l.week_number, tag: `${f.month(l.month)} · ${t("week", { n: l.week_number })}`, thumb: id ? youtubeThumb(id) : null,
-                date: f.date(l.live_start_time ?? l.created_at), isNew: new Date(l.created_at).getTime() > weekAgo,
+                date: f.date(l.live_start_time ?? l.created_at), isNew: new Date(l.live_start_time ?? l.created_at).getTime() > weekAgo,
               };
             });
             return (

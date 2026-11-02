@@ -95,11 +95,12 @@ export default async function MyClassesPage({ searchParams }: { searchParams: Pr
                     liveNow ? "border-destructive/40 ring-1 ring-destructive/20" : "border-border/80")}>
                   <div className="relative">
                     <ClassBanner cls={cls} month={e.month} className={cn(!open && "opacity-60 grayscale")} />
-                    <span className={cn("absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm backdrop-blur",
-                      open ? "bg-black/60 text-white" : "bg-destructive text-white")}>
-                      {open && <span className="h-1.5 w-1.5 rounded-full bg-success" />}
-                      {t(open ? "month.active" : "month.expired")}
-                    </span>
+                    {/* Only an expired month is tagged; open months need no label. Top-right, clear of the banner's own badge. */}
+                    {!open && (
+                      <span className="absolute right-3 top-3 inline-flex items-center rounded-full bg-destructive px-2.5 py-1 text-[11px] font-bold text-white shadow-sm">
+                        {t("month.expired")}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-1 flex-col gap-2.5 p-4">
                     <div className="flex flex-wrap items-center gap-1.5">

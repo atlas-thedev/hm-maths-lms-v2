@@ -49,7 +49,8 @@ export default async function ClassroomPage({ params, searchParams }: {
     return {
       id: l.id, href: `/dashboard/classes/${l.class_id}/lessons/${l.id}`, title: l.title, description: l.description,
       week: l.week_number, tag: t("week", { n: l.week_number }), thumb: id ? youtubeThumb(id) : null,
-      date: f.date(l.live_start_time ?? l.created_at), isNew: new Date(l.created_at).getTime() > weekAgo,
+      // "New" = the lesson itself is from the last week (not when it was uploaded: old months get bulk-uploaded).
+      date: f.date(l.live_start_time ?? l.created_at), isNew: new Date(l.live_start_time ?? l.created_at).getTime() > weekAgo,
     };
   });
   const watermark = { userId: profile.id, mobile: profile.mobile, studentId: profile.student_id };

@@ -195,7 +195,6 @@
     "goStore": "Go to Store",
     "all": "All",
     "month": {
-      "active": "Active",
       "expired": "Expired",
       "daysLeft": "{n} days left",
       "lastDay": "Last day",
