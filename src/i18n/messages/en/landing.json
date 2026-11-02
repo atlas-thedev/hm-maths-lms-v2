@@ -141,8 +141,6 @@
     "free": "Free",
     "enroll": "Enroll now",
     "viewAll": "View all classes",
-    "all": "All",
-    "month": "/ month",
     "previous": "Previous class",
     "next": "Next class",
     "goTo": "Go to slide {n}",
@@ -366,7 +364,6 @@
       "ctaGuest": "Join now",
       "badge": "THEORY",
       "ctaLearn": "Learn more",
-      "ctaClasses": "See classes",
       "tv": "National TV lecturer",
       "stats": {
         "subs": "YouTube subscribers",

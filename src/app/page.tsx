@@ -1,6 +1,9 @@
 import { HomeNav } from "@/components/landing/home-nav";
-import { HomeCenters, HomeChannels, HomeClasses, HomeCta, HomeGallery, HomeHero, HomeProcess, HomeStories, HomeTeacher, type HomeClass } from "@/components/landing/home-sections";
+import { HomeAbout, HomeCenters, HomeChannels, HomeCommunity, HomeCta, HomeGallery, HomeHero, HomeProcess, ScrollProgress, HomeStories, HomeTeacher } from "@/components/landing/home-sections";
 import { HomeFooter } from "@/components/landing/home-footer";
+import { MarqueeBand } from "@/components/landing/marquee-band";
+import { SmoothScroll } from "@/components/landing/smooth-scroll";
+import { ClassesCarousel, type CarouselClass } from "@/components/landing/classes-carousel";
 import { Faq } from "@/components/landing/faq";
 import { getSession, isStaffRole } from "@/lib/auth";
 import { getScheduleLabel, getT } from "@/i18n/server";
@@ -33,7 +36,7 @@ export default async function HomePage() {
 
   const placeholders = t.raw<Placeholder[]>("classes.placeholders") ?? [];
   const defaultLines = (type: string) => placeholders.find((p) => p.type === type)?.lines ?? [];
-  const classes: HomeClass[] = rows.length
+  const classes: CarouselClass[] = rows.length
     ? rows.map((c) => {
         const own = (c.description ?? "").split(/\r?\n/).map((l) => l.replace(/^[-•*]\s*/, "").trim()).filter(Boolean).slice(0, 4);
         return {
@@ -50,16 +53,20 @@ export default async function HomePage() {
   return (
     <div className="force-light theme-orange relative overflow-x-clip bg-landing-bg text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@graph": siteGraph({ brand, centers, site: SITEDATA, description: tm("description"), faq: t.raw<{ q: string; a: string }[]>("faq.items") ?? [], classes: rows.slice(0, 8).map((c) => ({ id: c.id, title: c.title, description: c.description, fee: Number(c.fee), isFree: c.is_free })) }) }) }} />
+      <SmoothScroll />
+      <ScrollProgress />
       <HomeNav account={account} />
       <main>
-        {/* Classes come right after the hero: they're what visitors come for. */}
-        <HomeHero account={account} stats={landingStats} photo={teacherPhoto || brandSettings.heroPhoto || "/images/hasitha-hero.webp"} />
-        <HomeClasses classes={classes} />
+        <HomeHero account={account} stats={landingStats} photo={brandSettings.heroPhoto || null} />
+        <MarqueeBand />
+        <HomeAbout />
         <HomeProcess />
-        <HomeTeacher photo={brandSettings.heroPhoto || teacherPhoto || SITEDATA.youtube.avatar} isReal={!!(brandSettings.heroPhoto || teacherPhoto)} />
+        <HomeTeacher photo={teacherPhoto ?? SITEDATA.youtube.avatar} isReal={!!teacherPhoto} />
         <HomeCenters points={centers.map((c) => ({ key: c.key, p: mapPoint(c) }))} />
-        <HomeStories stories={SITEDATA.youtube.stories} />
+        <ClassesCarousel classes={classes} />
+        <HomeStories stories={SITEDATA.youtube.stories} lessons={SITEDATA.youtube.lessons} />
         <HomeGallery photos={galleryPhotos} photo={brandSettings.groupPhoto || publicImage(SITE.galleryImage)} />
+        <HomeCommunity stats={landingStats} />
         <HomeChannels />
         <Faq />
         <HomeCta account={account} />
