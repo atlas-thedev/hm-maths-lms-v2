@@ -84,7 +84,6 @@ export function ClassForm({
   const [days, setDays] = useState<number[]>(cls?.schedule_days ?? []);
   const [start, setStart] = useState<string>(cls?.start_time?.slice(0, 5) ?? "");
   const [duration, setDuration] = useState<string>(String(cls?.duration_minutes ?? 120));
-  const [note, setNote] = useState<string>(cls?.schedule ?? "");
   const [link, setLink] = useState<string>(defaultLiveUrl ?? "");
   const [title, setTitle] = useState<string>(cls?.title ?? "");
   const [year, setYear] = useState<string>(cls?.target_year ? String(cls.target_year) : "");
@@ -95,7 +94,7 @@ export function ClassForm({
   const toggleCombo = (id: string) => setSelectedCombo((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   const dayNames = tc.raw<string[]>("schedule.days") ?? [];
-  const preview = scheduleLabel({ schedule_days: days, start_time: start || null, duration_minutes: Number(duration), schedule: note },
+  const preview = scheduleLabel({ schedule_days: days, start_time: start || null, duration_minutes: Number(duration), schedule: null },
     dayNames, (d) => tc("schedule.every", { days: d }), tc("schedule.and"));
   const toggle = (d: number) => setDays((cur) => (cur.includes(d) ? cur.filter((x) => x !== d) : [...cur, d]));
   return (
@@ -172,7 +171,6 @@ export function ClassForm({
               <span className="absolute right-2 top-1/2 -translate-y-1/2"><PlatformHint url={link} /></span>
             </div>
           </Field>
-          <Field label={t("class.note")} htmlFor="schedule"><Input id="schedule" name="schedule" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("class.notePh")} /></Field>
           <div className="rounded-xl border border-dashed border-teal-500/40 bg-background px-3 py-2.5 text-sm">
             <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("class.preview")} </span>
             <span className="font-medium">{preview ?? t("class.noDays")}</span>
