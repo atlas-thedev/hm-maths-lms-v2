@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText, Link2, Pencil, PlayCircle, Radio } from "lucide-react";
 import { Badge, Button, cardVariants } from "@/components/ui";
 import type { Lesson } from "@/lib/types";
@@ -9,11 +9,18 @@ import { useT } from "@/i18n/client";
 import { CancelSessionButton, DeleteButton, LessonForm, type SessionDefaults } from "../../forms";
 import { deleteLessonAction } from "../../actions";
 
-export function LessonList({ classId, lessons, links, defaults }: { classId: string; lessons: Lesson[]; links: Record<string, string>; defaults: SessionDefaults }) {
+export function LessonList({ classId, lessons, links, defaults, initialEditing = null }: {
+  classId: string; lessons: Lesson[]; links: Record<string, string>; defaults: SessionDefaults;
+  /** Lesson whose edit form starts open (e.g. "Add recording" from the Overview tab). */
+  initialEditing?: string | null;
+}) {
   const t = useT("admin.class");
   const tc = useT("common");
   const months12 = tc.raw<string[]>("months");
-  const [editing, setEditing] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(initialEditing);
+  useEffect(() => {
+    if (initialEditing) document.getElementById(`lesson-${initialEditing}`)?.scrollIntoView({ block: "center" });
+  }, [initialEditing]);
   const months = [...new Set(lessons.map((l) => l.month))].sort().reverse();
   if (!lessons.length) return <p className={cn(cardVariants({ variant: "outline" }), "border-dashed p-6 text-center text-sm text-muted-foreground")}>{t("noLessons")}</p>;
   return (
@@ -25,7 +32,7 @@ export function LessonList({ classId, lessons, links, defaults }: { classId: str
             {lessons.filter((l) => l.month === m).map((l) => {
               const link = links[l.id];
               return (
-                <div key={l.id} className={cn("p-3", l.is_cancelled && "bg-muted/40")}>
+                <div key={l.id} id={`lesson-${l.id}`} className={cn("scroll-mt-24 p-3", l.is_cancelled && "bg-muted/40", editing === l.id && "bg-accent/40")}>
                   <div className="flex items-center gap-3">
                     <span className="rounded-md bg-muted px-2 py-1 text-xs font-semibold">W{l.week_number}</span>
                     <div className="min-w-0 flex-1">
@@ -38,8 +45,10 @@ export function LessonList({ classId, lessons, links, defaults }: { classId: str
                         {l.live_start_time && <span className="flex items-center gap-1"><Radio className="h-3 w-3" />{formatDateTime(l.live_start_time)}</span>}
                         {link && <span className="flex items-center gap-1"><Link2 className="h-3 w-3" />{tc(`schedule.platforms.${livePlatform(link) ?? "other"}`)}</span>}
                         {l.live_start_time && !link && <span className="font-semibold text-warning-soft-foreground">{t("noLink")}</span>}
-                        {l.youtube_url && <span className="flex items-center gap-1"><PlayCircle className="h-3 w-3" />{t("recording")}</span>}
-                        {l.tute_pdf_url && <span className="flex items-center gap-1"><FileText className="h-3 w-3" />{t("tute")}</span>}
+                        {l.youtube_url
+                          ? <span className="flex items-center gap-1 text-success-soft-foreground"><PlayCircle className="h-3 w-3" />{t("recording")}</span>
+                          : !l.is_cancelled && <span className="flex items-center gap-1 font-semibold text-warning-soft-foreground"><PlayCircle className="h-3 w-3" />{t("noRecording")}</span>}
+                        {l.tute_pdf_url && <span className="flex items-center gap-1 text-success-soft-foreground"><FileText className="h-3 w-3" />{t("tute")}</span>}
                       </div>
                     </div>
                     <Button variant="ghost" size="icon" aria-label={t("edit")} onClick={() => setEditing(editing === l.id ? null : l.id)}><Pencil /></Button>
