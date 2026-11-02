@@ -5,7 +5,11 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type TabNavItem = {
-  href: string; label: string; icon?: LucideIcon; exact?: boolean;
+  href: string; label: string; exact?: boolean;
+  /** Icon component — only from client components (a function can't cross from a server component). */
+  icon?: LucideIcon;
+  /** Already-rendered icon, e.g. <Users className="h-4 w-4" /> — use this from server components. */
+  iconNode?: React.ReactNode;
   /** Small count after the label (0 / undefined = hidden). `alert` makes it red, for things to fix. */
   badge?: number; alert?: boolean;
 };
@@ -29,7 +33,7 @@ export function TabNav({ items, className, label, current: currentHref }: { item
             <Link key={i.href} href={i.href} aria-current={on ? "page" : undefined} scroll={false}
               className={cn("flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition active:scale-[0.97]",
                 on ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground")}>
-              {Icon ? <Icon className="h-4 w-4" /> : null}{i.label}
+              {Icon ? <Icon className="h-4 w-4" /> : i.iconNode ?? null}{i.label}
               {i.badge ? (
                 <span className={cn("min-w-5 rounded-full px-1.5 text-center text-[11px] font-bold tabular-nums",
                   i.alert ? "bg-destructive text-white" : on ? "bg-white/25" : "bg-muted text-muted-foreground")}>{i.badge}</span>

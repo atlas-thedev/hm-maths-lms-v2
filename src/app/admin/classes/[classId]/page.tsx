@@ -109,12 +109,14 @@ export default async function AdminClassPage({ params, searchParams }: {
   const doneCount = checklist.filter((x) => x.done).length;
   const todo = checklist.length - doneCount + missingRec.length + noLinkSoon.length;
 
+  // Icons go to the client TabNav as rendered elements (a component function can't be passed from a server component).
+  const ic = "h-4 w-4";
   const tabs: (TabNavItem & { key: Tab })[] = [
-    { key: "overview", href: tabHref("overview"), label: t("tabs.overview"), icon: LayoutDashboard, badge: todo, alert: todo > 0 },
-    ...(!isCombo ? [{ key: "sessions" as Tab, href: tabHref("sessions"), label: t("tabs.sessions"), icon: CalendarClock, badge: live.length }] : []),
-    { key: "content", href: tabHref("content"), label: t("tabs.content"), icon: PlayCircle, badge: lessons.length },
-    { key: "students", href: tabHref("students"), label: t("tabs.students"), icon: Users, badge: accessStudents },
-    { key: "settings", href: tabHref("settings"), label: t("tabs.settings"), icon: Settings2 },
+    { key: "overview", href: tabHref("overview"), label: t("tabs.overview"), iconNode: <LayoutDashboard className={ic} />, badge: todo, alert: todo > 0 },
+    ...(!isCombo ? [{ key: "sessions" as Tab, href: tabHref("sessions"), label: t("tabs.sessions"), iconNode: <CalendarClock className={ic} />, badge: live.length }] : []),
+    { key: "content", href: tabHref("content"), label: t("tabs.content"), iconNode: <PlayCircle className={ic} />, badge: lessons.length },
+    { key: "students", href: tabHref("students"), label: t("tabs.students"), iconNode: <Users className={ic} />, badge: accessStudents },
+    { key: "settings", href: tabHref("settings"), label: t("tabs.settings"), iconNode: <Settings2 className={ic} /> },
   ];
   const tab: Tab = tabs.some((x) => x.key === sp.tab) ? (sp.tab as Tab) : "overview";
   const editHref = (l: Lesson) => tabHref("content", `&month=${l.month}&edit=${l.id}`);
