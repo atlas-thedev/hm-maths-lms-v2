@@ -2,16 +2,19 @@ import type { Metadata } from "next";
 import { CenterPageBody } from "@/components/landing/center-page";
 import { getBrand, getCenters, getSiteData } from "@/lib/settings";
 import { siteGraph } from "@/lib/seo-graph";
-import { absolute, centerKeywords, centerSlug, jsonLd } from "@/lib/seo";
+import { absolute, centerKeywords, centerSlug, defaultOgImages, jsonLd, OG_IMAGE_URL } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
 import { centerLabel } from "@/lib/centers";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [t, centers] = await Promise.all([getT("landing.seo"), getCenters()]);
+  const title = t("hubTitle");
+  const description = t("hubDesc");
   return {
-    title: t("hubTitle"), description: t("hubDesc"), keywords: centers.flatMap(centerKeywords),
+    title, description, keywords: centers.flatMap(centerKeywords),
     alternates: { canonical: "/combined-maths-classes" },
-    openGraph: { title: t("hubTitle"), description: t("hubDesc"), url: "/combined-maths-classes" },
+    openGraph: { type: "website", title, description, url: "/combined-maths-classes", images: defaultOgImages(title) },
+    twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE_URL] },
   };
 }
 

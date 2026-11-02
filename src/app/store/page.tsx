@@ -3,10 +3,18 @@ import { LandingFooter } from "@/components/landing/footer";
 import { StoreCatalog, parseStoreFilter } from "@/components/store-catalog";
 import { getSession, isStaffRole } from "@/lib/auth";
 import { getT } from "@/i18n/server";
+import { defaultOgImages, OG_IMAGE_URL } from "@/lib/seo";
 import type { ClassRow, Product } from "@/lib/types";
 
 export async function generateMetadata() {
-  return { title: (await getT("portal.store"))("title") };
+  const t = await getT("portal.store");
+  const title = t("title");
+  const description = t("publicSubtitle");
+  return {
+    title, description, alternates: { canonical: "/store" },
+    openGraph: { type: "website", title, description, url: "/store", images: defaultOgImages(title) },
+    twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE_URL] },
+  };
 }
 
 export default async function PublicStorePage({ searchParams }: { searchParams: Promise<{ tab?: string; year?: string; mode?: string; type?: string }> }) {

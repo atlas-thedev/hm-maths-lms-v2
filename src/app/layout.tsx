@@ -7,7 +7,7 @@ import { getLocale, getMessages, getT } from "@/i18n/server";
 import { headers } from "next/headers";
 import { getSession, isStaffRole } from "@/lib/auth";
 import { getBrand, getBrandSettings, getCenters, getMaintenanceSettings, getThemeSettings } from "@/lib/settings";
-import { centerKeywords } from "@/lib/seo";
+import { centerKeywords, defaultOgImages, OG_IMAGE_URL, SITE_URL } from "@/lib/seo";
 import { iconVersion } from "@/lib/brand-icon";
 import { themeCss } from "@/lib/theme";
 import { MaintenanceScreen } from "@/components/maintenance-screen";
@@ -18,7 +18,7 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap
 const display = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 const sinhala = Noto_Sans_Sinhala({ subsets: ["sinhala"], weight: ["400", "500", "600", "700", "800"], variable: "--font-sinhala", display: "swap" });
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const PREVIEW_BOT_RE = /WhatsApp|facebookexternalhit|meta-externalagent|Facebot|Twitterbot|TelegramBot|Discordbot|Slackbot|LinkedInBot|SkypeUriPreview|Viber|vkShare|Pinterest/i;
 
 export async function generateMetadata(): Promise<Metadata> {
   const [t, locale, brand, brandSettings, centers] = await Promise.all([getT("common.meta"), getLocale(), getBrand(), getBrandSettings(), getCenters()]);
@@ -26,6 +26,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const iconV = iconVersion(brandSettings);
   const description = t("description");
   const keywords = [...(t.raw<string[]>("keywords") ?? []), ...centers.flatMap(centerKeywords)];
+  const ogAlt = `${brand.name} | ${brand.owner}, A/L Combined Mathematics classes`;
+  const images = defaultOgImages(ogAlt);
   return {
     metadataBase: new URL(SITE_URL),
     title: { default: title, template: t("titleTemplate") },
@@ -44,11 +46,17 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: brand.name,
       title,
       description,
-      url: "./",
+      url: SITE_URL,
       locale: locale === "si" ? "si_LK" : "en_US",
       alternateLocale: locale === "si" ? ["en_US"] : ["si_LK"],
+      images,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [OG_IMAGE_URL],
+    },
     // Tab / Google / home-screen icons are made from the uploaded logo by src/app/brand-icon (the ?v= makes browsers reload them after a change).
     icons: {
       icon: [{ url: `/favicon.ico?v=${iconV}`, sizes: "48x48" }, { url: `/icon-192.png?v=${iconV}`, sizes: "192x192", type: "image/png" }],
@@ -73,7 +81,19 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [locale, messages, h, theme, maintenance] = await Promise.all([getLocale(), getMessages(), headers(), getThemeSettings(), getMaintenanceSettings()]);
+  const h = await headers();
+  if (PREVIEW_BOT_RE.test(h.get("user-agent") ?? "")) {
+    const locale = await getLocale();
+    return (
+      <html lang={locale} suppressHydrationWarning>
+        <head />
+        <body className="min-h-dvh">
+          <main className="sr-only">{BRAND.name}</main>
+        </body>
+      </html>
+    );
+  }
+  const [locale, messages, theme, maintenance] = await Promise.all([getLocale(), getMessages(), getThemeSettings(), getMaintenanceSettings()]);
   // Maintenance mode (Developer panel): visitors and students see the maintenance screen; staff keep working.
   // The sign-in page stays open so staff can log in.
   let blocked = false;

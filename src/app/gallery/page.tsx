@@ -7,10 +7,17 @@ import { getAlbumCards } from "@/lib/gallery-data";
 import { cn } from "@/lib/utils";
 import { getFormat, getT } from "@/i18n/server";
 import { getBrand } from "@/lib/settings";
+import { defaultOgImages, OG_IMAGE_URL } from "@/lib/seo";
 
 export async function generateMetadata() {
   const t = await getT("landing");
-  return { title: t("galleryPage.title"), description: t("galleryPage.subtitle"), alternates: { canonical: "/gallery" } };
+  const title = t("galleryPage.title");
+  const description = t("galleryPage.subtitle");
+  return {
+    title, description, alternates: { canonical: "/gallery" },
+    openGraph: { type: "website", title, description, url: "/gallery", images: defaultOgImages(title) },
+    twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE_URL] },
+  };
 }
 
 export default async function GalleryPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {

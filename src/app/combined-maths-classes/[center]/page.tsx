@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { centerLabel, centerVenue, type Center } from "@/lib/centers";
 import { getBrand, getCenters, getSiteData } from "@/lib/settings";
 import { siteGraph } from "@/lib/seo-graph";
-import { absolute, centerKeywords, centerSlug, jsonLd, ONLINE_SLUG } from "@/lib/seo";
+import { absolute, centerKeywords, centerSlug, defaultOgImages, jsonLd, OG_IMAGE_URL, ONLINE_SLUG } from "@/lib/seo";
 import { interpolate } from "@/i18n/translate";
 import { getLocale, getT } from "@/i18n/server";
 import type { ClassRow } from "@/lib/types";
@@ -29,7 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ center: s
   return {
     title, description, alternates: { canonical: url },
     keywords: found.center ? centerKeywords(found.center) : ["online combined maths class", "online A/L combined maths Sri Lanka", "ඔන්ලයින් සංයුක්ත ගණිත පන්ති"],
-    openGraph: { title, description, url },
+    openGraph: { type: "website", title, description, url, images: defaultOgImages(title) },
+    twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE_URL] },
   };
 }
 
