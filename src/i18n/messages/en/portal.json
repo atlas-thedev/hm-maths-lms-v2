@@ -264,6 +264,8 @@
     "lockedText": "Your payment for this month hasn't been approved yet.",
     "enroll": "Enroll / upload slip",
     "noRecording": "Recording not uploaded yet",
+    "prev": "Previous",
+    "next": "Next lesson",
     "week": "Week {n}",
     "tute": "Tute PDF",
     "watermark": "This video is watermarked with your Student ID. Screen-recording or sharing leads to account suspension.",

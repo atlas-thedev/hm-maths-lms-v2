@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, PlayCircle, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Download, PlayCircle, ShieldAlert } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { VideoPlayer } from "@/components/video-player";
 import { buttonVariants } from "@/components/ui/button";
@@ -29,6 +29,12 @@ export default async function LessonPage({ params }: { params: Promise<{ classId
   const { data: siblings } = await db.from("lessons").select("id, title, week_number, youtube_url")
     .eq("class_id", classId).eq("month", lesson.month).not("youtube_url", "is", null).order("week_number").order("sort_order");
   const vid = youtubeId(lesson.youtube_url);
+  // Previous / next recording of this month, in the same order as the list below.
+  const list = siblings ?? [];
+  const at = list.findIndex((s) => s.id === lesson.id);
+  const prev = at > 0 ? list[at - 1] : null;
+  const next = at >= 0 && at < list.length - 1 ? list[at + 1] : null;
+  const lessonHref = (id: string) => `/dashboard/classes/${classId}/lessons/${id}`;
 
   return (
     <div className="space-y-6">
@@ -41,6 +47,12 @@ export default async function LessonPage({ params }: { params: Promise<{ classId
             <VideoPlayer lessonId={lesson.id} title={lesson.title} protect={profile.role === "student"} watermark={{ userId: profile.id, mobile: profile.mobile, studentId: profile.student_id }} />
           ) : (
             <div className="flex aspect-video items-center justify-center rounded-2xl bg-card text-sm text-muted-foreground">{t("noRecording")}</div>
+          )}
+          {(prev || next) && (
+            <nav aria-label={t("inMonth", { month: f.month(lesson.month) })} className="grid grid-cols-2 gap-2">
+              {prev ? <Link href={lessonHref(prev.id)} className={buttonVariants({ variant: "outline", className: "min-w-0 justify-start" })}><ChevronLeft /><span className="truncate">{t("prev")}</span></Link> : <span />}
+              {next ? <Link href={lessonHref(next.id)} className={buttonVariants({ variant: "default", className: "min-w-0 justify-end" })}><span className="truncate">{t("next")}</span><ChevronRight /></Link> : <span />}
+            </nav>
           )}
           <div className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-soft sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -60,7 +72,8 @@ export default async function LessonPage({ params }: { params: Promise<{ classId
             {(siblings ?? []).map((s) => (
               <Link key={s.id} href={`/dashboard/classes/${classId}/lessons/${s.id}`}
                 className={cn("flex items-center gap-2 rounded-lg px-2 py-2 text-sm", s.id === lesson.id ? "bg-primary/10 font-semibold text-primary" : "hover:bg-accent")}>
-                <PlayCircle className="h-4 w-4 shrink-0" /><span className="line-clamp-1 flex-1">{s.title}</span><span className="text-[11px] text-muted-foreground">W{s.week_number}</span>
+                {/* Two lines: these titles share a long prefix and differ only at the end ("… Part 09"), which one line cut off. */}
+                <PlayCircle className="h-4 w-4 shrink-0" /><span className="line-clamp-2 flex-1 leading-snug">{s.title}</span><span className="text-[11px] text-muted-foreground">W{s.week_number}</span>
               </Link>
             ))}
           </div>

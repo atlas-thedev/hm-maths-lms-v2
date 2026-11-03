@@ -33,11 +33,12 @@ export function LessonList({ classId, lessons, links, defaults, initialEditing =
               const link = links[l.id];
               return (
                 <div key={l.id} id={`lesson-${l.id}`} className={cn("scroll-mt-24 p-3", l.is_cancelled && "bg-muted/40", editing === l.id && "bg-accent/40")}>
-                  <div className="flex items-center gap-3">
+                  {/* Phone: the three icon buttons drop to their own row so the title gets the full width (it was cut to "සිද්ධාන්ත (T…"). */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span className="rounded-md bg-muted px-2 py-1 text-xs font-semibold">W{l.week_number}</span>
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 basis-44">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <p className={cn("truncate font-medium", l.is_cancelled && "text-muted-foreground line-through")}>{l.title}</p>
+                        <p className={cn("font-medium sm:truncate", l.is_cancelled && "text-muted-foreground line-through")}>{l.title}</p>
                         {l.session_type === "extra" && <Badge variant="warning">{tc("schedule.types.extra")}</Badge>}
                         {l.is_cancelled && <Badge variant="destructive">{tc("schedule.cancelled")}</Badge>}
                       </div>
@@ -51,9 +52,11 @@ export function LessonList({ classId, lessons, links, defaults, initialEditing =
                         {l.tute_pdf_url && <span className="flex items-center gap-1 text-success-soft-foreground"><FileText className="h-3 w-3" />{t("tute")}</span>}
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon" aria-label={t("edit")} onClick={() => setEditing(editing === l.id ? null : l.id)}><Pencil /></Button>
-                    {l.live_start_time && <CancelSessionButton id={l.id} cancelled={l.is_cancelled} />}
-                    <DeleteButton action={deleteLessonAction} id={l.id} size="icon" confirm={t("deleteLesson")} />
+                    <div className="ml-auto flex w-full items-center justify-end sm:w-auto">
+                      <Button variant="ghost" size="icon" aria-label={t("edit")} onClick={() => setEditing(editing === l.id ? null : l.id)}><Pencil /></Button>
+                      {l.live_start_time && <CancelSessionButton id={l.id} cancelled={l.is_cancelled} />}
+                      <DeleteButton action={deleteLessonAction} id={l.id} size="icon" confirm={t("deleteLesson")} />
+                    </div>
                   </div>
                   {editing === l.id && <div className="mt-4 border-t pt-4"><LessonForm classId={classId} lesson={l} liveUrl={link} defaults={defaults} onDone={() => setEditing(null)} /></div>}
                 </div>
