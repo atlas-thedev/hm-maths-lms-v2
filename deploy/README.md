@@ -6,7 +6,7 @@ Stack on one Ubuntu server:
 |---|---|
 | **PostgreSQL** (`hm_maths` db) | All data. Same schema as `db/migrations/*` + `deploy/00_bootstrap.sql` (auth + storage schemas, roles). |
 | **PostgREST** (`hm-postgrest`, 127.0.0.1:3001) | Local query API used by the app. Not exposed to the internet. Row-level security applies per user via the session token. |
-| **Next.js** (`hm-maths`, 127.0.0.1:3000) | The website. Own login (bcrypt passwords in `auth.users`, 30-day signed session cookie). |
+| **Next.js** (`hm-maths@3100` … `@3103`, 127.0.0.1) | The website, 4 instances (one per CPU core) behind nginx. Own login (bcrypt passwords in `auth.users`, 30-day signed session cookie). |
 | **Files** | `/srv/hm-maths/storage/<bucket>/…`, access checked against the `storage.objects` policies. |
 | **Nginx** | Public reverse proxy, HTTPS (Let's Encrypt, auto-renew). |
 
@@ -37,10 +37,15 @@ sudo -u postgres psql -d hm_maths -v admin_email=admin@nativelaunch.xyz -v admin
 
 ## Logs / restart
 ```bash
-journalctl -u hm-maths -f        # app
+journalctl -u 'hm-maths@*' -f    # app (all instances)
 journalctl -u hm-postgrest -f    # db api
-sudo systemctl restart hm-maths hm-postgrest
+sudo systemctl restart hm-maths@3100 hm-maths@3101 hm-maths@3102 hm-maths@3103 hm-postgrest
 ```
+
+## Capacity (how many students at once)
+A Node process uses one core, so the app runs one instance per vCPU (nginx `least_conn` in `deploy/nginx.conf`,
+ports in `HM_INSTANCES` of `deploy/update.sh`). More cores → add instances to both. Every open portal tab sends one
+small request about every 30 s; `scripts/loadtest.mjs` measures how many requests per second the site sustains.
 
 ## Restore a backup
 ```bash

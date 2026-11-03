@@ -33,6 +33,21 @@ export async function verifyPassword(email: string, password: string): Promise<A
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
+ * Short memory of "this token is a live session". Every page render and every background poll validates the token
+ * against the database; with thousands of students online that was one extra query per request. A valid answer is
+ * reused for USER_TTL_MS (per server process). Only a success is remembered, so a revoked / expired token is never
+ * "kept alive" by it, and a sign-out or password change forgets this user at once on the process that handles it.
+ * Worst case elsewhere: a session revoked on another process stays usable for up to USER_TTL_MS.
+ */
+const USER_TTL_MS = 15_000;
+const USER_CACHE_MAX = 5_000;
+const userCache = new Map<string, { user: AppUser; until: number }>();
+const userKey = (c: Claims) => `${c.sub}|${c.sid ?? ""}|${c.iat ?? 0}`;
+function forgetUser(sub: string) {
+  for (const k of userCache.keys()) if (k.startsWith(`${sub}|`)) userCache.delete(k);
+}
+
+/**
  * Loads a user for a session token. Rejects tokens issued before the last password change and
  * tokens whose session was signed out (auth.sessions.revoked_at). Tokens from before sessions
  * existed carry no "sid"; they are still accepted until they expire.
@@ -40,6 +55,24 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 export async function loadUser(claims: Claims | null): Promise<AppUser | null> {
   if (!claims?.sub || claims.role !== "authenticated" || !UUID_RE.test(claims.sub)) return null;
   if (claims.sid !== undefined && !UUID_RE.test(claims.sid)) return null;
+  const key = userKey(claims);
+  const hit = userCache.get(key);
+  if (hit && hit.until > Date.now()) return hit.user;
+  const user = await loadUserFromDb(claims);
+  if (user) {
+    if (userCache.size >= USER_CACHE_MAX) {
+      const now = Date.now();
+      for (const [k, v] of userCache) if (v.until <= now) userCache.delete(k);
+      if (userCache.size >= USER_CACHE_MAX) userCache.clear();
+    }
+    userCache.set(key, { user, until: Date.now() + USER_TTL_MS });
+  } else {
+    userCache.delete(key);
+  }
+  return user;
+}
+
+async function loadUserFromDb(claims: Claims): Promise<AppUser | null> {
   const sid = claims.sid ?? null;
   const rows = await asService(async (c) => (await c.query(
     `select u.id, u.email, u.raw_user_meta_data, u.created_at, extract(epoch from u.password_changed_at)::bigint as pwd,
@@ -60,6 +93,7 @@ export async function loadUser(claims: Claims | null): Promise<AppUser | null> {
 export async function revokeSession(claims: Claims | null) {
   if (!claims?.sid || !UUID_RE.test(claims.sid)) return;
   await asService((c) => c.query("update auth.sessions set revoked_at = now() where id = $1 and revoked_at is null", [claims.sid]));
+  if (claims.sub) forgetUser(claims.sub);
 }
 
 export async function setPassword(userId: string, password: string): Promise<AuthErr | null> {
@@ -70,6 +104,7 @@ export async function setPassword(userId: string, password: string): Promise<Aut
   if (!n) return { message: "User not found" };
   // A new password signs out every existing session (all devices).
   await asService((c) => c.query("update auth.sessions set revoked_at = now() where user_id = $1 and revoked_at is null", [userId]));
+  forgetUser(userId);
   return null;
 }
 

@@ -1,0 +1,23 @@
+[Unit]
+Description=HM Maths LMS (Next.js) on port %i
+After=network.target postgresql.service hm-postgrest.service
+Wants=hm-postgrest.service
+
+# One copy of this unit runs per CPU core, each on its own port (the instance name IS the port):
+#   systemctl enable --now hm-maths@3100 hm-maths@3101 hm-maths@3102 hm-maths@3103
+# Nginx spreads requests across them (deploy/nginx.conf). A single Node process uses one core only, and one
+# process alone could not keep up with a few hundred students at once.
+[Service]
+User=hm
+WorkingDirectory=/srv/hm-maths/app
+EnvironmentFile=/srv/hm-maths/.env
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node /srv/hm-maths/app/node_modules/next/dist/bin/next start -p %i -H 127.0.0.1
+Restart=always
+RestartSec=3
+# Each instance holds ~300 MB; cap a runaway one so it can't starve the others.
+MemoryMax=1500M
+
+[Install]
+WantedBy=multi-user.target

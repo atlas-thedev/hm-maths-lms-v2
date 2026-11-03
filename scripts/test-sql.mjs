@@ -668,6 +668,28 @@ await as(OWNER, () => q(`insert into public.enrollments (student_id,class_id,mon
 assert.ok(Math.abs(days(acc.access_until) - 3) < 0.01);
 console.log("✓ 0023: staff can grant an old month for a chosen length (and change it)");
 
+// ---- 0025: one pulse call for the portal's background check
+const sql25 = readFileSync(new URL("../db/migrations/0025_portal_pulse.sql", import.meta.url), "utf8");
+await db.exec(sql25);
+await db.exec(sql25);
+{
+  const [{ p }] = await as(S1, () => q(`select public.portal_pulse() as p`));
+  const [{ n }] = await as(S1, () => q(`select public.unread_notification_count() as n`));
+  assert.equal(p.unread, n);
+  const mine = await as(S1, () => q(`select id, status from public.enrollments order by created_at desc limit 5`));
+  assert.equal(p.fp, mine.map((r) => `${r.id}:${r.status}`).join(","));
+  const [{ p: p2 }] = await as(S2, () => q(`select public.portal_pulse() as p`));
+  assert.ok(!p2.fp.includes(mine[0].id), "a student's pulse only carries their own enrollments");
+  await fails(as(null, () => q(`select public.portal_pulse()`)), "anonymous portal_pulse");
+  await fails(as(null, () => q(`select public.admin_pulse()`)), "anonymous admin_pulse");
+  const pending = (await q(`select count(*)::int as n from public.enrollments where status = 'pending'`))[0].n;
+  const [{ a }] = await as(ADMIN, () => q(`select public.admin_pulse() as a`));
+  assert.equal(Number(a.pending), pending);
+  const [{ a: sa }] = await as(S1, () => q(`select public.admin_pulse() as a`));
+  assert.ok(Number(sa.pending) <= pending && sa.audit === "", "a student's admin_pulse sees only their own rows and no audit log");
+  console.log("✓ 0025: portal_pulse / admin_pulse answer the old two queries in one call, still row-level-secure");
+}
+
 // ---- 0024: tute deliveries
 const sql24 = readFileSync(new URL("../db/migrations/0024_tute_deliveries.sql", import.meta.url), "utf8");
 await db.exec(sql24);

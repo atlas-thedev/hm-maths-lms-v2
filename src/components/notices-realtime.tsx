@@ -45,9 +45,15 @@ export function broadcastDataMutation(scope = "all") {
   }
 }
 
+/** Background check every ~30 s (±20% so thousands of tabs don't tick in step); focus / other tabs / actions check at once. */
+const POLL_MS = 30_000;
+/** A focus / visibility burst (alt-tab, tab switching) checks at most this often. */
+const MIN_GAP_MS = 5_000;
+
 /**
  * Real-time bell count + live portal/admin data synchronization.
- * - Polls every 6 seconds while the tab is visible (and immediately on focus/visibilitychange).
+ * - ONE small request (portal_pulse / admin_pulse) every ~30 seconds while the tab is visible, and right away on
+ *   focus. It used to be two requests every 6 s per tab: with ~2,000 students online that alone was ~670 requests/s.
  * - Syncs across open browser tabs via BroadcastChannel.
  * - For students: tracks unread notifications + enrollment/order status changes and auto-refreshes.
  * - For admins/owners: tracks pending receipts, pending orders, and latest audit logs in real time.
@@ -75,51 +81,57 @@ export function useBellCount(initial: number, enabled: boolean, area: "student" 
     const db = createClient();
     let stop = false;
 
-    const check = async () => {
-      if (stop || document.visibilityState !== "visible") return;
+    let lastRun = 0;
+    let busy = false;
+    const check = async (force = false) => {
+      if (stop || busy || document.visibilityState !== "visible") return;
+      const now = Date.now();
+      if (!force && now - lastRun < MIN_GAP_MS) return;
+      lastRun = now;
+      busy = true;
+      try {
+        if (area === "student" && enabled) {
+          const { data, error } = await db.rpc("portal_pulse");
+          const pulse = data as { unread?: number; fp?: string } | null;
+          if (error || !pulse) return;
 
-      if (area === "student" && enabled) {
-        const [{ data: bellData, error: bellErr }, { data: enrData }] = await Promise.all([
-          db.rpc("unread_notification_count"),
-          db.from("enrollments").select("id, status").order("created_at", { ascending: false }).limit(5),
-        ]);
+          if (typeof pulse.unread === "number") {
+            if (pulse.unread > lastBell.current) {
+              toast.info(t("newNotification"));
+              router.refresh();
+            }
+            lastBell.current = pulse.unread;
+            setCount(pulse.unread);
+          }
 
-        if (!bellErr && typeof bellData === "number") {
-          if (bellData > lastBell.current) {
-            toast.info(t("newNotification"));
+          const fp = pulse.fp ?? "";
+          if (lastFingerprint.current !== null && lastFingerprint.current !== fp) {
             router.refresh();
           }
-          lastBell.current = bellData;
-          setCount(bellData);
-        }
+          lastFingerprint.current = fp;
+        } else if (area === "admin") {
+          const { data, error } = await db.rpc("admin_pulse");
+          const pulse = data as { pending?: number; audit?: string } | null;
+          if (error || !pulse) return;
 
-        const fp = JSON.stringify((enrData ?? []).map((r: { id: string; status: string }) => `${r.id}:${r.status}`));
-        if (lastFingerprint.current !== null && lastFingerprint.current !== fp) {
-          router.refresh();
-        }
-        lastFingerprint.current = fp;
-      } else if (area === "admin") {
-        const [{ count: pCount }, { data: latestAudit }] = await Promise.all([
-          db.from("enrollments").select("id", { count: "exact", head: true }).eq("status", "pending"),
-          db.from("admin_audit_logs").select("id").order("created_at", { ascending: false }).limit(1),
-        ]);
-
-        if (typeof pCount === "number") {
+          const pCount = Number(pulse.pending ?? 0);
           if (pCount > lastPending.current) {
             router.refresh();
           }
           lastPending.current = pCount;
           setPendingReceipts(pCount);
-        }
 
-        const auditId = latestAudit?.[0]?.id ?? "";
-        const fp = `${pCount ?? 0}:${auditId}`;
-        if (lastFingerprint.current !== null && lastFingerprint.current !== fp) {
-          router.refresh();
+          const fp = `${pCount}:${pulse.audit ?? ""}`;
+          if (lastFingerprint.current !== null && lastFingerprint.current !== fp) {
+            router.refresh();
+          }
+          lastFingerprint.current = fp;
         }
-        lastFingerprint.current = fp;
+      } finally {
+        busy = false;
       }
     };
+    const onWake = () => { void check(); };
 
     const cleared = () => {
       lastBell.current = 0;
@@ -127,11 +139,17 @@ export function useBellCount(initial: number, enabled: boolean, area: "student" 
     };
 
     // Initial fingerprint seed
-    check();
+    void check(true);
 
-    const id = setInterval(check, 6_000);
-    document.addEventListener("visibilitychange", check);
-    window.addEventListener("focus", check);
+    // Self-rescheduling timer with jitter (a plain setInterval would put every tab on the same beat).
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      void check();
+      timer = setTimeout(tick, POLL_MS * (0.8 + Math.random() * 0.4));
+    };
+    timer = setTimeout(tick, POLL_MS * (0.8 + Math.random() * 0.4));
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("focus", onWake);
     window.addEventListener(BELL_READ_EVENT, cleared);
 
     let bc: BroadcastChannel | null = null;
@@ -140,7 +158,7 @@ export function useBellCount(initial: number, enabled: boolean, area: "student" 
       bc.onmessage = (ev) => {
         if (ev.data?.type === DATA_MUTATED_EVENT) {
           router.refresh();
-          check();
+          void check(true);
         }
       };
     } catch {
@@ -149,9 +167,9 @@ export function useBellCount(initial: number, enabled: boolean, area: "student" 
 
     return () => {
       stop = true;
-      clearInterval(id);
-      document.removeEventListener("visibilitychange", check);
-      window.removeEventListener("focus", check);
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onWake);
+      window.removeEventListener("focus", onWake);
       window.removeEventListener(BELL_READ_EVENT, cleared);
       bc?.close();
     };
