@@ -16,8 +16,9 @@ export function StatCard({ label, value, icon, hint, tone = "brand", className }
   return (
     <div className={cn("h-full rounded-2xl border border-border/80 bg-card p-4 shadow-soft sm:p-5 dark:border-white/10", className)}>
       <div className="flex items-start justify-between gap-2">
-        <p className="min-w-0 text-[13px] font-medium leading-snug text-muted-foreground sm:text-sm">{label}</p>
-        <IconTile icon={icon} tone={tn} variant="solid" size="sm" />
+        {/* flex-1 + break-words: a long Sinhala word wraps inside the card instead of running under the icon (narrow phone cards). */}
+        <p className="min-w-0 flex-1 break-words text-[13px] font-medium leading-snug text-muted-foreground sm:text-sm">{label}</p>
+        <IconTile icon={icon} tone={tn} variant="solid" size="sm" className="h-8 w-8 sm:h-9 sm:w-9" />
       </div>
       <p className="mt-2 break-words font-display text-[clamp(1.25rem,6vw,1.625rem)] font-bold leading-tight tracking-tight">{value}</p>
       {hint ? <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{hint}</p> : null}
