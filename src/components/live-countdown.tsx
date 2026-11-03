@@ -60,7 +60,7 @@ export function LiveCountdown({ title, startISO, endISO, liveUrl, serverNow, wat
           {([[tr("days"), t.d], [tr("hours"), t.h], [tr("minutes"), t.m], [tr("seconds"), t.s]] as const).map(([l, v]) => (
             <div key={l} className="min-w-14 rounded-lg border bg-background px-3 py-2 text-center">
               <p className="font-mono text-xl font-bold tabular-nums">{String(v).padStart(2, "0")}</p>
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{l}</p>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{l}</p>
             </div>
           ))}
         </div>

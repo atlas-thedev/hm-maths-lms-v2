@@ -97,9 +97,22 @@
   }
   @media (prefers-reduced-motion: reduce) { .skeleton { animation: none !important; } }
   .no-select { user-select: none; -webkit-user-select: none; }
+  /*
+   * Entrance animations are plain CSS, never JS-driven opacity:0. A framer-motion `initial={{ opacity: 0 }}` is
+   * rendered into the server HTML, so on a phone the page stayed blank until the JS bundle loaded and hydrated.
+   * A CSS animation starts at first paint, whatever the network. (Reduced motion is handled at the top of this file.)
+   */
+  .animate-page-in { animation: page-in .28s cubic-bezier(.22, 1, .36, 1) both; }
+  .stagger > * { animation: page-in .4s cubic-bezier(.22, 1, .36, 1) both; }
+  .stagger > :nth-child(2) { animation-delay: .05s; }
+  .stagger > :nth-child(3) { animation-delay: .1s; }
+  .stagger > :nth-child(4) { animation-delay: .15s; }
+  .stagger > :nth-child(5) { animation-delay: .2s; }
+  .stagger > :nth-child(n+6) { animation-delay: .25s; }
 }
 
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes shine { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 
 @keyframes hm-shine { to { background-position: 200% center; } }

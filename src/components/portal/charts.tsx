@@ -13,7 +13,7 @@ export function ResultsChart({ data, emptyLabel, emptyHint }: { data: { label: s
     <motion.div className="relative h-56 pl-8" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
       {ticks.map((v) => (
         <div key={v} className="absolute left-8 right-0 border-t border-dashed border-slate-200 dark:border-slate-800" style={{ top: `${100 - v}%` }}>
-          <span className="absolute -left-8 -top-2 w-6 text-right text-[10px] font-medium text-slate-500 dark:text-slate-400">{v}</span>
+          <span className="absolute -left-8 -top-2 w-6 text-right text-[11px] font-medium text-slate-500 dark:text-slate-400">{v}</span>
         </div>
       ))}
       <div className="relative flex h-full items-end gap-3 px-2">
@@ -24,7 +24,7 @@ export function ResultsChart({ data, emptyLabel, emptyHint }: { data: { label: s
                 className="relative mx-auto w-full max-w-[38px] rounded-t-lg bg-gradient-to-t from-teal-700 to-teal-500">
                 <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[11px] font-bold text-slate-800 dark:text-slate-200">{d.value}</span>
               </motion.div>
-              <span className="absolute -bottom-5 left-1/2 w-full -translate-x-1/2 truncate text-center text-[10px] font-medium text-slate-500 dark:text-slate-400">{d.label}</span>
+              <span className="absolute -bottom-5 left-1/2 w-full -translate-x-1/2 truncate text-center text-[11px] font-medium text-slate-500 dark:text-slate-400">{d.label}</span>
             </div>
           ))}
         </div>

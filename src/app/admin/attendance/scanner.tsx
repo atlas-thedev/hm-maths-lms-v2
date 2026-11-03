@@ -195,7 +195,7 @@ export function Scanner({ autoStart = false, classes = [] }: { autoStart?: boole
                 {cam === "denied" || cam === "insecure" ? <ShieldAlert className="mx-auto h-10 w-10 text-white/90" /> : cam === "unsupported" || cam === "busy" ? <CameraOff className="mx-auto h-10 w-10 text-slate-400" /> : <Camera className="mx-auto h-10 w-10 text-teal-300" />}
                 <p className="text-sm text-slate-200">{camMessage}</p>
                 {camFailed && inAppBrowser() ? <p className="mx-auto max-w-xs text-xs leading-relaxed text-slate-400">{t("camInApp")}</p> : null}
-                {camDetail ? <p className="mx-auto max-w-xs break-words font-mono text-[10px] leading-relaxed text-slate-500">{camDetail}</p> : null}
+                {camDetail ? <p className="mx-auto max-w-xs break-words font-mono text-[11px] leading-relaxed text-slate-500">{camDetail}</p> : null}
                 <Button type="button" variant="gradient" onClick={start} disabled={cam === "starting"} data-testid="scanner-start">
                   {cam === "starting" ? <Loader2 className="animate-spin" /> : <Camera />} {cam === "off" || cam === "starting" ? t("start") : t("retry")}
                 </Button>

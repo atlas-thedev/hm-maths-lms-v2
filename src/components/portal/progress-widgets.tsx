@@ -36,7 +36,7 @@ export function ScoreRing({ value, size = 132, stroke = 12, label, sub }: { valu
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
         <span className="font-display text-2xl font-extrabold leading-none"><CountUp value={v} decimals={v % 1 ? 1 : 0} suffix="%" /></span>
         {label && <span className="mt-1 text-[11px] font-semibold text-muted-foreground">{label}</span>}
-        {sub && <span className="text-[10px] text-muted-foreground">{sub}</span>}
+        {sub && <span className="text-[11px] text-muted-foreground">{sub}</span>}
       </div>
     </div>
   );
@@ -68,9 +68,9 @@ export function StreakPanel({ streaks, className }: { streaks: Streaks; classNam
           const goal = nextMilestone(v.current);
           const on = v.current > 0;
           return (
-            <motion.div key={k} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+            <div key={k} style={{ animationDelay: `${i * 0.05}s` }}
               title={t(`types.${k}.rule`)}
-              className={cn("relative overflow-hidden min-w-0 rounded-2xl border p-3 sm:p-3.5 transition", on ? cn("border-transparent shadow-lift", toneSolid[tone]) : "border-dashed bg-muted/40")}>
+              className={cn("animate-page-in relative overflow-hidden min-w-0 rounded-2xl border p-3 sm:p-3.5 transition", on ? cn("border-transparent shadow-lift", toneSolid[tone]) : "border-dashed bg-muted/40")}>
               {on && <div className="pointer-events-none absolute -right-5 -top-5 h-16 w-16 rounded-full bg-white/20 blur-xl" />}
               <div className="relative flex items-center gap-2.5">
                 <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl", on ? "bg-white/20" : "bg-muted text-muted-foreground")}>
@@ -87,7 +87,7 @@ export function StreakPanel({ streaks, className }: { streaks: Streaks; classNam
               <p className={cn("relative mt-1.5 flex flex-wrap justify-between gap-x-2 gap-y-1 text-[11px] font-medium", on ? "text-white/90" : "text-muted-foreground")}>
                 <span>{t("best", { n: v.best })}</span><span>{t("next", { n: goal })}</span>
               </p>
-            </motion.div>
+            </div>
           );
         })}
       </div>
@@ -126,11 +126,11 @@ export function Achievements({ items }: { items: { key: BadgeKey; unlocked: bool
         {items.map(({ key, unlocked }, i) => {
           const { icon: Icon, tone } = BADGE_ICONS[key];
           return (
-            <motion.div key={key} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }}
-              title={t(`${key}.hint`)} className={cn("group flex flex-col items-center rounded-2xl border p-3 text-center transition", unlocked ? "border-border/80 bg-card shadow-soft hover:-translate-y-0.5 hover:shadow-lift" : "border-dashed bg-muted/40")}>
+            <div key={key} style={{ animationDelay: `${Math.min(i, 8) * 0.04}s` }}
+              title={t(`${key}.hint`)} className={cn("animate-page-in group flex flex-col items-center rounded-2xl border p-3 text-center transition", unlocked ? "border-border/80 bg-card shadow-soft hover:-translate-y-0.5 hover:shadow-lift" : "border-dashed bg-muted/40")}>
               <IconTile icon={unlocked ? Icon : Lock} tone={unlocked ? tone : "neutral"} variant={unlocked ? "solid" : "soft"} size="lg" />
               <span className={cn("mt-2 line-clamp-2 text-[11px] font-semibold leading-tight", !unlocked && "text-muted-foreground")}>{t(`${key}.name`)}</span>
-            </motion.div>
+            </div>
           );
         })}
       </div>

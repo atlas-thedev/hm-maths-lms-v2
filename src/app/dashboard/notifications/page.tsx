@@ -73,7 +73,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const pinned = shown.filter((i) => i.pinned);
   const rest = shown.filter((i) => !i.pinned);
   const unreadIn = (g: Filter) => items.filter((i) => i.unread && (g === "all" || i.group === g)).length;
-  const pill = (active: boolean) => cn("inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors",
+  const pill = (active: boolean) => cn("inline-flex min-h-9 items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors",
     active ? "bg-primary text-primary-foreground shadow-md shadow-primary/25" : "border bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground");
 
   return (
@@ -88,7 +88,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
             <Link key={x} href={x === "all" ? "/dashboard/notifications" : `/dashboard/notifications?filter=${x}`} className={pill(filter === x)}
               role="tab" aria-selected={filter === x} data-testid={`notifications-filter-${x}`}>
               {t(`filters.${x}`)}
-              {n > 0 && <span className={cn("grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold", filter === x ? "bg-white/25" : "bg-destructive text-white")}>{n > 9 ? "9+" : n}</span>}
+              {n > 0 && <span className={cn("grid h-4 min-w-4 place-items-center rounded-full px-1 text-[11px] font-bold", filter === x ? "bg-white/25" : "bg-destructive text-white")}>{n > 9 ? "9+" : n}</span>}
             </Link>
           );
         })}

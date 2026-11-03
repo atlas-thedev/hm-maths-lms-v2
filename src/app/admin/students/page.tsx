@@ -68,7 +68,8 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                 </Link>
                 {p.mobile && <a href={`tel:${p.mobile}`} aria-label={p.mobile} className={buttonVariants({ variant: "outline", size: "sm", className: "h-9" })}><Phone /> {p.mobile}</a>}
                 {wa && <a href={wa} target="_blank" rel="noreferrer" aria-label={t("whatsapp")} className={buttonVariants({ variant: "outline", size: "icon" })}><WhatsAppIcon className="h-5 w-5" /></a>}
-                <span className="ml-auto flex items-center gap-1">
+                {/* Phone: its own full-width row (right aligned) so the wrapped buttons line up instead of floating mid-row. */}
+                <span className="flex w-full items-center justify-end gap-1 sm:ml-auto sm:w-auto">
                   {p.role === "student" && <Link href={`/admin/students/${p.id}`} aria-label={t("qr")} title={t("qr")} className={buttonVariants({ variant: "outline", size: "icon", className: "h-9" })}><QrCode className="h-4 w-4" /></Link>}
                   {p.id !== user.id && (p.role === "student" || (isOwner && p.role !== "developer")) && <ResetPasswordButton id={p.id} name={p.full_name} />}
                   {isOwner && p.id !== user.id && !isOwnerRole(p.role) && <RoleButton id={p.id} role={p.role} compact />}
@@ -107,13 +108,13 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                       </Link>
                       <div className="flex items-center gap-1 mt-0.5">
                         <span className="font-mono text-[11px] text-muted-foreground">{p.student_id ?? tc("dash")}</span>
-                        {p.role === "developer" ? <Badge variant="highlight" className="text-[10px] py-0 px-1">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning" className="text-[10px] py-0 px-1">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge className="text-[10px] py-0 px-1">{tc("shell.admin")}</Badge> : null}
+                        {p.role === "developer" ? <Badge variant="highlight" className="text-[11px] py-0 px-1">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning" className="text-[11px] py-0 px-1">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge className="text-[11px] py-0 px-1">{tc("shell.admin")}</Badge> : null}
                       </div>
                     </div>
                   </td>
                   <td className="px-2 py-2.5 text-xs whitespace-nowrap">
                     <p className="font-medium text-foreground">{p.mobile ?? tc("dash")}</p>
-                    {p.nic && <p className="text-[10px] text-muted-foreground">{t("nic")} {p.nic}</p>}
+                    {p.nic && <p className="text-[11px] text-muted-foreground">{t("nic")} {p.nic}</p>}
                   </td>
                   <td className="px-2 py-2.5 text-xs whitespace-nowrap">
                     <span className="font-medium text-foreground">{p.al_year ?? tc("dash")}</span>
@@ -121,7 +122,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                   </td>
                   <td className="px-2 py-2.5 text-xs max-w-[140px]">
                     <p className="truncate font-medium text-foreground" title={p.school ?? undefined}>{p.school ?? tc("dash")}</p>
-                    {p.district ? <p className="text-[10px] text-muted-foreground truncate">{p.district}</p> : null}
+                    {p.district ? <p className="text-[11px] text-muted-foreground truncate">{p.district}</p> : null}
                   </td>
                   <td className="px-1.5 py-2.5 text-center text-xs font-semibold text-foreground">
                     {p.enrollments?.[0]?.count ?? 0}

@@ -154,7 +154,7 @@ export function DashboardShell({ area, groups, tabs, user, notices, menu, streak
     <nav className="space-y-5">
       {groups.map((g) => (
         <div key={g.label}>
-          <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">{g.label}</p>
+          <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">{g.label}</p>
           <div className="space-y-0.5">
             {g.items.map((item) => {
               const active = item.href === activeHref;
@@ -203,7 +203,7 @@ export function DashboardShell({ area, groups, tabs, user, notices, menu, streak
             const v = streak[k].current;
             return (
               <span key={k} title={`${ts(`types.${k}.name`)}: ${v}`}
-                className={cn("flex h-6 flex-1 items-center justify-center gap-0.5 rounded-md text-[10px] font-bold", v > 0 ? "bg-white/25" : "bg-black/15 text-white/45")}>
+                className={cn("flex h-6 flex-1 items-center justify-center gap-0.5 rounded-md text-[11px] font-bold", v > 0 ? "bg-white/25" : "bg-black/15 text-white/45")}>
                 <KIcon className="h-3 w-3" />{v}
               </span>
             );
@@ -339,9 +339,10 @@ export function DashboardShell({ area, groups, tabs, user, notices, menu, streak
         {/* ── Page ── */}
         <main className="mx-auto w-full min-w-0 max-w-7xl px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-4 sm:pt-6 sm:px-6 lg:pb-12 lg:pt-8">
           {announcement ? <AnnouncementBar {...announcement} /> : null}
-          <motion.div className="min-w-0" key={pathname} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
+          {/* CSS entrance (not framer-motion): content must be visible as soon as the HTML paints, before any JS runs. */}
+          <div className="min-w-0 animate-page-in" key={pathname}>
             {children}
-          </motion.div>
+          </div>
         </main>
         <footer className="mx-auto hidden max-w-7xl justify-end gap-4 px-6 pb-8 text-xs text-muted-foreground lg:flex">
           <Link href="/#support" className="font-medium transition hover:text-primary">{tc("shell.helpDesk")}</Link>

@@ -1,44 +1,39 @@
 "use client";
-import { animate, motion, useInView, useReducedMotion, type HTMLMotionProps } from "framer-motion";
+import { animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Fades + lifts its children in when they scroll into view. */
-export function Reveal({ delay = 0, y = 16, className, children, ...rest }: HTMLMotionProps<"div"> & { delay?: number; y?: number }) {
-  const reduce = useReducedMotion();
+/*
+ * Entrance effects are CSS animations (see globals.css), not framer-motion opacity:0 states: those are written into
+ * the server HTML, so on a phone every Reveal'd block stayed invisible until the JS bundle had loaded.
+ */
+
+/** Fades + lifts its children in as the page paints. */
+export function Reveal({ delay = 0, className, children, style, ...rest }: React.HTMLAttributes<HTMLDivElement> & { delay?: number }) {
   return (
-    <motion.div initial={reduce ? false : { opacity: 0, y }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, delay, ease: EASE }} className={className} {...rest}>
+    <div className={cn("animate-page-in", className)} style={delay ? { animationDelay: `${delay}s`, ...style } : style} {...rest}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
-/** Parent that staggers its <StaggerItem> children. */
-export function Stagger({ className, children, gap = 0.06, ...rest }: HTMLMotionProps<"div"> & { gap?: number }) {
-  return (
-    <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-30px" }}
-      variants={{ hidden: {}, show: { transition: { staggerChildren: gap } } }} className={className} {...rest}>
-      {children}
-    </motion.div>
-  );
+/** Parent whose direct children fade in one after another. */
+export function Stagger({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("stagger", className)} {...rest}>{children}</div>;
 }
 
-export function StaggerItem({ className, children, ...rest }: HTMLMotionProps<"div">) {
-  return (
-    <motion.div variants={{ hidden: { opacity: 0, y: 14, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: EASE } } }}
-      className={className} {...rest}>
-      {children}
-    </motion.div>
-  );
+export function StaggerItem({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={className} {...rest}>{children}</div>;
 }
 
 /** Animated number that counts up when visible. */
 export function CountUp({ value, decimals = 0, suffix = "", prefix = "", className }: { value: number; decimals?: number; suffix?: string; prefix?: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
-  const [v, setV] = useState(0);
+  // Starts at the real value so the number is right before JS runs; counts up from 0 only once it is in view.
+  const [v, setV] = useState(value);
   useEffect(() => {
     if (!inView) return;
     const c = animate(0, value, { duration: 1.1, ease: EASE, onUpdate: setV });

@@ -161,7 +161,8 @@ export default async function AdminClassPage({ params, searchParams }: {
 
       {/* Header: banner + what this class is */}
       <div className="flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-card shadow-soft dark:border-white/10 sm:flex-row">
-        <ClassBanner cls={c} className="shrink-0 sm:w-72" />
+        {/* Hidden on phones: the poster alone took half the screen and pushed the tabs below the fold. */}
+        <ClassBanner cls={c} className="hidden shrink-0 sm:block sm:w-72" />
         <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-1.5">
             <Badge>{tc(`classTypes.${c.class_type}`)}</Badge>
@@ -368,13 +369,14 @@ export default async function AdminClassPage({ params, searchParams }: {
 /** One "needs attention" row: what is wrong, and a button that goes straight to the fix. */
 function Attention({ icon, tone, title, sub, href, action }: { icon: LucideIcon; tone: "warning" | "danger" | "info"; title: string; sub?: string; href: string; action: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/80 p-3 dark:border-white/10">
+    // On a phone the button drops under the text (full width) instead of squeezing the message into a few letters per line.
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border/80 p-3 dark:border-white/10">
       <IconTile icon={icon} tone={tone} size="sm" />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-40">
         <p className="text-sm font-semibold leading-snug">{title}</p>
         {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
       </div>
-      <Link href={href} className={buttonVariants({ size: "sm", variant: "outline", className: "shrink-0" })}>{action}</Link>
+      <Link href={href} className={buttonVariants({ size: "sm", variant: "outline", className: "w-full shrink-0 sm:w-auto" })}>{action}</Link>
     </div>
   );
 }

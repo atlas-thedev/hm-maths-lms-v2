@@ -74,12 +74,12 @@ export function StaffRowActions({
         {() => (
           <>
             <input type="hidden" name="id" value={id} />
-            <Select name="role" defaultValue={role} className="h-8 w-28 text-xs" aria-label={t("staff.role")}>
+            <Select name="role" defaultValue={role} className="h-10 w-28 text-xs sm:h-8" aria-label={t("staff.role")}>
               <option value="admin">{t("staff.roleAdmin")}</option>
               <option value="owner">{t("staff.roleOwner")}</option>
               <option value="student">{t("staff.demoteStudent")}</option>
             </Select>
-            <SubmitButton size="sm" variant="outline" className="h-8 px-2.5 text-xs">
+            <SubmitButton size="sm" variant="outline" className="h-10 px-2.5 text-xs sm:h-8">
               {t("staff.updateRole")}
             </SubmitButton>
           </>
@@ -89,7 +89,7 @@ export function StaffRowActions({
         {() => (
           <>
             <input type="hidden" name="id" value={id} />
-            <SubmitButton size="sm" variant="ghost" className="h-8 px-2 text-xs">
+            <SubmitButton size="sm" variant="ghost" className="h-10 px-2 text-xs sm:h-8">
               <KeyRound className="h-3.5 w-3.5" /> {t("staff.resetPw")}
             </SubmitButton>
           </>

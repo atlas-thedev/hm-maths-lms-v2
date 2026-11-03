@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,8 +24,16 @@ export function TabNav({ items, className, label, current: currentHref }: { item
   const path = usePathname();
   const active = (i: TabNavItem) => (i.exact ? path === i.href : path === i.href || path.startsWith(i.href + "/"));
   const current = currentHref !== undefined ? items.find((i) => i.href === currentHref) : [...items].sort((a, b) => b.href.length - a.href.length).find(active);
+  const navRef = useRef<HTMLElement>(null);
+  // On a phone the row scrolls sideways: bring the active tab into view instead of leaving it half cut off.
+  useEffect(() => {
+    const el = navRef.current?.querySelector<HTMLElement>('[aria-current="page"]');
+    const box = navRef.current;
+    if (!el || !box || box.scrollWidth <= box.clientWidth) return;
+    box.scrollTo({ left: el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2, behavior: "auto" });
+  }, [current?.href]);
   return (
-    <nav aria-label={label} className={cn("-mx-4 overflow-x-auto px-4 no-scrollbar sm:mx-0 sm:px-0", className)}>
+    <nav ref={navRef} aria-label={label} className={cn("-mx-4 overflow-x-auto px-4 no-scrollbar sm:mx-0 sm:px-0", className)}>
       <div className="inline-flex min-w-full gap-1 rounded-2xl border border-border/80 bg-card p-1 shadow-soft dark:border-white/10 sm:min-w-0">
         {items.map((i) => {
           const on = i === current;

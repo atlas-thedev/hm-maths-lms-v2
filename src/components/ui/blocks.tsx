@@ -189,7 +189,7 @@ export function Avatar({ name, src, size = "md", className }: { name: string; sr
 export function CountBadge({ count, max = 99, className, ...p }: React.HTMLAttributes<HTMLSpanElement> & { count?: number | null; max?: number }) {
   if (!count) return null;
   return (
-    <span className={cn("grid h-5 min-w-5 place-items-center rounded-full bg-destructive px-1.5 text-[10px] font-bold leading-none text-destructive-foreground", className)} {...p}>
+    <span className={cn("grid h-5 min-w-5 place-items-center rounded-full bg-destructive px-1.5 text-[11px] font-bold leading-none text-destructive-foreground", className)} {...p}>
       {count > max ? `${max}+` : count}
     </span>
   );

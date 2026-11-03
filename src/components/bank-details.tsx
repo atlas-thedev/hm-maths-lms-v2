@@ -39,7 +39,7 @@ export async function BankDetails({ amount, stacked = true }: { amount?: string;
             <div className="mt-4 flex items-center gap-2 border-t border-white/15 pt-3">
               <UserRound className="h-4 w-4 shrink-0 text-white/60" />
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/55">{t("name")}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">{t("name")}</p>
                 <p className="truncate text-sm font-bold uppercase tracking-wide">{b.accountName}</p>
               </div>
             </div>

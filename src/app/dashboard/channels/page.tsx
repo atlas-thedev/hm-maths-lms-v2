@@ -31,7 +31,7 @@ export default async function ChannelsPage() {
             <span className="min-w-0 flex-1">
               <span className="block truncate font-display font-bold group-hover:text-primary">{channelTitle(c, locale)}</span>
               <span className="block truncate text-xs text-muted-foreground">{c.handle}</span>
-              {mine(c.key) && <span className="mt-1 inline-block rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">{t("yourBatch")}</span>}
+              {mine(c.key) && <span className="mt-1 inline-block rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">{t("yourBatch")}</span>}
             </span>
             <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
           </a>

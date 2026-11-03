@@ -48,7 +48,7 @@ export function PaymentHistory({ rows }: { rows: PaymentRow[] }) {
             className={cn("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition sm:text-sm",
               filter === k ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
             {t(`filters.${k}`)}
-            <span className={cn("rounded-full px-1.5 text-[10px] tabular-nums", filter === k ? "bg-teal-50 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300" : "bg-background/60")}>{counts[k]}</span>
+            <span className={cn("rounded-full px-1.5 text-[11px] tabular-nums", filter === k ? "bg-teal-50 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300" : "bg-background/60")}>{counts[k]}</span>
           </button>
         ))}
       </div>

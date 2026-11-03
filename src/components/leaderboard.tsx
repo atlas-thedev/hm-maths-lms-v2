@@ -64,8 +64,8 @@ export function Leaderboard({ rows, emptyLabel, youLabel, premiumLabel, meLabel,
   const meOutside = me && !top.includes(me) && !rest.includes(me) ? me : null;
   const order = [1, 0, 2]; // 2nd, 1st, 3rd visual order
   const Row = ({ r, i }: { r: BoardRow; i: number }) => (
-    <motion.li initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(i, 15) * 0.035 }} data-testid="board-row"
-      className={cn("flex items-center gap-3 rounded-2xl border bg-card px-3 py-2.5 shadow-soft transition hover:-translate-y-px hover:shadow-lift sm:px-4",
+    <li style={{ animationDelay: `${Math.min(i, 15) * 0.035}s` }} data-testid="board-row"
+      className={cn("animate-page-in flex items-center gap-3 rounded-2xl border bg-card px-3 py-2.5 shadow-soft transition hover:-translate-y-px hover:shadow-lift sm:px-4",
         r.isMe ? "border-primary/40 bg-accent/70 ring-2 ring-primary/20" : "border-border/80 dark:border-white/10")}>
       <RankMedal rank={r.rank} />
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-brand-soft text-xs font-bold text-primary">{initials(r.name)}</span>
@@ -74,16 +74,16 @@ export function Leaderboard({ rows, emptyLabel, youLabel, premiumLabel, meLabel,
           <span className="truncate">{r.name}</span>
           {r.premium && <PremiumMark label={premiumLabel} />}
           {r.note && <span className="shrink-0 text-[11px] font-normal text-muted-foreground">{r.note}</span>}
-          {r.isMe && <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">{youLabel}</span>}
+          {r.isMe && <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold uppercase text-primary-foreground">{youLabel}</span>}
         </p>
         {r.sub && <p className="truncate text-xs text-muted-foreground">{r.sub}</p>}
       </div>
       {r.side && <span className="hidden text-xs text-muted-foreground sm:block">{r.side}</span>}
       <div className="text-right">
         <p className="font-display text-base font-bold">{r.main}</p>
-        {r.mainLabel && <p className="text-[10px] text-muted-foreground">{r.mainLabel}</p>}
+        {r.mainLabel && <p className="text-[11px] text-muted-foreground">{r.mainLabel}</p>}
       </div>
-    </motion.li>
+    </li>
   );
   return (
     <div className="space-y-5">
@@ -96,19 +96,18 @@ export function Leaderboard({ rows, emptyLabel, youLabel, premiumLabel, meLabel,
               if (!r) return <div key={`empty-${i}`} />;
               const p = PODIUM[Math.min(i, 2)];
               return (
-                <motion.div key={r.key} style={{ gridColumnStart: order.indexOf(i) + 1 }}
-                  initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.12, type: "spring", stiffness: 160, damping: 18 }}
-                  className="flex min-w-0 flex-col items-center text-center">
+                <div key={r.key} style={{ gridColumnStart: order.indexOf(i) + 1, animationDelay: `${0.05 + i * 0.1}s` }}
+                  className="animate-page-in flex min-w-0 flex-col items-center text-center">
                   {i === 0 && <Crown className="mb-1 h-6 w-6 animate-bounce text-medal-gold-to" />}
                   <Avatar name={r.name} rank={i + 1} big={i === 0} />
                   <p className={cn("mt-2 flex w-full items-center justify-center gap-1 text-sm font-semibold", r.isMe && "text-primary")}>
                     <span className="truncate">{r.name}</span>{r.premium && <PremiumMark label={premiumLabel} />}
                   </p>
-                  {r.note && <p className="w-full truncate text-[10px] text-muted-foreground">{r.note}</p>}
+                  {r.note && <p className="w-full truncate text-[11px] text-muted-foreground">{r.note}</p>}
                   {r.sub && <p className="w-full truncate text-[11px] text-muted-foreground">{r.sub}</p>}
                   <p className={cn("mt-1 font-display text-lg font-bold", p.text)}>{r.main}</p>
                   <div className={cn("mt-2 grid w-full place-items-center rounded-t-2xl bg-gradient-to-b font-display text-3xl font-extrabold text-white/90 shadow-inner", p.ring, p.h)}>{r.rank}</div>
-                </motion.div>
+                </div>
               );
             })}
           </div>

@@ -91,7 +91,7 @@ export default async function OwnerOverviewPage() {
                 {d.topClasses.map((c) => (
                   <li key={c.id}>
                     <div className="flex items-baseline justify-between gap-3 text-sm">
-                      <Link href={`/admin/classes/${c.id}`} className="min-w-0 truncate font-medium hover:text-primary">{c.title}</Link>
+                      <Link href={`/admin/classes/${c.id}`} className="min-w-0 truncate py-1.5 font-medium hover:text-primary">{c.title}</Link>
                       <span className="shrink-0 tabular-nums"><b className="font-semibold">{formatLKR(c.total)}</b> <span className="text-xs text-muted-foreground">· {t("dash.revenueSlips", { n: c.n })}</span></span>
                     </div>
                     <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
@@ -133,13 +133,14 @@ export default async function OwnerOverviewPage() {
 /** One "needs attention" row: what's wrong, where, and a button straight to the fix. */
 function Row({ icon, tone, title, sub, href, action }: { icon: LucideIcon; tone: Tone; title: string; sub?: string; href: string; action: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/80 p-3 dark:border-white/10">
+    // Phone: the button drops under the text (full width) so the message isn't squeezed into a few letters per line.
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border/80 p-3 dark:border-white/10">
       <IconTile icon={icon} tone={tone} size="sm" />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-40">
         <p className="text-sm font-semibold leading-snug">{title}</p>
         {sub && <p className="truncate text-xs text-muted-foreground">{sub}</p>}
       </div>
-      <Link href={href} className={buttonVariants({ size: "sm", variant: "outline", className: "shrink-0" })}>{action}</Link>
+      <Link href={href} className={buttonVariants({ size: "sm", variant: "outline", className: "w-full shrink-0 sm:w-auto" })}>{action}</Link>
     </div>
   );
 }
@@ -177,10 +178,13 @@ function RevenueBars({ months, label, slipsLabel, title }: {
           </span>
         ))}
       </div>
-      <table className="sr-only">
-        <caption>{title}</caption>
-        <tbody>{months.map((x) => <tr key={x.m}><th scope="row">{label(x.m)}</th><td>{formatLKR(x.total)}</td><td>{slipsLabel(x.n)}</td></tr>)}</tbody>
-      </table>
+      {/* A table ignores sr-only's 1px width, so it must sit inside an sr-only wrapper (it made the page scroll sideways). */}
+      <div className="sr-only">
+        <table>
+          <caption>{title}</caption>
+          <tbody>{months.map((x) => <tr key={x.m}><th scope="row">{label(x.m)}</th><td>{formatLKR(x.total)}</td><td>{slipsLabel(x.n)}</td></tr>)}</tbody>
+        </table>
+      </div>
     </figure>
   );
 }

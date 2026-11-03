@@ -40,10 +40,11 @@ export default async function AdminPapersPage() {
       </PageHeader>
       {error && <p className="rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-warning">{t("migrate")}</p>}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* Phone: the two counts side by side, the latest paper full width below (three full-width cards ate the screen). */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard label={t("stats.papers")} value={rows.length} icon={FileText} />
         <StatCard label={t("stats.entries")} value={totalEntries} icon={Users} tone="sky" />
-        <StatCard label={t("stats.latest")} value={rows[0] ? f.date(rows[0].paper_date) : tc("dash")} icon={CalendarDays} tone="violet" hint={rows[0]?.title} />
+        <StatCard className="col-span-2 sm:col-span-1" label={t("stats.latest")} value={rows[0] ? f.date(rows[0].paper_date) : tc("dash")} icon={CalendarDays} tone="violet" hint={rows[0]?.title} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_440px]">

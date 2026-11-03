@@ -98,7 +98,8 @@ export function McqRunner({ examId, title, durationMinutes, totalQuestions }: { 
 
   return (
     <div className="space-y-4">
-      <div className="sticky top-16 z-30 flex items-center justify-between gap-3 rounded-2xl bg-card/95 px-4 py-3 shadow-lg backdrop-blur">
+      {/* Sits right under the top bar: h-14 (+ the notch inset) on a phone, h-16 from sm up. */}
+      <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-30 flex items-center sm:top-16 justify-between gap-3 rounded-2xl bg-card/95 px-4 py-3 shadow-lg backdrop-blur">
         <div className="min-w-0"><p className="truncate font-display font-semibold">{title}</p><p className="text-xs text-muted-foreground">{t("answered", { done: answered, total: qs.length })}</p></div>
         <div className={cn("flex items-center gap-2 rounded-lg px-3 py-1.5 font-mono text-lg font-bold tabular-nums", low ? "animate-pulse bg-destructive/15 text-destructive" : "bg-primary/10 text-primary")}>
           <Timer className="h-4 w-4" />{String(mm).padStart(2, "0")}:{String(ss).padStart(2, "0")}

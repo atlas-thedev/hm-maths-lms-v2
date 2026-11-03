@@ -60,7 +60,7 @@ export default async function LessonPage({ params }: { params: Promise<{ classId
             {(siblings ?? []).map((s) => (
               <Link key={s.id} href={`/dashboard/classes/${classId}/lessons/${s.id}`}
                 className={cn("flex items-center gap-2 rounded-lg px-2 py-2 text-sm", s.id === lesson.id ? "bg-primary/10 font-semibold text-primary" : "hover:bg-accent")}>
-                <PlayCircle className="h-4 w-4 shrink-0" /><span className="line-clamp-1 flex-1">{s.title}</span><span className="text-[10px] text-muted-foreground">W{s.week_number}</span>
+                <PlayCircle className="h-4 w-4 shrink-0" /><span className="line-clamp-1 flex-1">{s.title}</span><span className="text-[11px] text-muted-foreground">W{s.week_number}</span>
               </Link>
             ))}
           </div>

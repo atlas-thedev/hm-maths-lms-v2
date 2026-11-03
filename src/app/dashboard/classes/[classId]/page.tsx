@@ -117,7 +117,9 @@ export default async function ClassroomPage({ params, searchParams }: {
         <ArrowLeft className="h-4 w-4" /> {cls.is_free ? t("backFree") : t("back")}
       </Link>
       <div className="overflow-hidden rounded-2xl bg-card shadow-soft">
-        <ClassBanner cls={cls} month={month} shape="strip" className="aspect-[16/4] sm:aspect-[16/3]" />
+        {/* Phone: the normal 16:7 poster. The wide "strip" art squeezes the month name behind the timetable box on a narrow screen. */}
+        <ClassBanner cls={cls} month={month} className="sm:hidden" />
+        <ClassBanner cls={cls} month={month} shape="strip" className="hidden aspect-[16/3] sm:block" />
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex flex-wrap gap-2"><Badge>{tc(`classTypes.${cls.class_type}`)}</Badge>{cls.town && <Badge variant="secondary">{tc(`towns.${cls.town}`)}</Badge>}</div>
@@ -125,7 +127,7 @@ export default async function ClassroomPage({ params, searchParams }: {
             {timetable && <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground"><CalendarDays className="h-4 w-4" />{timetable}</p>}
           </div>
           <div className="flex min-w-0 flex-col gap-2 sm:items-end">
-            {months.length > 1 && <MonthSwitcher months={months} current={month} labels={monthLabels} hrefBase={`/dashboard/classes/${classId}`} className="sm:justify-end" />}
+            {months.length > 1 && <MonthSwitcher months={months} current={month} labels={monthLabels} hrefBase={`/dashboard/classes/${classId}`} className="w-full sm:w-auto" />}
             {!cls.is_free && <Link href={`/dashboard/store/class/${classId}`} className="text-xs font-semibold text-primary hover:underline">{t("otherMonths")}</Link>}
           </div>
         </div>

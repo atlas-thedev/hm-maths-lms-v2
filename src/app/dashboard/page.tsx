@@ -93,7 +93,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 {profile.student_id && (
                   <span className="inline-flex items-center gap-2 rounded-2xl bg-white/20 py-1 pl-3.5 pr-1 ring-1 ring-white/25 backdrop-blur [&_button]:text-white [&_button:hover]:bg-white/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-white/90">{t("sid")}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-white/90">{t("sid")}</span>
                     <span data-testid="student-id" className="font-mono text-lg font-extrabold tabular-nums tracking-tight">{profile.student_id}</span>
                     <CopyButton value={profile.student_id} />
                   </span>
