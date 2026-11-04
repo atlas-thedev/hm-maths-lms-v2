@@ -4,7 +4,7 @@ import { PublicShell } from "@/components/landing/public-shell";
 import { ResultPhoto } from "@/components/landing/result-photo";
 import { getSession } from "@/lib/auth";
 import { getStudentResults, type StudentResult } from "@/lib/public-results";
-import { resultGrade } from "@/lib/result-wall";
+import { districtRank, resultGrade } from "@/lib/result-wall";
 import { getT } from "@/i18n/server";
 import { cn } from "@/lib/utils";
 
@@ -25,29 +25,38 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
   const b = ordinary.filter((r) => resultGrade(r.grades) === "B");
   const other = ordinary.filter((r) => !resultGrade(r.grades));
 
-  const featureCard = (r: StudentResult) => <li key={r.id} data-testid="result-card" className="group flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-brand-100 bg-white shadow-soft">
-    <div className="relative overflow-hidden bg-brand-50">
-      <ResultPhoto src={r.photo_url} name={r.name} />
-      <span className="absolute left-3 top-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-xs font-bold text-brand-800 shadow-sm backdrop-blur"><Award className="h-4 w-4 shrink-0" /><span className="break-words">{r.distinction}</span></span>
-    </div>
-    <div className="flex flex-1 flex-col p-5">
-      <p className="text-xs font-bold uppercase tracking-wider text-brand-700">{r.exam_year} · {t("year")}</p>
-      <h3 className="mt-1.5 break-words font-display text-lg font-extrabold leading-snug text-ink">{r.name}</h3>
-      <p className="mt-3 break-words text-sm font-semibold leading-relaxed text-slate-600">{r.grades}</p>
-      {r.exam_number && <p className="mt-2 break-words text-xs text-slate-500">{t("examNumber")}: {r.exam_number}</p>}
-    </div>
-  </li>;
+  const rankBadge = (number: string, compact = false) => <span aria-hidden className={cn("grid shrink-0 place-items-center rounded-full bg-red-700 font-display font-black leading-none text-white shadow-sm", compact ? "h-11 w-11 text-lg" : "h-16 w-16 text-2xl", number.length > 3 && "text-sm")}>{number}</span>;
 
-  const wallCard = (r: StudentResult, grade: "A" | "B" | null) => <li key={r.id} data-testid="result-card" className="flex h-full flex-col rounded-[1.4rem] border border-black/[0.06] bg-white p-4 shadow-[0_8px_30px_-20px_rgba(20,14,10,.2)] sm:p-5">
-    <div className="flex items-start justify-between gap-2">
-      <span aria-hidden className={cn("grid h-14 w-14 shrink-0 place-items-center rounded-2xl font-display text-4xl font-black leading-none shadow-sm sm:h-16 sm:w-16 sm:text-5xl", grade === "A" ? "bg-brand-600 text-white" : grade === "B" ? "bg-ink text-white" : "bg-brand-50 text-brand-700")}>{grade ?? "✦"}</span>
-      <ResultPhoto src={r.photo_url} name={r.name} variant="avatar" />
-    </div>
-    <h3 className="mt-4 break-words font-display text-sm font-bold leading-snug text-ink sm:text-base">{r.name}</h3>
-    <p className="mt-1 text-xs font-medium text-slate-500">{r.exam_year} · {t("year")}</p>
-    <p className="mt-3 break-words border-t border-slate-100 pt-3 text-xs font-semibold leading-relaxed text-slate-700">{r.grades}</p>
-    {r.exam_number && <p className="mt-2 break-words text-xs text-slate-500">{t("examNumber")}: {r.exam_number}</p>}
-  </li>;
+  const featureCard = (r: StudentResult) => {
+    const rank = districtRank(r.distinction);
+    return <li key={r.id} data-testid="result-card" className="group flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-brand-100 bg-white shadow-soft">
+      <div className="relative overflow-hidden bg-brand-50">
+        <ResultPhoto src={r.photo_url} name={r.name} />
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-4 flex items-center gap-3">{rank && rankBadge(rank.number)}<p className="break-words text-sm font-extrabold leading-snug text-red-800">{r.distinction}</p></div>
+        <p className="text-xs font-bold uppercase tracking-wider text-brand-700">{r.exam_year} · {t("year")}</p>
+        <h3 className="mt-1.5 break-words font-display text-lg font-extrabold leading-snug text-ink">{r.name}</h3>
+        <p className="mt-3 break-words text-sm font-semibold leading-relaxed text-slate-600">{r.grades}</p>
+        {r.exam_number && <p className="mt-2 break-words text-xs text-slate-500">{t("examNumber")}: {r.exam_number}</p>}
+      </div>
+    </li>;
+  };
+
+  const wallCard = (r: StudentResult, grade: "A" | "B" | null) => {
+    const rank = districtRank(r.grades);
+    return <li key={r.id} data-testid="result-card" className="flex h-full flex-col rounded-[1.4rem] border border-black/[0.06] bg-white p-4 shadow-[0_8px_30px_-20px_rgba(20,14,10,.2)] sm:p-5">
+      <div className="flex items-start justify-between gap-2">
+        <span aria-hidden className={cn("grid h-14 w-14 shrink-0 place-items-center rounded-2xl font-display text-4xl font-black leading-none shadow-sm sm:h-16 sm:w-16 sm:text-5xl", grade === "A" ? "bg-brand-600 text-white" : grade === "B" ? "bg-ink text-white" : "bg-brand-50 text-brand-700")}>{grade ?? <GraduationCap className="h-7 w-7" />}</span>
+        <ResultPhoto src={r.photo_url} name={r.name} variant="avatar" />
+      </div>
+      <h3 className="mt-4 break-words font-display text-sm font-bold leading-snug text-ink sm:text-base">{r.name}</h3>
+      <p className="mt-1 text-xs font-medium text-slate-500">{r.exam_year} · {t("year")}</p>
+      <p className="mt-3 break-words border-t border-slate-100 pt-3 text-xs font-semibold leading-relaxed text-slate-700">{r.grades}</p>
+      {rank && <div className="mt-3 flex items-center gap-2">{rankBadge(rank.number, true)}<p className="break-words text-xs font-bold leading-snug text-red-800">{rank.label}</p></div>}
+      {r.exam_number && <p className="mt-2 break-words text-xs text-slate-500">{t("examNumber")}: {r.exam_number}</p>}
+    </li>;
+  };
 
   const wallSection = (title: string, list: StudentResult[], grade: "A" | "B" | null, id: string) => list.length ? <section aria-labelledby={`${id}-title`} data-testid={id}>
     <div className="mb-5 flex items-end justify-between gap-3 border-b border-black/[0.06] pb-4">
