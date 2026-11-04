@@ -19,22 +19,31 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
   const years = [...new Set(allResults.map((r) => r.exam_year))].sort((a, b) => b - a);
   const selectedYear = /^\d{4}$/.test(params.year ?? "") ? Number(params.year) : null;
   const results = selectedYear === null ? allResults : allResults.filter((r) => r.exam_year === selectedYear);
-  const featured = results.filter((r) => r.distinction.trim());
+  const featured = results.filter((r) => r.distinction.trim()).sort((a, b) => {
+    if (a.exam_year !== b.exam_year) return b.exam_year - a.exam_year;
+    const aRank = districtRank(a.distinction);
+    const bRank = districtRank(b.distinction);
+    return Number(aRank?.number ?? Number.MAX_SAFE_INTEGER) - Number(bRank?.number ?? Number.MAX_SAFE_INTEGER);
+  });
   const ordinary = results.filter((r) => !r.distinction.trim());
   const a = ordinary.filter((r) => resultGrade(r.grades) === "A");
   const b = ordinary.filter((r) => resultGrade(r.grades) === "B");
   const other = ordinary.filter((r) => !resultGrade(r.grades));
 
-  const rankBadge = (number: string, compact = false) => <span aria-hidden className={cn("grid shrink-0 place-items-center rounded-full bg-red-700 font-display font-black leading-none text-white shadow-sm", compact ? "h-11 w-11 text-lg" : "h-16 w-16 text-2xl", number.length > 3 && "text-sm")}>{number}</span>;
+  const rankBadge = (number: string, compact = false) => <span aria-hidden data-testid="district-rank-badge" className={cn("flex shrink-0 flex-col items-center justify-center rounded-full border-[3px] border-white bg-red-700 text-center text-white shadow-[0_6px_18px_rgba(127,29,29,0.35)]", compact ? "h-14 w-14" : "h-28 w-28 border-4 sm:h-24 sm:w-24", !compact && "absolute bottom-4 right-4")}>
+    <span className={cn("font-sans font-black leading-none tabular-nums", compact ? "text-xl" : "text-4xl", number.length > 3 && (compact ? "text-sm" : "text-2xl"))}>{number}</span>
+    {!compact && <span className="mt-1 text-[10px] font-bold uppercase leading-none tracking-wider">{t("rank")}</span>}
+  </span>;
 
   const featureCard = (r: StudentResult) => {
     const rank = districtRank(r.distinction);
     return <li key={r.id} data-testid="result-card" className="group flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-brand-100 bg-white shadow-soft">
       <div className="relative overflow-hidden bg-brand-50">
         <ResultPhoto src={r.photo_url} name={r.name} />
+        {rank && rankBadge(rank.number)}
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <div className="mb-4 flex items-center gap-3">{rank && rankBadge(rank.number)}<p className="break-words text-sm font-extrabold leading-snug text-red-800">{r.distinction}</p></div>
+        <p className="mb-4 border-l-[3px] border-red-700 pl-3 text-sm font-extrabold leading-snug text-red-800 break-words">{r.distinction}</p>
         <p className="text-xs font-bold uppercase tracking-wider text-brand-700">{r.exam_year} · {t("year")}</p>
         <h3 className="mt-1.5 break-words font-display text-lg font-extrabold leading-snug text-ink">{r.name}</h3>
         <p className="mt-3 break-words text-sm font-semibold leading-relaxed text-slate-600">{r.grades}</p>
