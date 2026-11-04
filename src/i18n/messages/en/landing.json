@@ -588,6 +588,17 @@
     "examNumber": "Index number",
     "empty": "Results are coming soon.",
     "emptyText": "Student achievements will appear here once published.",
-    "grades": "Results"
+    "grades": "Results",
+    "wallLabel": "Results wall",
+    "explore": "Explore results",
+    "count": "{n} results",
+    "gradeResults": "results",
+    "yearFilter": "A/L year",
+    "allYears": "All years",
+    "emptyYear": "No results for this year yet.",
+    "spotlight": "In the spotlight",
+    "aResults": "A results",
+    "bResults": "B results",
+    "otherResults": "More achievements"
   }
 }

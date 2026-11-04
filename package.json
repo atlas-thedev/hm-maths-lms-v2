@@ -12,7 +12,8 @@
     "test:i18n": "node scripts/test-i18n.mjs",
     "test:ui": "node scripts/e2e-ui.mjs",
     "test:rest": "node scripts/test-rest.mjs",
-    "dev:db": "bash scripts/dev-stack.sh up"
+    "dev:db": "bash scripts/dev-stack.sh up",
+    "test:results": "node scripts/test-results.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

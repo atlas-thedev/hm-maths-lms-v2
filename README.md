@@ -77,13 +77,14 @@ Rules for new screens: build with the library components; use theme classes (`bg
 
 Developers can open **Developer → Results & teacher photos** (`/dev/results`). Add teacher portraits there; the About the teacher section cycles through them on refresh in each browser tab. If none are added, it uses the existing Brand & SEO teacher photo (or its built-in fallback).
 
-Add students with a name, A/L year and grades. The index number is optional and is only shown when provided. An optional distinction (for example a district rank) makes a large featured card; other results appear in the regular grid. Photos are optional. Results start as drafts and can be edited, published, unpublished or deleted. Published results are visible at `/results`. Obtain permission before uploading photos or publishing personal information: photo files have public URLs even while a result is a draft and may remain cached after removal.
+Add students with a name, A/L year and grades. The index number is optional and is only shown when provided. An optional distinction (for example a district rank) makes a large featured card; other results appear in the regular grid. Photos are optional. Results start as drafts and can be edited, published, unpublished or deleted. Published results are visible at `/results` in the Results Wall. Single A/B grades appear in their respective sections; other result formats remain in More achievements. Visitors can filter by A/L year. Obtain permission before uploading photos or publishing personal information: photo files have public URLs even while a result is a draft and may remain cached after removal.
 
 ## 7. Tests
 
 - `npm run typecheck` – TypeScript.
 - `npm run test:sql` – applies every migration twice in an in-memory Postgres (PGlite) and checks the RLS / workflow / exam / leaderboard rules offline.
 - `npm run test:i18n` – translation key/placeholder parity + every `t("…")` key used in code exists.
+- `npm run test:results` – checks A/B grouping and preserves other result formats.
 - `npm run test:rest` – the PostgREST client against a real database (filters, embedded tables, counts, upsert, rpc, RLS errors).
 - `npm run test:ui` – Playwright journey: register → login → enroll with a slip → admin approves → classroom → MCQ → leaderboard, English + Sinhala, phone + desktop.
 

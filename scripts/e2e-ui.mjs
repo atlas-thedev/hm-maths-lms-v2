@@ -36,7 +36,7 @@ const ok = (m) => { pass++; console.log("  ✓", m); };
 const bad = (m) => { problems.push(m); console.log("  ✗", m); };
 const check = (cond, m) => (cond ? ok(m) : bad(m));
 
-const cleanup = { classes: [], users: [] };
+const cleanup = { classes: [], users: [], results: [] };
 const browser = await chromium.launch({ executablePath: process.env.CHROME ?? undefined, args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"] });
 const consoleErrors = [];
 const newPage = async (vp = { width: 1366, height: 860 }, locale, { stickers = false } = {}) => {
@@ -134,6 +134,36 @@ try {
     await go(p, "/store");
     check(await p.locator(`text=${tag} 2027 A/L Theory`).count() > 0, "public store lists class");
     await p.context().close();
+  }
+
+  // Results wall: exercise all sections, optional fields, filtering and draft privacy.
+  {
+    const { data: seededResults, error } = await svc.from("student_results").insert([
+      { name: `${tag} Featured`, exam_year: 2099, exam_number: "99", grades: "A", distinction: "District 1", is_published: true },
+      { name: `${tag} A result`, exam_year: 2099, exam_number: "", grades: "Combined Maths: A · Z-score 1.5", is_published: true },
+      { name: `${tag} B result`, exam_year: 2099, exam_number: "", grades: "B", is_published: true },
+      { name: `${tag} Other`, exam_year: 2099, exam_number: "", grades: "A A B", is_published: true },
+      { name: `${tag} Draft`, exam_year: 2099, exam_number: "", grades: "A", is_published: false },
+      { name: `${tag} Other year`, exam_year: 2098, exam_number: "", grades: "A", is_published: true },
+    ]).select("id");
+    if (error || !seededResults) throw new Error(`Could not seed wall results: ${error?.message}`);
+    cleanup.results.push(...seededResults.map((r) => r.id));
+    for (const [width, locale] of [[390, "si"], [1024, "en"], [1440, "en"]]) {
+      const p = await newPage({ width, height: 844 }, locale);
+      await go(p, "/results?year=2099");
+      check(await p.locator('[data-testid="featured-results"]', { hasText: `${tag} Featured` }).count() === 1, `${width}/${locale} featured result shown`);
+      check(await p.locator('[data-testid="grade-a-results"]', { hasText: `${tag} A result` }).count() === 1, `${width}/${locale} A badge section`);
+      check(await p.locator('[data-testid="grade-b-results"]', { hasText: `${tag} B result` }).count() === 1, `${width}/${locale} B badge section`);
+      check(await p.locator('[data-testid="other-results"]', { hasText: `${tag} Other` }).count() === 1, `${width}/${locale} multi-grade result remains visible`);
+      check(await p.locator("main", { hasText: `${tag} Draft` }).count() === 0 && await p.locator("main", { hasText: `${tag} Other year` }).count() === 0, `${width}/${locale} draft and other-year result hidden`);
+      const plainCard = p.locator('[data-testid="result-card"]', { hasText: `${tag} A result` });
+      check(await plainCard.getByRole("img", { name: `${tag} A result` }).count() === 1 && !(await plainCard.innerText()).includes("Index number"), `${width}/${locale} missing photo placeholder and optional index`);
+      check(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}/${locale} results page has no horizontal overflow`);
+      await shot(p, `results-wall-${width}-${locale}`);
+      await go(p, "/results?year=2098");
+      check(await p.locator("main", { hasText: `${tag} Other year` }).count() === 1 && await p.locator("main", { hasText: `${tag} B result` }).count() === 0, `${width}/${locale} year filter works`);
+      await p.context().close();
+    }
   }
 
   // ── Student registration via UI ──
@@ -485,6 +515,7 @@ try {
   bad("CRASH: " + (e?.stack ?? e));
 } finally {
   for (const id of cleanup.classes) await svc.from("classes").delete().eq("id", id);
+  for (const id of cleanup.results) await svc.from("student_results").delete().eq("id", id);
   await svc.from("notices").delete().like("title", `${tag}%`);
   await svc.from("papers").delete().like("title", `${tag}%`);
   for (const id of cleanup.users) {
