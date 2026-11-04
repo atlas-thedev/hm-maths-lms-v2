@@ -353,7 +353,8 @@
       "classes": "Classes",
       "stories": "Stories",
       "support": "FAQ",
-      "gallery": "Gallery"
+      "gallery": "Gallery",
+      "results": "Results"
     },
     "hero": {
       "kicker": "G.C.E. Advanced Level",
@@ -576,5 +577,16 @@
     "otherCenters": "Other class centers",
     "allCenters": "All centers",
     "online": "Online"
+  },
+  "resultsPage": {
+    "title": "Our students’ results",
+    "subtitle": "Celebrating the achievements of our students.",
+    "featured": "Outstanding achievements",
+    "all": "Student results",
+    "year": "A/L year",
+    "examNumber": "Index number",
+    "empty": "Results are coming soon.",
+    "emptyText": "Student achievements will appear here once published.",
+    "grades": "Results"
   }
 }

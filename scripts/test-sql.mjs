@@ -758,5 +758,24 @@ assert.equal(await tuteOf(S2, "2027-07"), undefined);
 await as(OWNER, () => q(`update public.classes set posts_tutes=true where id=$1`, [paid.id]));
 console.log("✓ 0024: a class that doesn't post tutes queues nothing");
 
+// ---- 0026: public results and developer-only portrait management
+const sql26 = readFileSync(new URL("../db/migrations/0026_public_results.sql", import.meta.url), "utf8");
+await db.exec(sql26); await db.exec(sql26);
+await as(ADMIN, () => q(`insert into public.student_results (name, exam_year, exam_number, grades, distinction, is_published) values ('Featured', 2026, '123', 'A A A', 'District 1', true), ('Draft', 2026, '456', 'A B B', '', false)`));
+await as(ADMIN, () => q(`insert into public.teacher_portraits (photo_url) values ('/api/storage/public/public-results/teacher/example.jpg')`));
+assert.deepEqual((await as(null, () => q(`select name from public.student_results`))).map(r => r.name), ['Featured']);
+assert.equal((await as(S1, () => q(`select * from public.student_results`))).length, 1);
+assert.equal((await as(ADMIN, () => q(`select * from public.student_results`))).length, 2);
+assert.equal((await as(null, () => q(`select * from public.teacher_portraits`))).length, 1);
+await fails(as(S1, () => q(`insert into public.student_results (name, exam_year, exam_number, grades) values ('Bad', 2026, '1', 'A')`)), "student publishing results");
+await fails(as(OWNER, () => q(`insert into public.teacher_portraits (photo_url) values ('bad')`)), "owner changing developer portraits");
+await fails(as(S1, () => q(`insert into storage.objects (bucket_id, name) values ('public-results', 'students/bad.jpg')`)), "student uploading public result image");
+await as(ADMIN, () => q(`insert into storage.objects (bucket_id, name) values ('public-results', 'students/ok.jpg')`));
+await as(ADMIN, () => q(`update public.student_results set is_published=true where name='Draft'`));
+assert.equal((await as(null, () => q(`select * from public.student_results`))).length, 2);
+await as(ADMIN, () => q(`delete from public.student_results where name='Draft'`));
+assert.equal((await as(null, () => q(`select * from public.student_results`))).length, 1);
+console.log("✓ 0026: migrations re-run safely, only developers manage results and images, drafts stay private");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);

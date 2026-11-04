@@ -9,9 +9,9 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { useT } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 
-const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["stories", "stories"], ["gallery", "gallery"], ["support", "support"]] as const;
+const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["stories", "stories"], ["gallery", "gallery"], ["results", "results"], ["support", "support"]] as const;
 /** Sections that have a page of their own: the nav goes there instead of scrolling. */
-const PAGE_LINKS: Record<string, string> = { gallery: "/gallery" };
+const PAGE_LINKS: Record<string, string> = { gallery: "/gallery", results: "/results" };
 
 /** Floating white pill navbar (cmwithmn-style). */
 export function HomeNav({ account }: { account: "guest" | "student" | "admin" }) {
@@ -23,7 +23,7 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
   const onHome = pathname === "/";
   const [seen, setSeen] = useState("home");
   // On the home page the section in view is active; on /gallery the Gallery link is; elsewhere nothing is.
-  const active = onHome ? seen : pathname.startsWith("/gallery") ? "gallery" : "";
+  const active = onHome ? seen : pathname.startsWith("/gallery") ? "gallery" : pathname.startsWith("/results") ? "results" : "";
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);

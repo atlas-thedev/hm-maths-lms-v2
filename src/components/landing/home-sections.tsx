@@ -13,6 +13,7 @@ import { SL_DISTRICTS, SL_VIEWBOX } from "./sl-map-data";
 import { Sticker } from "./sticker";
 import { Magnetic, SplitReveal, TiltCard } from "./motion-kit";
 import { HeroBanner } from "./hero-banner";
+import { TeacherPhoto } from "./teacher-photo";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const up = (d = 0) => ({ initial: { opacity: 0, y: 26 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.7, delay: d, ease } });
@@ -212,7 +213,7 @@ export function HomeProcess() {
 }
 
 /* ---------- about teacher ---------- */
-export function HomeTeacher({ photo, isReal }: { photo: string; isReal: boolean }) {
+export function HomeTeacher({ photo, isReal, photos = [] }: { photo: string; isReal: boolean; photos?: string[] }) {
   const SITE = useSite();
   const t = useT("landing.home.teacher");
   return (
@@ -235,7 +236,7 @@ export function HomeTeacher({ photo, isReal }: { photo: string; isReal: boolean 
         <motion.div {...up(0.1)} className="relative mx-auto w-full max-w-md">
           <div className="absolute inset-x-6 bottom-0 top-10 rounded-[3rem] bg-gradient-to-b from-brand-200/70 to-warning/40 blur-2xl" />
           <div className="relative overflow-hidden rounded-[2.5rem] shadow-[0_30px_80px_-30px_rgba(20,14,10,.5)] [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
-            <Image src={photo} alt={t("name")} width={800} height={1000} className={cn("w-full object-cover", isReal ? "aspect-[4/5]" : "aspect-square")} />
+            <TeacherPhoto photos={photos} fallback={photo} fallbackIsReal={isReal} alt={t("name")} />
           </div>
           <div className="absolute -bottom-3 -left-4"><Sticker name="partyface" size={72} /></div>
         </motion.div>

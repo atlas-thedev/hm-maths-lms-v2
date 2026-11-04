@@ -57,7 +57,7 @@ export function FileUpload({
   }
 
   return (
-    <div ref={wrapRef} className="space-y-2">
+    <div ref={wrapRef} data-uploading={busy ? "true" : undefined} className="space-y-2">
       {values.map((v) => <input key={v} type="hidden" name={name} value={v} />)}
       {/* Native required check: a visually-hidden text input that is only filled once the upload finished */}
       {required && <input tabIndex={-1} aria-hidden className="sr-only" required value={values.length ? "ok" : ""} onChange={() => {}} />}

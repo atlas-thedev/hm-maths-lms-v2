@@ -12,6 +12,7 @@ import { publicImage } from "@/lib/public-image";
 import type { ClassRow } from "@/lib/types";
 import { getBrand, getBrandSettings, getCenters, getLandingStatsSettings, getSiteData } from "@/lib/settings";
 import { getLatestPhotos } from "@/lib/gallery-data";
+import { getTeacherPortraits } from "@/lib/public-results";
 import { siteGraph } from "@/lib/seo-graph";
 import { jsonLd } from "@/lib/seo";
 import { mapPoint } from "@/lib/centers";
@@ -30,7 +31,7 @@ export default async function HomePage() {
     getCenters(),
     getSiteData(),
   ]);
-  const galleryPhotos = await getLatestPhotos(db, 9);
+  const [galleryPhotos, portraits] = await Promise.all([getLatestPhotos(db, 9), getTeacherPortraits(db)]);
   const { data } = await db.from("classes").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(10);
   const rows = (data ?? []) as ClassRow[];
 
@@ -61,7 +62,7 @@ export default async function HomePage() {
         <MarqueeBand />
         <HomeAbout />
         <HomeProcess />
-        <HomeTeacher photo={teacherPhoto ?? SITEDATA.youtube.avatar} isReal={!!teacherPhoto} />
+        <HomeTeacher photo={teacherPhoto ?? SITEDATA.youtube.avatar} isReal={!!teacherPhoto} photos={portraits.map((p) => p.photo_url)} />
         <HomeCenters points={centers.map((c) => ({ key: c.key, p: mapPoint(c) }))} />
         <ClassesCarousel classes={classes} />
         <HomeStories stories={SITEDATA.youtube.stories} lessons={SITEDATA.youtube.lessons} />

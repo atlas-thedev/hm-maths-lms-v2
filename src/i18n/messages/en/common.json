@@ -189,7 +189,8 @@
     "retry": "Try again",
     "home": "Go to home page",
     "reference": "Error reference: {digest}",
-    "stale": "This page was out of date or your sign-in expired. Reloading, please try again."
+    "stale": "This page was out of date or your sign-in expired. Reloading, please try again.",
+    "uploading": "Please wait for the upload to finish."
   },
   "accountIssue": {
     "title": "We couldn't load your profile",

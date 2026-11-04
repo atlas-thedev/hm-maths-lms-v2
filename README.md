@@ -14,7 +14,7 @@ Planned work: **[PLAN.md](PLAN.md)**.
 | --- | --- | --- |
 | Website | `src/app` (Next.js on 127.0.0.1:3000) | Pages, server actions, API routes |
 | Database client | `src/lib/db/*` | Our own small client: `rest.ts` (PostgREST query builder over `fetch`), `core.ts`/`server.ts` (login, sessions, `from` / `rpc` / `storage` / `auth`), `pg.ts` (direct connection for login and files). No third-party database SDK. |
-| Database | `deploy/00_bootstrap.sql` → `db/migrations/0001…0010` → `deploy/99_grants.sql` | Re-applied on every deploy — every file must stay safe to re-run |
+| Database | `deploy/00_bootstrap.sql` → `db/migrations/0001…0026` → `deploy/99_grants.sql` | Re-applied on every deploy — every file must stay safe to re-run |
 | Login | `src/lib/db/core.ts`, `server.ts`, `jwt.ts` | bcrypt passwords in `auth.users`; 30-day signed cookie `hm_session` tied to a row in `auth.sessions` (logout revokes it; a password change revokes all) |
 | Browser → DB | `/api/rest/*` | Same-origin proxy to PostgREST; adds the session token only for a live session |
 | Files | `STORAGE_DIR/<bucket>/…`, `/api/storage/*` | Upload checks real file type + `storage.objects` RLS; downloads via short-lived signed links |
@@ -73,7 +73,13 @@ Rules for new screens: build with the library components; use theme classes (`bg
 - **Papers & marks** – admin enters marks; paper / center / all-island leaderboards (other students' Student ID and school are not shown), streaks and badges.
 - **Notifications (bell)** – payment approved / rejected, tute order updates, admin site updates and Notices (General / Urgent / Exam Notice, optionally targeted to a class and/or batch) in one page with an unread count; the portal checks for new ones every 30 s.
 
-## 6. Tests
+## 6. Public results and teacher photos
+
+Developers can open **Developer → Results & teacher photos** (`/dev/results`). Add teacher portraits there; the About the teacher section cycles through them on refresh in each browser tab. If none are added, it uses the existing Brand & SEO teacher photo (or its built-in fallback).
+
+Add students with a name, A/L year, index number and grades. An optional distinction (for example a district rank) makes a large featured card; other results appear in the regular grid. Photos are optional. Results start as drafts and can be edited, published, unpublished or deleted. Published results are visible at `/results`. Obtain permission before uploading photos or publishing personal information: photo files have public URLs even while a result is a draft and may remain cached after removal.
+
+## 7. Tests
 
 - `npm run typecheck` – TypeScript.
 - `npm run test:sql` – applies every migration twice in an in-memory Postgres (PGlite) and checks the RLS / workflow / exam / leaderboard rules offline.

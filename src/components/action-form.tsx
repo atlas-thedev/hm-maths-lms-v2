@@ -71,6 +71,7 @@ export function ActionForm({
         className={className}
         onSubmit={(e) => {
           e.preventDefault();
+          if (e.currentTarget.querySelector('[data-uploading="true"]')) { toast.error(te("uploading")); return; }
           if (confirm && !window.confirm(confirm)) return;
           const fd = new FormData(e.currentTarget);
           const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;

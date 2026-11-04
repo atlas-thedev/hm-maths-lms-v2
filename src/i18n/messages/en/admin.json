@@ -24,7 +24,14 @@
     "subtitle": "Every tute to send: class tutes once a slip is approved, and tute-book orders. Pack, post with a tracking number, and students are told.",
     "statusTabs": "Parcel status",
     "all": "All",
-    "status": { "to_pack": "To pack", "packed": "Packed", "posted": "Posted", "delivered": "Delivered", "returned": "Returned", "skipped": "No tute" },
+    "status": {
+      "to_pack": "To pack",
+      "packed": "Packed",
+      "posted": "Posted",
+      "delivered": "Delivered",
+      "returned": "Returned",
+      "skipped": "No tute"
+    },
     "labelsAll": "Print labels",
     "csv": "Download CSV",
     "search": "Search parcels",
@@ -945,7 +952,8 @@
     "brand": "Brand & SEO",
     "content": "Site text",
     "centers": "Centers",
-    "contact": "Contact & links"
+    "contact": "Contact & links",
+    "results": "Results & teacher photos"
   },
   "gallery": {
     "title": "Photo gallery",

@@ -50,8 +50,8 @@ export async function resetThemeAction(): Promise<ActionState> {
 export async function saveMaintenanceAction(_p: ActionState, fd: FormData): Promise<ActionState> {
   const { user } = await requireDeveloper();
   const until = str(fd, "until");
-  const next = { enabled: on(fd, "enabled"), message: str(fd, "message").slice(0, 600), until: until ? new Date(until).toISOString() : "" };
   if (until && Number.isNaN(Date.parse(until))) return { error: "That date/time isn't valid." };
+  const next = { enabled: on(fd, "enabled"), message: str(fd, "message").slice(0, 600), until: until ? new Date(until).toISOString() : "" };
   await saveMaintenanceSettings(next, user.id);
   await log(`Maintenance mode ${next.enabled ? "ON" : "off"}`, { ...next });
   refreshAll();
