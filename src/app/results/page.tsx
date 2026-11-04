@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { ArrowDown, Award, GraduationCap, Sparkles } from "lucide-react";
+import { ArrowDown, Award, GraduationCap } from "lucide-react";
 import { PublicShell } from "@/components/landing/public-shell";
 import { ResultPhoto } from "@/components/landing/result-photo";
 import { getSession } from "@/lib/auth";
 import { getStudentResults, type StudentResult } from "@/lib/public-results";
 import { resultGrade } from "@/lib/result-wall";
 import { getT } from "@/i18n/server";
-import { getBrand } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata() {
@@ -16,7 +15,7 @@ export async function generateMetadata() {
 
 export default async function ResultsPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
   const { db } = await getSession();
-  const [allResults, t, brand, params] = await Promise.all([getStudentResults(db), getT("landing.resultsPage"), getBrand(), searchParams]);
+  const [allResults, t, params] = await Promise.all([getStudentResults(db), getT("landing.resultsPage"), searchParams]);
   const years = [...new Set(allResults.map((r) => r.exam_year))].sort((a, b) => b - a);
   const selectedYear = /^\d{4}$/.test(params.year ?? "") ? Number(params.year) : null;
   const results = selectedYear === null ? allResults : allResults.filter((r) => r.exam_year === selectedYear);
@@ -25,8 +24,6 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
   const a = ordinary.filter((r) => resultGrade(r.grades) === "A");
   const b = ordinary.filter((r) => resultGrade(r.grades) === "B");
   const other = ordinary.filter((r) => !resultGrade(r.grades));
-  const aCount = results.filter((r) => resultGrade(r.grades) === "A").length;
-  const bCount = results.filter((r) => resultGrade(r.grades) === "B").length;
 
   const featureCard = (r: StudentResult) => <li key={r.id} data-testid="result-card" className="group flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-brand-100 bg-white shadow-soft">
     <div className="relative overflow-hidden bg-brand-50">
@@ -55,7 +52,6 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
   const wallSection = (title: string, list: StudentResult[], grade: "A" | "B" | null, id: string) => list.length ? <section aria-labelledby={`${id}-title`} data-testid={id}>
     <div className="mb-5 flex items-end justify-between gap-3 border-b border-black/[0.06] pb-4">
       <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">{t("wallLabel")}</p><h2 id={`${id}-title`} className="mt-1 font-display text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{title}</h2></div>
-      <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-black/5">{list.length}</span>
     </div>
     <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">{list.map((r) => wallCard(r, grade))}</ul>
   </section> : null;
@@ -65,15 +61,11 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
       <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-brand-500/15 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-[6%] hidden select-none font-display text-[15rem] font-black leading-none text-white/[0.025] lg:block">A B</div>
       <div className="container relative">
-        <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-semibold text-brand-300"><Sparkles className="h-3.5 w-3.5" />{brand.name} · {t("wallLabel")}</p>
-        <div className="mt-7 max-w-3xl"><h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">{t("title")}</h1><p className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">{t("subtitle")}</p></div>
+        <div className="max-w-3xl"><h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">{t("title")}</h1><p className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">{t("subtitle")}</p></div>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <a href="#results-wall" className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-400">{t("explore")} <ArrowDown className="h-4 w-4" /></a>
           <span className="text-sm text-white/55">{t("count", { n: results.length })}</span>
         </div>
-        {results.length > 0 && <div className="mt-10 flex flex-wrap gap-3" aria-label={t("all")}>
-          {[["A", aCount], ["B", bCount]].map(([grade, count]) => <div key={grade} className="flex min-w-32 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 font-display text-2xl font-black">{grade}</span><div><p className="font-display text-xl font-bold">{count}</p><p className="text-xs text-white/55">{t("gradeResults")}</p></div></div>)}
-        </div>}
       </div>
     </section>
 
