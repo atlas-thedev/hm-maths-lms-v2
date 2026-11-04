@@ -94,6 +94,37 @@ try {
       await p.context().close();
     }
   }
+  // Navigation must fit at the desktop breakpoint in both languages, and every link stays reachable.
+  for (const loc of ["en", "si"]) {
+    const p = await newPage({ width: 1024, height: 800 }, loc);
+    await go(p, "/");
+    const nav = p.locator("nav").first();
+    const fits = await nav.evaluate((n) => {
+      const box = n.getBoundingClientRect();
+      const controls = [...n.querySelectorAll("a, button")].filter((el) => el.getClientRects().length && getComputedStyle(el).visibility !== "hidden");
+      const rects = controls.map((el) => el.getBoundingClientRect());
+      return box.left >= 0 && box.right <= innerWidth && rects.every((r, i) => r.left >= box.left - 1 && r.right <= box.right + 1 && (i === 0 || rects[i - 1].right <= r.left + 1));
+    });
+    check(fits, `${loc} desktop navigation fits without overlapping`);
+    const more = p.getByRole("button", { name: loc === "si" ? "තවත්" : "More" });
+    await more.click();
+    check(await more.getAttribute("aria-expanded") === "true" && await p.locator("#home-more-menu a").count() === 5, `${loc} More menu opens with remaining links`);
+    await p.keyboard.press("Escape");
+    check(await more.getAttribute("aria-expanded") === "false", `${loc} More menu closes on Escape`);
+    await more.click(); await Promise.all([p.waitForURL("**/gallery"), p.locator('#home-more-menu a[href="/gallery"]').click()]);
+    check(new URL(p.url()).pathname === "/gallery", `${loc} More menu navigates to Gallery`);
+    await p.context().close();
+
+    const m = await newPage({ width: 375, height: 600 }, loc);
+    await go(m, "/");
+    await m.getByRole("button", { name: loc === "si" ? "මෙනුව විවෘත කරන්න" : "Open menu" }).click();
+    const menu = m.locator("#home-mobile-menu");
+    check(await menu.isVisible() && await menu.locator('a[href="/results"]').count() === 1, `${loc} mobile menu includes Results`);
+    const mobileFits = await menu.evaluate((el) => el.getBoundingClientRect().bottom <= innerHeight && el.scrollHeight >= el.clientHeight);
+    check(mobileFits, `${loc} mobile menu fits and can scroll on a short screen`);
+    await m.context().close();
+  }
+
   {
     const p = await newPage();
     await go(p, "/");

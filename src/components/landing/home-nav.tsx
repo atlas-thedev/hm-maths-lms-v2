@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useT } from "@/i18n/client";
@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["stories", "stories"], ["gallery", "gallery"], ["results", "results"], ["support", "support"]] as const;
 /** Sections that have a page of their own: the nav goes there instead of scrolling. */
 const PAGE_LINKS: Record<string, string> = { gallery: "/gallery", results: "/results" };
+const PRIMARY = LINKS.filter(([key]) => ["home", "teacher", "classes", "results"].includes(key));
+const MORE = LINKS.filter(([key]) => !["home", "teacher", "classes", "results"].includes(key));
 
 /** Floating white pill navbar (cmwithmn-style). */
 export function HomeNav({ account }: { account: "guest" | "student" | "admin" }) {
@@ -19,10 +21,13 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
   const tn = useT("landing.nav");
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const onHome = pathname === "/";
   const [seen, setSeen] = useState("home");
-  // On the home page the section in view is active; on /gallery the Gallery link is; elsewhere nothing is.
+  // On the home page the section in view is active; standalone public pages highlight their own link.
   const active = onHome ? seen : pathname.startsWith("/gallery") ? "gallery" : pathname.startsWith("/results") ? "results" : "";
 
   useEffect(() => {
@@ -34,6 +39,18 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
     return () => { window.removeEventListener("scroll", on); obs.disconnect(); };
   }, [onHome]);
 
+  useEffect(() => {
+    if (!moreOpen) return;
+    const outside = (e: PointerEvent) => { if (!moreRef.current?.contains(e.target as Node)) setMoreOpen(false); };
+    const escape = (e: KeyboardEvent) => { if (e.key === "Escape") { setMoreOpen(false); moreButtonRef.current?.focus(); } };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
+  }, [moreOpen]);
+
+  useEffect(() => { setMoreOpen(false); setOpen(false); }, [pathname]);
+
+  const moreActive = MORE.some(([, id]) => active === id);
   const cta = account === "admin" ? { href: "/admin", label: tn("admin") }
     : account === "student" ? { href: "/dashboard", label: tn("dashboard") }
     : { href: "/login", label: tn("login") };
@@ -41,31 +58,38 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:pt-4">
       <motion.nav initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={cn("pointer-events-auto mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-full border py-1.5 pl-2 pr-1.5 transition-all duration-300",
-          scrolled ? "border-black/[0.06] bg-white/85 shadow-[0_10px_40px_-12px_rgba(20,14,10,.18)] backdrop-blur-xl" : "dark-top border-white/10 bg-white/[0.06] text-white backdrop-blur-md")}>
-        <Logo tone={scrolled ? "auto" : "dark"} />
-        <div className="hidden items-center lg:flex">
-          {LINKS.map(([k, id]) => (
-            <Link key={k} href={PAGE_LINKS[id] ?? `/#${id}`} aria-current={active === id ? "page" : undefined} className={cn("relative rounded-full px-3 py-2 text-[13px] font-medium transition", active === id ? "text-ink" : scrolled ? "text-slate-500 hover:text-ink" : "text-white/90 hover:text-white")}>
+        className={cn("pointer-events-auto mx-auto flex max-w-[1120px] items-center justify-between gap-3 rounded-full border p-1.5 pl-2 shadow-lg transition-colors duration-300",
+          scrolled ? "border-black/[0.06] bg-white/90 shadow-black/10 backdrop-blur-xl" : "dark-top border-white/10 bg-white/[0.07] text-white shadow-black/10 backdrop-blur-xl")}>
+        <div className="min-w-0 overflow-hidden whitespace-nowrap pl-1"><Logo tone={scrolled ? "auto" : "dark"} /></div>
+        <div className="hidden items-center justify-center gap-0.5 lg:flex">
+          {PRIMARY.map(([k, id]) => (
+            <Link key={k} href={PAGE_LINKS[id] ?? `/#${id}`} aria-current={active === id ? "page" : undefined} className={cn("relative whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold transition-colors", active === id ? "text-ink" : scrolled ? "text-slate-600 hover:bg-black/5 hover:text-ink" : "text-white/75 hover:bg-white/10 hover:text-white")}>
               {active === id && <motion.span layoutId="home-nav" className="absolute inset-0 rounded-full bg-brand-50 ring-1 ring-brand-100" transition={{ type: "spring", stiffness: 380, damping: 30 }} />}
               <span className="relative">{t(k)}</span>
             </Link>
           ))}
+          <div ref={moreRef} className="relative">
+            <button ref={moreButtonRef} type="button" aria-expanded={moreOpen} aria-controls="home-more-menu" onClick={() => setMoreOpen((v) => !v)} className={cn("flex items-center gap-1 whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold transition-colors", moreActive ? "bg-brand-50 text-ink ring-1 ring-brand-100" : scrolled ? "text-slate-600 hover:bg-black/5 hover:text-ink" : "text-white/75 hover:bg-white/10 hover:text-white")}>
+              {t("more")}<ChevronDown aria-hidden className={cn("h-4 w-4 transition-transform", moreOpen && "rotate-180")} />
+            </button>
+            {moreOpen && <div id="home-more-menu" className="absolute right-0 top-full z-50 mt-3 w-56 rounded-2xl border border-black/5 bg-white p-1.5 text-ink shadow-[0_18px_50px_-15px_rgba(0,0,0,.3)]">
+              {MORE.map(([k, id]) => <Link key={k} href={PAGE_LINKS[id] ?? `/#${id}`} onClick={() => setMoreOpen(false)} aria-current={active === id ? "page" : undefined} className={cn("block rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:bg-brand-50 hover:text-brand-700", active === id ? "bg-brand-50 text-brand-700" : "text-slate-700")}>{t(k)}</Link>)}
+            </div>}
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <LanguageSwitcher className={cn("hidden sm:inline-flex", scrolled ? "text-slate-600 hover:bg-slate-100" : "text-white/90 hover:bg-white/10 hover:text-white")} />
-          <Link href={cta.href} className="rounded-full bg-brand-500 px-5 py-2.5 text-[13px] font-bold text-white shadow-md shadow-brand-500/25 transition hover:-translate-y-px hover:bg-brand-400">{cta.label}</Link>
-          <button type="button" onClick={() => setOpen(true)} aria-label={tn("menu")} className={cn("inline-flex h-10 w-10 items-center justify-center rounded-full lg:hidden", scrolled ? "text-slate-700 hover:bg-slate-100" : "text-white hover:bg-white/10")}>
+        <div className="flex shrink-0 items-center gap-1">
+          <LanguageSwitcher className={cn("hidden whitespace-nowrap sm:inline-flex", scrolled ? "text-slate-600 hover:bg-slate-100" : "text-white/90 hover:bg-white/10 hover:text-white")} />
+          <Link href={cta.href} className="whitespace-nowrap rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-bold text-white shadow-md shadow-brand-500/25 transition hover:-translate-y-px hover:bg-brand-400 sm:px-5">{cta.label}</Link>
+          <button type="button" onClick={() => setOpen(true)} aria-label={tn("menu")} aria-expanded={open} aria-controls="home-mobile-menu" className={cn("inline-flex h-10 w-10 items-center justify-center rounded-full lg:hidden", scrolled ? "text-slate-700 hover:bg-slate-100" : "text-white hover:bg-white/10")}>
             <Menu className="h-5 w-5" />
           </button>
         </div>
       </motion.nav>
-
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: "none" }} className="pointer-events-auto fixed inset-0 z-50 bg-black/30 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)}>
             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="m-3 rounded-3xl bg-white p-5 text-ink shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              id="home-mobile-menu" className="m-3 max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-3xl bg-white p-5 text-ink shadow-2xl" onClick={(e) => e.stopPropagation()}>
               <div className="mb-3 flex items-center justify-between">
                 <Logo />
                 <button type="button" onClick={() => setOpen(false)} aria-label={tn("close")} className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100"><X className="h-5 w-5" /></button>
