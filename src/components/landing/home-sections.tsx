@@ -212,9 +212,44 @@ export function HomeProcess() {
 }
 
 /* ---------- about teacher ---------- */
-export function HomeTeacher({ photo, isReal }: { photo: string; isReal: boolean }) {
+/** One slide of the teacher spot, already worded for the visitor's language. */
+export interface TeacherSlide {
+  id: string;
+  photo: string | null;
+  name: string;
+  title: string;
+  caption: string;
+  href: string | null;
+  /** true when the picture is a real photo (portrait crop) rather than the YouTube avatar (square). */
+  isReal: boolean;
+}
+
+export function HomeTeacher({ slides, intervalSeconds = 6 }: { slides: TeacherSlide[]; intervalSeconds?: number }) {
   const SITE = useSite();
   const t = useT("landing.home.teacher");
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const many = slides.length > 1;
+  // Every hook above runs before this guard, so the hook order never changes between renders.
+  const slide = slides[Math.min(i, Math.max(0, slides.length - 1))];
+
+  // Rotate only when there is something to rotate to, and never while the visitor is pointing at it.
+  useEffect(() => {
+    if (!many || paused) return;
+    const ms = Math.max(3, intervalSeconds) * 1000;
+    const id = window.setTimeout(() => setI((n) => (n + 1) % slides.length), ms);
+    return () => window.clearTimeout(id);
+  }, [many, paused, i, slides.length, intervalSeconds]);
+
+  if (!slide) return null;
+  const face = (
+    <Image
+      src={slide.photo ?? SITE.youtube.avatar}
+      alt={slide.name || t("name")}
+      width={800} height={1000} priority={i === 0}
+      className={cn("h-full w-full object-cover", slide.isReal ? "aspect-[4/5]" : "aspect-square")}
+    />
+  );
   return (
     <section id="teacher" className="relative scroll-mt-24 overflow-hidden py-12 sm:py-20">
       <Glow className="-left-32 bottom-0 h-96 w-96 bg-warning/70" />
@@ -225,19 +260,45 @@ export function HomeTeacher({ photo, isReal }: { photo: string; isReal: boolean 
           <Quote className="mt-6 h-8 w-8 rotate-180 fill-ink text-ink" />
           <p className="mt-3 text-[15px] leading-[1.9] text-slate-600">{t("text")}</p>
           <div className="mt-3 flex justify-end"><Quote className="h-8 w-8 fill-slate-300 text-slate-300" /></div>
-          <p className="mt-2 font-display text-lg font-bold text-ink">{t("name")}</p>
-          <p className="text-sm text-slate-600">{t("role")}</p>
+          {/* The name/title swap with the photo, so each picture can describe itself. */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={slide.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25 }}>
+              <p className="mt-2 font-display text-lg font-bold text-ink">{slide.name || t("name")}</p>
+              <p className="text-sm text-slate-600">{slide.title || t("role")}</p>
+              {slide.caption ? <p className="mt-1 text-sm text-slate-500">{slide.caption}</p> : null}
+            </motion.div>
+          </AnimatePresence>
           <div className="mt-5 flex flex-wrap gap-2">
             <a href={SITE.social.youtube} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-xs font-semibold text-white shadow-md shadow-destructive/20 transition hover:-translate-y-0.5"><Youtube className="h-4 w-4" />YouTube</a>
             {SITE.social.facebook ? <a href={SITE.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-facebook px-4 py-2 text-xs font-semibold text-white shadow-md shadow-info/20 transition hover:-translate-y-0.5">Facebook</a> : null}
           </div>
         </motion.div>
-        <motion.div {...up(0.1)} className="relative mx-auto w-full max-w-md">
+        <motion.div {...up(0.1)} className="relative mx-auto w-full max-w-md"
+          onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
           <div className="absolute inset-x-6 bottom-0 top-10 rounded-[3rem] bg-gradient-to-b from-brand-200/70 to-warning/40 blur-2xl" />
           <div className="relative overflow-hidden rounded-[2.5rem] shadow-[0_30px_80px_-30px_rgba(20,14,10,.5)] [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
-            <Image src={photo} alt={t("name")} width={800} height={1000} className={cn("w-full object-cover", isReal ? "aspect-[4/5]" : "aspect-square")} />
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.div key={slide.id} initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.45 }}
+                className="relative">
+                {slide.href
+                  ? <a href={slide.href} target="_blank" rel="noopener noreferrer" className="block" aria-label={slide.name}>{face}</a>
+                  : face}
+              </motion.div>
+            </AnimatePresence>
           </div>
           <div className="absolute -bottom-3 -left-4"><Sticker name="partyface" size={72} /></div>
+
+          {/* Dots: visitors can step through the photos themselves; the bar shows the auto-advance. */}
+          {many && (
+            <div className="relative mt-8 flex items-center justify-center gap-2">
+              {slides.map((s, n) => (
+                <button key={s.id} type="button" onClick={() => setI(n)}
+                  aria-label={s.name || `${t("label")} ${n + 1}`} aria-current={n === i ? "true" : undefined}
+                  className={cn("h-2 rounded-full transition-all duration-300", n === i ? "w-7 bg-brand-500" : "w-2 bg-slate-300 hover:bg-slate-400")} />
+              ))}
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

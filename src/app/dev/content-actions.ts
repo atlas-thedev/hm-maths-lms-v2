@@ -6,8 +6,11 @@ import { asService } from "@/lib/db/pg";
 import { KEY_RE, normalizeCenters, ONLINE_KEY, type Center } from "@/lib/centers";
 import { defaultFor, EDITABLE_NS, missingVars } from "@/lib/site-text";
 import {
-  getBrandSettings, getCenters, getFaqs, getSiteData, getSiteText, recordAuditLog, saveBrandSettings, saveCenters, saveFaqs, saveSiteData, saveSiteText, type FaqItem, type SiteText,
+  getBrandSettings, getCenters, getFaqs, getSiteData, getSiteText, recordAuditLog, saveBrandSettings, saveCenters, saveFaqs,
+  saveHeroSettings, saveSiteData, saveSiteText, saveTopResults, type FaqItem, type SiteText,
 } from "@/lib/settings";
+import { MAX_HERO_SLIDES, normalizeHero } from "@/lib/hero";
+import { isResultGrade, normalizeTopResults } from "@/lib/results";
 import { youtubeId } from "@/lib/youtube";
 import type { Locale } from "@/i18n/config";
 import type { ActionState } from "@/lib/types";
@@ -222,4 +225,67 @@ export async function saveFaqsAction(_p: ActionState, fd: FormData): Promise<Act
   revalidatePath("/dashboard/faq");
   revalidatePath("/");
   return { ok: true, message: `Saved ${out.length} FAQ questions. Live across the home page and student portal.` };
+}
+
+// ─── Teacher spot on the home page ("ගුරුවරයා"): one photo or a gallery of them ───
+export async function saveHeroSlidesAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const { user } = await requireDeveloper();
+  let raw: unknown;
+  try {
+    raw = JSON.parse(str(fd, "hero"));
+  } catch {
+    return { error: "Could not read the photo list. Reload the page and try again." };
+  }
+  const parsed = normalizeHero(raw);
+  const rawCount = Array.isArray((raw as { slides?: unknown[] })?.slides) ? (raw as { slides: unknown[] }).slides.length : 0;
+  if (rawCount > MAX_HERO_SLIDES) return { error: `You can show up to ${MAX_HERO_SLIDES} photos. Remove one first.` };
+  // A slide with neither a picture nor a name would render as an empty card.
+  const empty = parsed.slides.findIndex((s) => !s.photo && !s.nameEn && !s.nameSi);
+  if (empty !== -1) return { error: `Photo ${empty + 1}: add a picture or a name (or remove the row).` };
+
+  await saveHeroSettings(parsed, user.id);
+  await log(`Home page teacher photos → ${parsed.slides.length} slide(s)`, {
+    slides: parsed.slides.length,
+    enabled: parsed.slides.filter((s) => s.enabled).length,
+    every: parsed.intervalSeconds,
+  });
+  refreshAll();
+  return {
+    ok: true,
+    message: parsed.slides.length
+      ? `Saved. ${parsed.slides.filter((s) => s.enabled).length} photo(s) now rotate in the home page teacher section.`
+      : "Saved. The built-in single photo is back on the home page.",
+  };
+}
+
+// ─── Results page (/results) ───
+export async function saveResultsAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const { user } = await requireDeveloper();
+  let raw: unknown;
+  try {
+    raw = JSON.parse(str(fd, "results"));
+  } catch {
+    return { error: "Could not read the results list. Reload the page and try again." };
+  }
+  const next = normalizeTopResults(raw);
+  const rows = (raw as { results?: Record<string, unknown>[] })?.results ?? [];
+  for (const [i, r] of rows.entries()) {
+    const label = `Result #${i + 1}`;
+    if (!String(r.name ?? "").trim()) return { error: `${label}: the student's name is required.` };
+    if (!/^\d{4}$/.test(String(r.year ?? "").trim())) return { error: `${label}: the examination year must be 4 digits (e.g. 2025).` };
+    if (!String(r.district ?? "").trim()) return { error: `${label}: add the district (or “Island”) the result is from.` };
+    if (r.kind === "student" && !isResultGrade(r.grade)) return { error: `${label}: pick a grade.` };
+  }
+  if (next.results.length > 500) return { error: "That is more than 500 results — split the page by year instead." };
+
+  await saveTopResults(next, user.id);
+  await log(`Results page updated → ${next.results.length} result(s)`, {
+    count: next.results.length,
+    districts: next.results.filter((r) => r.kind === "district").length,
+    published: next.results.filter((r) => r.enabled).length,
+    sort: next.sort,
+  });
+  refreshAll();
+  revalidatePath("/results");
+  return { ok: true, message: `Saved ${next.results.length} result(s). Live on /results now.` };
 }

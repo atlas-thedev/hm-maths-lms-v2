@@ -626,7 +626,23 @@ assert.equal((await q(`select count(*)::int as n from public.enrollments where c
 await db.exec(sql22);
 await db.exec(sql22);
 assert.equal((await q(`select count(*)::int as n from public.combo_items`))[0].n, 0);
-console.log("✓ 0021/0022: re-running keeps classes + their enrollments, combo pairs skip missing classes");
+
+// 0022 must grant the table privileges its own policies assume: without them every role got
+// "permission denied for table combo_items" on a single-deploy database (admin could not save a Combo pack).
+assert.equal((await q(`select has_table_privilege('authenticated','public.combo_items','SELECT') s,
+                              has_table_privilege('authenticated','public.combo_items','INSERT') i`))[0].s, true);
+const [comboA] = await q(`select id from public.classes where title = '2027 A/L Combined Maths - Theory'`);
+const [comboB] = await q(`select id from public.classes where title = '2027 A/L Combined Maths - Revision'`);
+const [comboPack] = await q(`select id from public.classes where title = '2027 A/L Combined Maths - Full Pack (Theory + Revision + Paper)'`);
+// The owner (who builds packs) can write and read the pairs …
+await as(OWNER, () => q(`insert into public.combo_items (combo_id, class_id) values ($1,$2),($1,$3)`, [comboPack.id, comboA.id, comboB.id]));
+assert.equal((await as(OWNER, () => q(`select * from public.combo_items where combo_id=$1`, [comboPack.id]))).length, 2);
+// … a normal admin still cannot (0015 keeps class structure owner-only) …
+await fails(as(ADMIN, () => q(`insert into public.combo_items (combo_id, class_id) values ($1,$2)`, [comboPack.id, comboA.id])), "admin writing combo_items (owner-only)");
+// … and a student can read them (the store page needs the children) but never write them.
+assert.equal((await as(S1, () => q(`select class_id from public.combo_items where combo_id=$1`, [comboPack.id]))).length, 2);
+await fails(as(S1, () => q(`insert into public.combo_items (combo_id, class_id) values ($1,$2)`, [comboPack.id, comboB.id])), "student writing combo_items");
+console.log("✓ 0021/0022: re-running keeps classes + their enrollments, combo pairs skip missing classes, combo_items is usable by staff and readable by students");
 
 // ---- 0023: paid access lasts 40 days from approval
 const sql23 = readFileSync(new URL("../db/migrations/0023_access_expiry.sql", import.meta.url), "utf8");

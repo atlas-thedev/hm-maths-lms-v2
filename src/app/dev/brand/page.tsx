@@ -1,5 +1,5 @@
 import { requireDeveloper } from "@/lib/auth";
-import { getBrandSettings, getSiteText } from "@/lib/settings";
+import { getBrandSettings, getHeroSettings, getSiteText } from "@/lib/settings";
 import { defaultFor } from "@/lib/site-text";
 import { MESSAGES } from "@/i18n/messages";
 import { PageHeader } from "@/components/ui";
@@ -7,6 +7,7 @@ import { publicImage } from "@/lib/public-image";
 import { SITE } from "@/content/site";
 import { SITE_URL } from "@/lib/seo";
 import { BrandForm, SeoForm } from "./brand-forms";
+import { HeroSlidesForm } from "./hero-slides-form";
 
 export const metadata = { title: "Brand & SEO" };
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ const keywordsOf = (l: "en" | "si") => ((MESSAGES[l].common as { meta: { keyword
 
 export default async function DevBrandPage() {
   await requireDeveloper();
-  const [brand, text] = await Promise.all([getBrandSettings(), getSiteText()]);
+  const [brand, text, hero] = await Promise.all([getBrandSettings(), getSiteText(), getHeroSettings()]);
   const seo = (l: "en" | "si") => ({
     title: text[l]["common.meta.title"] ?? defaultFor(l, "common.meta.title") ?? "",
     description: text[l]["common.meta.description"] ?? defaultFor(l, "common.meta.description") ?? "",
@@ -28,6 +29,7 @@ export default async function DevBrandPage() {
         <BrandForm initial={brand} builtIn={{ teacher: publicImage(SITE.teacherImage) ?? SITE.youtube.avatar ?? null, hero: "/images/hasitha-hero.webp", group: publicImage(SITE.galleryImage) }} />
         <SeoForm en={seo("en")} si={seo("si")} brand={brand.name} url={SITE_URL.replace(/^https?:\/\//, "")} />
       </div>
+      <HeroSlidesForm initial={hero} />
     </div>
   );
 }

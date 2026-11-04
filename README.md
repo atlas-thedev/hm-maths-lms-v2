@@ -39,6 +39,8 @@ npm run dev                  # http://localhost:3000
 | Every label, heading, button, error message (English) | `src/i18n/messages/en/*.json` |
 | Same in Sinhala | `src/i18n/messages/si/*.json` (missing keys fall back to English) |
 | Home page: hero text, announcements ticker, story milestones, testimonials, FAQ, placeholder classes | `src/i18n/messages/<lang>/landing.json` |
+| Teacher photos on the home page (one, or a gallery that rotates) | Developer panel → **Brand & SEO** → *Teacher photos* (or `/dev/brand`) |
+| Results shown on `/results` (district toppers + every student result) | Developer panel → **Results** (`/dev/results`) |
 | Dashboard banner slides | `portal.json` → `dashboard.banners` |
 | Phone, WhatsApp, e-mail, address, social links, bank accounts, WhatsApp channels, testimonial YouTube video ID | `src/content/site.json` |
 | Tutor photo on the hero / photo on login & register | drop `public/images/tutor.png` (transparent PNG) and `public/images/auth-bg.jpg` — shown automatically when present |
@@ -71,6 +73,7 @@ Rules for new screens: build with the library components; use theme classes (`bg
 - **Classroom** – live link readable from the database only from 20 min before start until 30 min after the end, and only for paid months. Recordings play in a locked player with a phone + NIC watermark.
 - **Exams** – MCQ timing and marking happen inside Postgres (`start_exam` / `submit_mcq`); the answer key is shown in the review only after the paper closes; late submissions are not ranked. Structured papers: upload answer-sheet photos, the admin grades.
 - **Papers & marks** – admin enters marks; paper / center / all-island leaderboards (other students' Student ID and school are not shown), streaks and badges.
+- **Results page** – `/results` shows the district top results as big cards and every other result as a line with its **grade (A / B / C …)**, exam year and district; students without a photo show their initials. Content comes from Developer panel → Results, so nothing is hard-coded.
 - **Notifications (bell)** – payment approved / rejected, tute order updates, admin site updates and Notices (General / Urgent / Exam Notice, optionally targeted to a class and/or batch) in one page with an unread count; the portal checks for new ones every 30 s.
 
 ## 6. Tests

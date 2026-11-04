@@ -8,3 +8,7 @@ next-env.d.ts
 .vercel
 .dev-stack
 storage-data
+
+# deploy credentials (never commit)
+.env.deploy
+.secrets/
