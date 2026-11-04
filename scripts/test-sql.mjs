@@ -805,5 +805,18 @@ assert.equal((await q(`select count(*)::int as n from public.student_results whe
 assert.equal((await q(`select name from public.student_results where exam_number='8243352'`))[0].name, 'Reviewed name');
 console.log("✓ 0028: poster drafts are private; reruns preserve edits and deletions");
 
+// ---- 0029: publish only the imported rows once, preserving later edits and unpublishing
+const sql29 = readFileSync(new URL("../db/migrations/0029_publish_2025_poster_results.sql", import.meta.url), "utf8");
+await q(`update public.student_results set name='Edited import' where name='සෙනිතු සිල්වා' and exam_year=2025`);
+await db.exec(sql29); await db.exec(sql29);
+assert.equal((await as(null, () => q(`select count(*)::int as n from public.student_results where exam_year=2025`)))[0].n, 55);
+assert.equal((await q(`select is_published from public.student_results where name='Reviewed name'`))[0].is_published, false, "pre-existing drafts are not published");
+assert.equal((await q(`select is_published from public.student_results where name='Edited import'`))[0].is_published, true, "edits to imported records are preserved and published");
+await q(`update public.student_results set is_published=false where name='Edited import'`);
+await db.exec(sql26); await db.exec(sql27); await db.exec(sql28); await db.exec(sql29);
+assert.equal((await q(`select is_published from public.student_results where name='Edited import'`))[0].is_published, false, "later unpublishing survives redeployment");
+assert.equal((await q(`select count(*)::int as n from public.student_results where exam_year=2025`))[0].n, 56);
+console.log("✓ 0029: imported results published once; other drafts and later unpublishing stay untouched");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);
