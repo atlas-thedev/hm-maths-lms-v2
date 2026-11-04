@@ -14,7 +14,7 @@ Planned work: **[PLAN.md](PLAN.md)**.
 | --- | --- | --- |
 | Website | `src/app` (Next.js on 127.0.0.1:3000) | Pages, server actions, API routes |
 | Database client | `src/lib/db/*` | Our own small client: `rest.ts` (PostgREST query builder over `fetch`), `core.ts`/`server.ts` (login, sessions, `from` / `rpc` / `storage` / `auth`), `pg.ts` (direct connection for login and files). No third-party database SDK. |
-| Database | `deploy/00_bootstrap.sql` → `db/migrations/0001…0027` → `deploy/99_grants.sql` | Re-applied on every deploy — every file must stay safe to re-run |
+| Database | `deploy/00_bootstrap.sql` → `db/migrations/0001…0028` → `deploy/99_grants.sql` | Re-applied on every deploy — every file must stay safe to re-run |
 | Login | `src/lib/db/core.ts`, `server.ts`, `jwt.ts` | bcrypt passwords in `auth.users`; 30-day signed cookie `hm_session` tied to a row in `auth.sessions` (logout revokes it; a password change revokes all) |
 | Browser → DB | `/api/rest/*` | Same-origin proxy to PostgREST; adds the session token only for a live session |
 | Files | `STORAGE_DIR/<bucket>/…`, `/api/storage/*` | Upload checks real file type + `storage.objects` RLS; downloads via short-lived signed links |
@@ -88,3 +88,5 @@ Add students with a name, A/L year and grades. The index number is optional and 
 - `npm run test:ui` – Playwright journey: register → login → enroll with a slip → admin approves → classroom → MCQ → leaderboard, English + Sinhala, phone + desktop.
 
 `test:rest` and `test:ui` need a database. `bash scripts/dev-stack.sh up` starts a throwaway PostgreSQL (:55442) and PostgREST (:55443) under `.dev-stack/` (never the production one); `eval "$(bash scripts/dev-stack.sh env)"` exports the variables. Run `npm run dev:db` to start it.
+
+The 2025 poster import (migration `0028`) creates review-only drafts once; it does not recreate deleted results or overwrite edits on later deploys. Review names and ranks before publishing. The two posters label Z-score 2.5971 with different names, so they are separate drafts until verified. Imported portrait files are public static assets, even while records remain drafts.

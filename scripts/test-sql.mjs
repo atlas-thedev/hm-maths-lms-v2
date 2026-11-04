@@ -790,5 +790,20 @@ await db.exec(sql26); await db.exec(sql27);
 assert.equal((await as(null, () => q(`select exam_number from public.student_results where name='No index'`)))[0].exam_number, "");
 console.log("✓ 0027: optional index numbers preserve existing values, accept blanks and keep the length limit on redeploy");
 
+// ---- 0028: one-time poster import stays private until checked, never overwrites edits on redeploy
+const sql28 = readFileSync(new URL("../db/migrations/0028_seed_2025_results.sql", import.meta.url), "utf8");
+await q(`insert into public.student_results (name, exam_year, exam_number, grades) values ('Existing result', 2025, '8243352', 'existing')`);
+await db.exec(sql28); await db.exec(sql28);
+assert.equal((await q(`select count(*)::int as n from public.student_results where exam_year=2025`))[0].n, 57);
+assert.equal((await q(`select name from public.student_results where exam_number='8243352'`))[0].name, 'Existing result');
+assert.equal((await as(null, () => q(`select * from public.student_results where exam_year=2025`))).length, 0);
+assert.equal((await q(`select count(*)::int as n from public.student_results where exam_year=2025 and photo_url <> ''`))[0].n, 3);
+await q(`update public.student_results set name='Reviewed name' where exam_number='8243352'`);
+await q(`delete from public.student_results where exam_number='8288674'`);
+await db.exec(sql26); await db.exec(sql27); await db.exec(sql28);
+assert.equal((await q(`select count(*)::int as n from public.student_results where exam_year=2025`))[0].n, 56);
+assert.equal((await q(`select name from public.student_results where exam_number='8243352'`))[0].name, 'Reviewed name');
+console.log("✓ 0028: poster drafts are private; reruns preserve edits and deletions");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);

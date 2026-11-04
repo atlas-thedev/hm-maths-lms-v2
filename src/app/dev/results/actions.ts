@@ -29,7 +29,7 @@ export async function saveResultAction(_prev: ActionState, fd: FormData): Promis
   if (id && !uuid(id)) return { error: "Invalid result ID." };
   if (!name || name.length > 120 || examNumber.length > 40 || !grades || grades.length > 80 || distinction.length > 120) return { error: "Enter a name and grades within the field limits; the optional index number must be at most 40 characters." };
   if (!/^\d{4}$/.test(year) || Number(year) < 1900 || Number(year) > 2100) return { error: "Enter a valid four-digit exam year." };
-  if (photoUrl && !photo(photoUrl, "students")) return { error: "Please upload a valid student photo." };
+  if (photoUrl && !photo(photoUrl, "students") && !/^\/images\/results-2025\/(district-02|district-04|district-12|maths-ict)\.webp$/.test(photoUrl)) return { error: "Please upload a valid student photo." };
   const old = id ? await db.from("student_results").select("photo_url").eq("id", id).maybeSingle() : null;
   if (old?.error) return { error: old.error.message };
   const row = { name, exam_year: Number(year), exam_number: examNumber, grades, distinction, photo_url: photoUrl, is_published: fd.get("is_published") === "on" };
