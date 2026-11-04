@@ -21,7 +21,7 @@ export default async function ResultsPage() {
       <h3 className={`font-display font-bold ${large ? "text-2xl" : "text-lg"}`}>{r.name}</h3>
       <p className="mt-2 font-display text-xl font-extrabold text-brand-700">{r.grades}</p>
       <p className="mt-2 text-sm text-slate-600">{t("year")}: {r.exam_year}</p>
-      <p className="mt-1 break-words text-sm text-slate-600">{t("examNumber")}: {r.exam_number}</p>
+      {r.exam_number && <p className="mt-1 break-words text-sm text-slate-600">{t("examNumber")}: {r.exam_number}</p>}
     </div>
   </li>;
   return <PublicShell><section className="bg-landing-hero pb-14 pt-32 text-white"><div className="container"><GraduationCap className="h-8 w-8 text-brand-300" /><h1 className="mt-3 font-display text-4xl font-extrabold sm:text-5xl">{t("title")}</h1><p className="mt-3 text-white/75">{t("subtitle")}</p></div></section>

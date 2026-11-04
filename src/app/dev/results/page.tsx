@@ -18,7 +18,7 @@ function ResultForm({ result }: { result?: StudentResult }) {
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Student name" htmlFor={`name-${id}`}><Input id={`name-${id}`} name="name" required maxLength={120} defaultValue={result?.name} /></Field>
       <Field label="A/L exam year" htmlFor={`year-${id}`}><Input id={`year-${id}`} name="exam_year" type="number" min={1900} max={2100} required defaultValue={result?.exam_year} /></Field>
-      <Field label="Exam index number" htmlFor={`number-${id}`}><Input id={`number-${id}`} name="exam_number" required maxLength={40} defaultValue={result?.exam_number} /></Field>
+      <Field label="Exam index number (optional)" htmlFor={`number-${id}`}><Input id={`number-${id}`} name="exam_number" maxLength={40} defaultValue={result?.exam_number} /></Field>
       <Field label="Grades / results" htmlFor={`grades-${id}`} hint="For example: A A B"><Input id={`grades-${id}`} name="grades" required maxLength={80} defaultValue={result?.grades} /></Field>
     </div>
     <Field label="Special achievement (optional)" htmlFor={`distinction-${id}`} hint="For example: Colombo District Rank 1. Filling this makes the result a large featured card."><Input id={`distinction-${id}`} name="distinction" maxLength={120} defaultValue={result?.distinction} /></Field>

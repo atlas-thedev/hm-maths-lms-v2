@@ -27,7 +27,7 @@ export async function saveResultAction(_prev: ActionState, fd: FormData): Promis
   const id = text(fd, "id"), name = text(fd, "name"), year = text(fd, "exam_year"), examNumber = text(fd, "exam_number"), grades = text(fd, "grades"), distinction = text(fd, "distinction");
   const photoUrl = text(fd, "remove_photo") === "on" ? "" : text(fd, "photo_url");
   if (id && !uuid(id)) return { error: "Invalid result ID." };
-  if (!name || name.length > 120 || !examNumber || examNumber.length > 40 || !grades || grades.length > 80 || distinction.length > 120) return { error: "Enter a name, exam number and grades within the field limits." };
+  if (!name || name.length > 120 || examNumber.length > 40 || !grades || grades.length > 80 || distinction.length > 120) return { error: "Enter a name and grades within the field limits; the optional index number must be at most 40 characters." };
   if (!/^\d{4}$/.test(year) || Number(year) < 1900 || Number(year) > 2100) return { error: "Enter a valid four-digit exam year." };
   if (photoUrl && !photo(photoUrl, "students")) return { error: "Please upload a valid student photo." };
   const old = id ? await db.from("student_results").select("photo_url").eq("id", id).maybeSingle() : null;

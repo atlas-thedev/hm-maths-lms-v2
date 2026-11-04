@@ -777,5 +777,18 @@ await as(ADMIN, () => q(`delete from public.student_results where name='Draft'`)
 assert.equal((await as(null, () => q(`select * from public.student_results`))).length, 1);
 console.log("✓ 0026: migrations re-run safely, only developers manage results and images, drafts stay private");
 
+// ---- 0027: optional result index numbers survive a full deploy re-run
+const sql27 = readFileSync(new URL("../db/migrations/0027_optional_result_index.sql", import.meta.url), "utf8");
+await db.exec(sql27); await db.exec(sql27);
+assert.equal((await q(`select exam_number from public.student_results where name='Featured'`))[0].exam_number, "123");
+await as(ADMIN, () => q(`insert into public.student_results (name, exam_year, grades, is_published) values ('No index', 2026, 'A A B', true)`));
+assert.equal((await as(null, () => q(`select exam_number from public.student_results where name='No index'`)))[0].exam_number, "");
+await as(ADMIN, () => q(`update public.student_results set exam_number='789' where name='No index'`));
+await as(ADMIN, () => q(`update public.student_results set exam_number='' where name='No index'`));
+await fails(as(ADMIN, () => q(`update public.student_results set exam_number=repeat('1', 41) where name='No index'`)), "index number longer than 40 characters");
+await db.exec(sql26); await db.exec(sql27);
+assert.equal((await as(null, () => q(`select exam_number from public.student_results where name='No index'`)))[0].exam_number, "");
+console.log("✓ 0027: optional index numbers preserve existing values, accept blanks and keep the length limit on redeploy");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);
