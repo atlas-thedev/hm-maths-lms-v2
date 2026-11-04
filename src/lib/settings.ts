@@ -6,6 +6,8 @@ import { DEFAULT_THEME, normalizeTheme, type ThemeSettings } from "@/lib/theme";
 import { BRAND } from "@/config/brand";
 import { normalizeCenters, type Center } from "@/lib/centers";
 import { normalizeSiteData, type SiteData } from "@/lib/site-data";
+import { normalizeHero, type HeroSettings } from "@/lib/hero";
+import { normalizeTopResults, type ResultsSettings } from "@/lib/results";
 
 /*
  * Site settings stored in public.system_settings (key → JSON). Server-only.
@@ -18,7 +20,7 @@ import { normalizeSiteData, type SiteData } from "@/lib/site-data";
 
 // ─── generic read / write ───
 // Every setting is read with ONE query per request (React cache()), so adding settings costs nothing extra.
-const ALL_KEYS = ["landing_stats", "theme", "maintenance", "announcement", "access", "brand", "centers", "site_text", "site_data", "faqs"];
+const ALL_KEYS = ["landing_stats", "theme", "maintenance", "announcement", "access", "brand", "centers", "site_text", "site_data", "faqs", "hero_slides", "top_results"];
 const allSettings = cache(async (): Promise<Record<string, unknown>> => {
   try {
     const rows = await asService(async (c) => (await c.query("select key, value from public.system_settings where key = any($1::text[])", [ALL_KEYS])).rows);
@@ -122,6 +124,14 @@ export const getBrand = cache(async (): Promise<Brand> => {
 // ─── Class centers ───
 export const getCenters = cache(async (): Promise<Center[]> => normalizeCenters(await readRaw("centers")));
 export const saveCenters = (next: Center[], actorId: string) => writeSetting("centers", normalizeCenters(next), actorId);
+
+// ─── Teacher spot on the home page ("ගුරුවරයා"): one photo or a small gallery ───
+export const getHeroSettings = cache(async (): Promise<HeroSettings> => normalizeHero(await readRaw("hero_slides")));
+export const saveHeroSettings = (next: HeroSettings, actorId: string) => writeSetting("hero_slides", normalizeHero(next), actorId);
+
+// ─── Results shown on the public /results page ───
+export const getTopResults = cache(async (): Promise<ResultsSettings> => normalizeTopResults(await readRaw("top_results")));
+export const saveTopResults = (next: ResultsSettings, actorId: string) => writeSetting("top_results", normalizeTopResults(next), actorId);
 
 // ─── Contact, social links, channels, bank accounts, featured videos ───
 export const getSiteData = cache(async (): Promise<SiteData> => normalizeSiteData(await readRaw("site_data")));

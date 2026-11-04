@@ -14,7 +14,8 @@
     "close": "Close menu",
     "features": "Features",
     "register": "Register",
-    "how": "How it works"
+    "how": "How it works",
+    "results": "Results"
   },
   "hero": {
     "kicker": "G.C.E. A/L Combined Mathematics",
@@ -353,7 +354,8 @@
       "classes": "Classes",
       "stories": "Stories",
       "support": "FAQ",
-      "gallery": "Gallery"
+      "gallery": "Gallery",
+      "results": "Results"
     },
     "hero": {
       "kicker": "G.C.E. Advanced Level",
@@ -576,5 +578,10 @@
     "otherCenters": "Other class centers",
     "allCenters": "All centers",
     "online": "Online"
+  },
+  "resultsPage": {
+    "metaTitle": "A/L Combined Maths Results",
+    "metaDescription": "{count} G.C.E. Advanced Level Combined Mathematics results from the {brand} classes — district toppers and every result we have permission to publish.",
+    "title": "Results"
   }
 }

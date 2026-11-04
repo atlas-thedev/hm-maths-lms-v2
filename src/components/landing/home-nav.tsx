@@ -9,9 +9,9 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { useT } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 
-const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["stories", "stories"], ["gallery", "gallery"], ["support", "support"]] as const;
+const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["results", "results"], ["stories", "stories"], ["gallery", "gallery"], ["support", "support"]] as const;
 /** Sections that have a page of their own: the nav goes there instead of scrolling. */
-const PAGE_LINKS: Record<string, string> = { gallery: "/gallery" };
+const PAGE_LINKS: Record<string, string> = { gallery: "/gallery", results: "/results" };
 
 /** Floating white pill navbar (cmwithmn-style). */
 export function HomeNav({ account }: { account: "guest" | "student" | "admin" }) {

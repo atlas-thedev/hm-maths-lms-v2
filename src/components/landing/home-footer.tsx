@@ -14,7 +14,7 @@ export async function HomeFooter() {
   const locale = await getLocale();
   const centerNames = (await getCenters()).map((c) => centerLabel(c, locale));
   const wa = whatsappLink(SITE.contact.whatsapp, "Hi");
-  const quick = [["/dashboard", t("nav.dashboard")], ["/store", t("nav.store")], ["/#classes", t("home.nav.classes")], ["/gallery", t("home.nav.gallery")], ["/#support", t("home.nav.support")]] as const;
+  const quick = [["/dashboard", t("nav.dashboard")], ["/store", t("nav.store")], ["/#classes", t("home.nav.classes")], ["/results", t("home.nav.results")], ["/gallery", t("home.nav.gallery")], ["/#support", t("home.nav.support")]] as const;
   return (
     <footer className="container pb-8 pt-4">
       <div className="rounded-[2rem] border border-white/10 bg-ink p-8 text-white shadow-soft backdrop-blur">

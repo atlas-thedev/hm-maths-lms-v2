@@ -1,16 +1,16 @@
 import { HomeNav } from "@/components/landing/home-nav";
-import { HomeAbout, HomeCenters, HomeChannels, HomeCommunity, HomeCta, HomeGallery, HomeHero, HomeProcess, ScrollProgress, HomeStories, HomeTeacher } from "@/components/landing/home-sections";
+import { HomeAbout, HomeCenters, HomeChannels, HomeCommunity, HomeCta, HomeGallery, HomeHero, HomeProcess, ScrollProgress, HomeStories, HomeTeacher, type TeacherSlide } from "@/components/landing/home-sections";
 import { HomeFooter } from "@/components/landing/home-footer";
 import { MarqueeBand } from "@/components/landing/marquee-band";
 import { SmoothScroll } from "@/components/landing/smooth-scroll";
 import { ClassesCarousel, type CarouselClass } from "@/components/landing/classes-carousel";
 import { Faq } from "@/components/landing/faq";
 import { getSession, isStaffRole } from "@/lib/auth";
-import { getScheduleLabel, getT } from "@/i18n/server";
+import { getLocale, getScheduleLabel, getT } from "@/i18n/server";
 import { SITE } from "@/content/site";
 import { publicImage } from "@/lib/public-image";
 import type { ClassRow } from "@/lib/types";
-import { getBrand, getBrandSettings, getCenters, getLandingStatsSettings, getSiteData } from "@/lib/settings";
+import { getBrand, getBrandSettings, getCenters, getHeroSettings, getLandingStatsSettings, getSiteData } from "@/lib/settings";
 import { getLatestPhotos } from "@/lib/gallery-data";
 import { siteGraph } from "@/lib/seo-graph";
 import { jsonLd } from "@/lib/seo";
@@ -19,9 +19,11 @@ import { mapPoint } from "@/lib/centers";
 type Placeholder = { title: string; type: string; year: number; lines: string[] };
 
 export default async function HomePage() {
-  const [{ db, user, profile }, t, sched, tm, landingStats, brand, brandSettings, centers, SITEDATA] = await Promise.all([
+  const [{ db, user, profile }, t, tt, locale, sched, tm, landingStats, brand, brandSettings, centers, SITEDATA, hero] = await Promise.all([
     getSession(),
     getT("landing"),
+    getT("landing.home.teacher"),
+    getLocale(),
     getScheduleLabel(),
     getT("common.meta"),
     getLandingStatsSettings(),
@@ -29,6 +31,7 @@ export default async function HomePage() {
     getBrandSettings(),
     getCenters(),
     getSiteData(),
+    getHeroSettings(),
   ]);
   const galleryPhotos = await getLatestPhotos(db, 9);
   const { data } = await db.from("classes").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(10);
@@ -48,8 +51,25 @@ export default async function HomePage() {
     : placeholders.map((p) => ({ id: null, title: p.title, type: p.type, year: p.year, town: null, schedule: null, fee: 0, isFree: false, banner: null, lines: p.lines }));
 
   const account = !user ? "guest" : isStaffRole(profile?.role) ? "admin" : "student";
-  // Photos: drop files into /public/images to replace the YouTube profile picture.
-  const teacherPhoto = brandSettings.teacherPhoto || publicImage(SITE.teacherImage);
+  // Teacher spot: the Developer panel's slides (one or many), else the teacher photo / YouTube avatar.
+  // A slide without its own name or title keeps the translated wording, so the page stays bilingual.
+  const pick = (en: string, si: string) => (locale === "si" ? si || en : en || si);
+  const heroSlides: TeacherSlide[] = hero.slides.filter((s) => s.enabled).map((s) => ({
+    id: s.id,
+    photo: s.photo || brandSettings.teacherPhoto || publicImage(SITE.teacherImage) || SITEDATA.youtube.avatar || null,
+    name: pick(s.nameEn, s.nameSi),
+    title: pick(s.titleEn, s.titleSi),
+    caption: pick(s.captionEn, s.captionSi),
+    href: s.href || null,
+    isReal: !!(s.photo || brandSettings.teacherPhoto || publicImage(SITE.teacherImage)),
+  }));
+  if (!heroSlides.length) {
+    const teacherPhoto = brandSettings.teacherPhoto || publicImage(SITE.teacherImage);
+    heroSlides.push({
+      id: "built-in", photo: teacherPhoto ?? SITEDATA.youtube.avatar ?? null,
+      name: tt("name"), title: tt("role"), caption: "", href: null, isReal: !!teacherPhoto,
+    });
+  }
   return (
     <div className="force-light theme-orange relative overflow-x-clip bg-landing-bg text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@graph": siteGraph({ brand, centers, site: SITEDATA, description: tm("description"), faq: t.raw<{ q: string; a: string }[]>("faq.items") ?? [], classes: rows.slice(0, 8).map((c) => ({ id: c.id, title: c.title, description: c.description, fee: Number(c.fee), isFree: c.is_free })) }) }) }} />
@@ -61,7 +81,7 @@ export default async function HomePage() {
         <MarqueeBand />
         <HomeAbout />
         <HomeProcess />
-        <HomeTeacher photo={teacherPhoto ?? SITEDATA.youtube.avatar} isReal={!!teacherPhoto} />
+        <HomeTeacher slides={heroSlides} intervalSeconds={hero.intervalSeconds} />
         <HomeCenters points={centers.map((c) => ({ key: c.key, p: mapPoint(c) }))} />
         <ClassesCarousel classes={classes} />
         <HomeStories stories={SITEDATA.youtube.stories} lessons={SITEDATA.youtube.lessons} />
