@@ -284,6 +284,15 @@ try {
   console.log("Live support chat");
   await go(sp, "/dashboard");
   await sp.getByRole("button", { name: "Chat with us" }).click();
+  const supportStyles = await sp.getByRole("dialog").evaluate((el) => {
+    const probe = document.createElement("span");
+    probe.style.backgroundColor = "hsl(var(--landing-hero))";
+    el.appendChild(probe);
+    const matchesHeader = getComputedStyle(el.querySelector("header")).backgroundColor === getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return { border: getComputedStyle(el).borderTopWidth, matchesHeader };
+  });
+  check(supportStyles.border === "0px" && supportStyles.matchesHeader, "support widget matches the landing header with no outer border");
   await sp.getByRole("button", { name: /Live chat/ }).click();
   await sp.getByLabel("Your message").fill(`Slip question ${tag}`);
   await sp.getByRole("button", { name: "Start chat" }).click();
