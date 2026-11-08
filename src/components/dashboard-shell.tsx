@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity, Code2, Images, Link2, MapPin, Palette, Tag, Type, Power, Shapes, UsersRound, Wrench,
   ArrowLeft, Bell, BookOpen, CalendarDays, ChevronDown, ChevronRight, ClipboardList, CreditCard, FileText, Flame, GraduationCap, HelpCircle, Home,
-  LayoutDashboard, LogOut, Megaphone, Menu, Moon, Package, Phone, PlayCircle, Radio, ScanLine, ShieldCheck, ShoppingBag, Sun, Trophy, Truck, User, Users, X, type LucideIcon,
+  LayoutDashboard, LogOut, Megaphone, Menu, MessageCircle, Moon, Package, Phone, PlayCircle, Radio, ScanLine, ShieldCheck, ShoppingBag, Sun, Trophy, Truck, User, Users, X, type LucideIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { LogoMark } from "@/components/logo";
@@ -28,7 +28,7 @@ const ICONS = {
   payments: CreditCard, store: ShoppingBag, notices: Bell, profile: User, students: Users, megaphone: Megaphone,
   package: Package, grad: GraduationCap, home: Home, events: CalendarDays, channels: Radio, contact: Phone, faq: HelpCircle, qr: ScanLine, shield: ShieldCheck,
   images: Images, map: MapPin, link: Link2, type: Type, brand: Tag, code: Code2, palette: Palette, power: Power, activity: Activity, wrench: Wrench, kit: Shapes, team: UsersRound,
-  delivery: Truck,
+  delivery: Truck, chat: MessageCircle,
 } satisfies Record<string, LucideIcon>;
 export type IconKey = keyof typeof ICONS;
 
@@ -72,9 +72,24 @@ export function DashboardShell({ area, groups, tabs, user, notices, menu, streak
   const home = area === "admin" ? "/admin" : area === "dev" ? "/dev" : "/dashboard";
   const initialPending = all.find((i) => i.href === "/admin/payments")?.badge ?? 0;
   const { bell, pendingReceipts } = useBellCount(notices?.count ?? 0, !!notices, area === "dev" ? "admin" : area, initialPending);
+  const [supportUnread, setSupportUnread] = useState(0);
+  useEffect(() => {
+    if (area !== "admin") return;
+    const check = async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const r = await fetch("/api/support/admin?count=1", { cache: "no-store" });
+        if (r.ok) { const data = await r.json(); setSupportUnread(typeof data.count === "number" ? data.count : 0); }
+      } catch { /* keep the last known count */ }
+    };
+    void check();
+    const timer = window.setInterval(check, 30000);
+    return () => window.clearInterval(timer);
+  }, [area]);
   const badgeOf = (item: ShellItem) => {
     if (notices && item.href === notices.href) return bell;
     if (area === "admin" && item.href === "/admin/payments") return pendingReceipts;
+    if (area === "admin" && item.href === "/admin/support") return supportUnread;
     return item.badge;
   };
 

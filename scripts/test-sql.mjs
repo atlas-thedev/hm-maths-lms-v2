@@ -818,5 +818,25 @@ assert.equal((await q(`select is_published from public.student_results where nam
 assert.equal((await q(`select count(*)::int as n from public.student_results where exam_year=2025`))[0].n, 56);
 console.log("✓ 0029: imported results published once; other drafts and later unpublishing stay untouched");
 
+
+// ---- 0030: chat data is private from both PostgREST roles and survives redeploy.
+const sql30 = readFileSync(new URL("../db/migrations/0030_support_chat.sql", import.meta.url), "utf8");
+await db.exec(sql30); await db.exec(sql30);
+const conversation = (await q(`insert into public.support_conversations (guest_token_hash, visitor_name, category) values ('test-hash','Guest','bug') returning id`))[0].id;
+await q(`insert into public.support_messages (conversation_id, sender, sender_name, body) values ($1,'visitor','Guest','Help')`, [conversation]);
+await q(`insert into public.support_agents (conversation_id, staff_id) values ($1,$2)`, [conversation, ADMIN]);
+for (const uid of [null, S1, ADMIN]) for (const table of ['support_conversations', 'support_messages', 'support_agents']) {
+  await fails(as(uid, () => q(`select * from public.${table}`)), `support ${table} not exposed via REST to ${uid ?? 'anon'}`);
+}
+await fails(q(`insert into public.support_conversations (guest_token_hash, visitor_name, category) values ('other','Guest','fake')`), 'invalid support topic');
+await fails(q(`insert into public.support_messages (conversation_id, sender, sender_name, body) values ($1,'visitor','Guest',repeat('x',2001))`, [conversation]), 'oversized support message');
+await db.exec(sql30);
+await db.exec("set role service_role");
+try { assert.equal((await q(`select body from public.support_messages where conversation_id=$1`, [conversation]))[0].body, 'Help'); }
+finally { await db.exec("reset role"); }
+await q(`delete from public.support_conversations where id=$1`, [conversation]);
+assert.equal((await q(`select count(*)::int as n from public.support_messages where conversation_id=$1`, [conversation]))[0].n, 0);
+console.log("✓ 0030: chat tables are private, validated, redeploy-safe and cascade on deletion");
+
 console.log("\nALL SQL TESTS PASSED");
 process.exit(0);

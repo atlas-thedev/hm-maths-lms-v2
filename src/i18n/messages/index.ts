@@ -10,16 +10,18 @@ import enAuth from "./en/auth.json";
 import enPortal from "./en/portal.json";
 import enAdmin from "./en/admin.json";
 import enErrors from "./en/errors.json";
+import enSupport from "./en/support.json";
 import siCommon from "./si/common.json";
 import siLanding from "./si/landing.json";
 import siAuth from "./si/auth.json";
 import siPortal from "./si/portal.json";
 import siAdmin from "./si/admin.json";
 import siErrors from "./si/errors.json";
+import siSupport from "./si/support.json";
 import type { Locale } from "../config";
 import { mergeMessages, type Messages } from "../translate";
 
-const en: Messages = { common: enCommon, landing: enLanding, auth: enAuth, portal: enPortal, admin: enAdmin, errors: enErrors };
-const si: Messages = { common: siCommon, landing: siLanding, auth: siAuth, portal: siPortal, admin: siAdmin, errors: siErrors };
+const en: Messages = { common: enCommon, landing: enLanding, auth: enAuth, portal: enPortal, admin: enAdmin, errors: enErrors, support: enSupport };
+const si: Messages = { common: siCommon, landing: siLanding, auth: siAuth, portal: siPortal, admin: siAdmin, errors: siErrors, support: siSupport };
 
 export const MESSAGES: Record<Locale, Messages> = { en, si: mergeMessages(en, si) };

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_Sinhala, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { SupportWidget } from "@/components/support/support-widget";
 import { NavProgress } from "@/components/nav-progress";
 import { I18nProvider } from "@/i18n/client";
 import { getLocale, getMessages, getT } from "@/i18n/server";
@@ -104,6 +105,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       blocked = !isStaffRole(profile?.role);
     }
   }
+  const { profile } = blocked ? { profile: null } : await getSession();
   const css = themeCss(theme);
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -112,7 +114,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <I18nProvider locale={locale} messages={messages}>
           <NavProgress />
           <Providers nonce={h.get("x-nonce") ?? undefined} defaultMode={theme.defaultMode} allowToggle={theme.allowToggle}>
-            {blocked ? <MaintenanceScreen message={maintenance.message} until={maintenance.until} /> : children}
+            {blocked ? <MaintenanceScreen message={maintenance.message} until={maintenance.until} /> : <>{children}<SupportWidget accountName={profile?.full_name ?? null} /></>}
           </Providers>
         </I18nProvider>
       </body>

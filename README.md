@@ -14,11 +14,17 @@ Planned work: **[PLAN.md](PLAN.md)**.
 | --- | --- | --- |
 | Website | `src/app` (Next.js on 127.0.0.1:3000) | Pages, server actions, API routes |
 | Database client | `src/lib/db/*` | Our own small client: `rest.ts` (PostgREST query builder over `fetch`), `core.ts`/`server.ts` (login, sessions, `from` / `rpc` / `storage` / `auth`), `pg.ts` (direct connection for login and files). No third-party database SDK. |
-| Database | `deploy/00_bootstrap.sql` → `db/migrations/0001…0029` → `deploy/99_grants.sql` | Re-applied on every deploy — every file must stay safe to re-run |
+| Database | `deploy/00_bootstrap.sql` → `db/migrations/0001…0030` → `deploy/99_grants.sql` | Re-applied on every deploy — every file must stay safe to re-run |
 | Login | `src/lib/db/core.ts`, `server.ts`, `jwt.ts` | bcrypt passwords in `auth.users`; 30-day signed cookie `hm_session` tied to a row in `auth.sessions` (logout revokes it; a password change revokes all) |
 | Browser → DB | `/api/rest/*` | Same-origin proxy to PostgREST; adds the session token only for a live session |
 | Files | `STORAGE_DIR/<bucket>/…`, `/api/storage/*` | Upload checks real file type + `storage.objects` RLS; downloads via short-lived signed links |
 | Security headers | `src/lib/db/middleware.ts`, `next.config.ts` | Per-request CSP with a script nonce, HSTS, frame/permission policies |
+
+### Live support chat
+
+Visitors and signed-in students can choose WhatsApp (using the number from Developer → Contact & links) or the on-site text chat. Messages persist in PostgreSQL. Guests return to their conversation using an HttpOnly, 90-day browser cookie; signed-in students use their account. Clearing a guest's cookies or changing browsers loses access to that guest conversation. Do not ask for passwords or card details in chat; slips are uploaded through the existing Store/Payments flow, not chat.
+
+Staff use Admin → Live chat. Select a conversation and **Join chat** to reply; the current staff profile name and avatar appear to the visitor. Presence is based on an open, visible inbox and expires after about 45 seconds without a heartbeat; leaving or marking resolved removes presence. Visitor messages reopen resolved conversations. Staff can delete a conversation and its messages after a confirmation. Inbox badges and open chats update by polling, not push notifications; a closed browser will not receive an alert. Chat tables are denied to PostgREST users, and server routes enforce owner/guest-secret and staff checks. An app-instance-local rate limit is a basic spam deterrent, not a distributed abuse-prevention service. Backups include chat records; define a retention/deletion policy appropriate to the site's privacy requirements.
 
 ## 2. Run locally
 

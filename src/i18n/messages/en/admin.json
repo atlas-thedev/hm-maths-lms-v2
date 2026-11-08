@@ -1,5 +1,6 @@
 {
   "nav": {
+    "support": "Live chat",
     "overview": "Overview",
     "payments": "Slip approvals",
     "classes": "Classes & content",
@@ -600,6 +601,7 @@
     "engage": "Engage"
   },
   "crumbs": {
+    "support": "Live chat",
     "deliveries": "Tute delivery",
     "labels": "Labels",
     "payments": "Slip approvals",

@@ -280,6 +280,26 @@ try {
   const ap = await newPage(undefined, "en");
   await go(ap, "/login"); await ap.fill("#identifier", ADMIN_EMAIL); await ap.fill("#password", ADMIN_PW);
   await Promise.all([ap.waitForURL(/\/admin/, { timeout: 15000 }), ap.click("button[type=submit]")]); ok("admin login → /admin");
+  // Support: student starts a private conversation; staff explicitly joins and replies.
+  console.log("Live support chat");
+  await go(sp, "/dashboard");
+  await sp.getByRole("button", { name: "Chat with us" }).click();
+  await sp.getByRole("button", { name: /Live chat/ }).click();
+  await sp.getByLabel("Your message").fill(`Slip question ${tag}`);
+  await sp.getByRole("button", { name: "Start chat" }).click();
+  await sp.locator("[role=dialog] p").getByText(`Slip question ${tag}`).waitFor();
+  await go(ap, "/admin/support");
+  await ap.getByRole("button", { name: new RegExp(`Slip question ${tag}`) }).click();
+  await ap.getByRole("button", { name: "Join chat" }).click();
+  await ap.getByText("You joined this chat").waitFor();
+  await ap.getByLabel("Your message").fill(`Support reply ${tag}`);
+  await ap.getByRole("button", { name: "Send" }).click();
+  await sp.getByText(`Support reply ${tag}`).waitFor({ timeout: 20000 });
+  const [supportAdmin] = (await adminDb.query(`select p.full_name from public.profiles p join auth.users u on u.id=p.id where lower(u.email)=lower($1)`, [ADMIN_EMAIL])).rows;
+  check(await sp.locator("[role=dialog]").getByText(supportAdmin.full_name, { exact: true }).count() > 0, "student sees joined admin's name with reply");
+  await sp.getByRole("button", { name: "Close", exact: true }).click();
+  await ap.getByRole("button", { name: "Leave chat" }).click();
+
   for (const [name, path] of [["overview", "/admin"], ["payments", "/admin/payments"], ["classes", "/admin/classes"], ["class", `/admin/classes/${cls.id}`], ["new-class", "/admin/classes/new"], ["exams", "/admin/exams"], ["exam", `/admin/exams/${exam.id}`], ["new-exam", "/admin/exams/new"], ["notices", "/admin/notices"], ["students", "/admin/students"], ["store", "/admin/store"], ["owner", "/admin/owner"]]) {
     const st = await go(ap, path); check(st === 200, `${path} → ${st}`);
     const mk = await missingKeys(ap); if (mk.length) bad(`${path} untranslated: ${[...new Set(mk)].join(", ")}`);
