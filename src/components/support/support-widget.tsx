@@ -67,27 +67,27 @@ export function SupportWidget({ accountName }: { accountName: string | null }) {
   }
   if (hidden) return null;
   return <div className={cn("fixed right-4 z-[80] font-sans", path.startsWith("/dashboard") ? "bottom-24 sm:bottom-5" : "bottom-5")}>
-    {open ? <section role="dialog" aria-labelledby="support-title" className="flex h-[min(680px,calc(100dvh-7rem))] w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl bg-card text-card-foreground shadow-[0_18px_70px_rgba(0,0,0,.3)]">
+    {open ? <section role="dialog" aria-labelledby="support-title" className="flex h-[min(680px,calc(100dvh-7rem))] w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border-0 bg-transparent text-card-foreground shadow-[0_18px_70px_rgba(0,0,0,.3)]">
       <header className="flex shrink-0 items-center gap-3 bg-landing-hero px-5 py-4 text-white">
         {screen === "chat" ? <button type="button" onClick={() => setScreen("choice")} aria-label={t("back")} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-500/15 text-brand-300 hover:bg-brand-500/25"><ArrowLeft className="h-4 w-4" /></button> : <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-brand-500 text-[#141414]"><LifeBuoy className="h-5 w-5" /></span>}
         <div className="min-w-0 flex-1"><h2 id="support-title" className="font-sans text-base font-bold leading-snug">{t("title")}</h2><p className="mt-0.5 text-xs leading-relaxed text-white/65">{t("subtitle")}</p></div>
         <button type="button" onClick={() => setOpen(false)} aria-label={t("close")} className="grid h-9 w-9 place-items-center rounded-full hover:bg-white/10"><X className="h-5 w-5" /></button>
       </header>
-      {screen === "choice" ? <div className="flex-1 overflow-y-auto p-5">
+      {screen === "choice" ? <div className="flex-1 overflow-y-auto bg-card p-5">
         <p className="text-lg font-bold">{t("choose")}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t("chooseHint")}</p>
         <div className="mt-6 space-y-3">
           {wa && <a href={wa} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl border border-border bg-background p-4 transition hover:border-whatsapp hover:bg-whatsapp/5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-whatsapp text-white"><WhatsAppIcon mono className="h-6 w-6" /></span><span className="min-w-0 flex-1"><strong className="block text-sm">{t("whatsapp")}</strong><span className="text-xs text-muted-foreground">{t("whatsappHint")}</span></span><ArrowUpRight className="h-4 w-4 text-muted-foreground" /></a>}
           <button type="button" onClick={() => { setLoaded(false); setScreen("chat"); }} className="flex w-full items-center gap-3 rounded-2xl border border-border bg-background p-4 text-left transition hover:border-brand-500 hover:bg-brand-500/5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-500 text-[#141414]"><MessageCircle className="h-6 w-6" /></span><span className="min-w-0 flex-1"><strong className="block text-sm">{t("live")}</strong><span className="text-xs text-muted-foreground">{t("liveHint")}</span></span><ArrowUpRight className="h-4 w-4 text-muted-foreground" /></button>
         </div>
-      </div> : !loaded ? <div className="grid flex-1 place-items-center text-sm text-muted-foreground">{t("loading")}</div> : chat ? <>
+      </div> : !loaded ? <div className="grid flex-1 place-items-center bg-card text-sm text-muted-foreground">{t("loading")}</div> : chat ? <>
         <div className="border-b border-border/60 bg-card px-4 py-3">{chat.agents.length ? <div><p className="mb-2 text-[11px] font-semibold text-success-soft-foreground">● {t("active")}</p><div className="flex flex-wrap gap-3">{chat.agents.map((a) => <div key={a.id} className="flex items-center gap-2"><Face name={a.name} src={a.avatar} size="small" themed /><span className="text-xs font-semibold">{a.name}</span></div>)}</div></div> : <p className="text-[13px] leading-relaxed text-muted-foreground">{t("waiting")}</p>}</div>
-        <div className="min-h-0 flex-1 overflow-y-auto bg-muted/40 px-4 py-5"><ChatMessages key={chat.conversation.id} chat={chat} /></div>
+        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5"><ChatMessages key={chat.conversation.id} chat={chat} /></div>
         <form onSubmit={send} className="shrink-0 border-t border-border/60 bg-card p-3">
           {chat.conversation.status === "closed" && <p className="mb-2 text-xs text-muted-foreground">{t("resolved")}</p>}
           {error && <p role="alert" className="mb-2 text-xs text-destructive-soft-foreground">{error}</p>}
           <div className="flex items-center gap-2"><input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={2000} aria-label={t("message")} placeholder={t("messagePlaceholder")} className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" /><button disabled={busy || !message.trim()} aria-label={t("send")} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-500 text-[#141414] transition hover:bg-brand-400 disabled:opacity-40"><Send className="h-4 w-4" /></button></div>
         </form>
-      </> : <form onSubmit={send} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
+      </> : <form onSubmit={send} className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-card p-5">
         <h3 className="text-lg font-bold">{t("startTitle")}</h3>
         {!viewerName && <label className="block text-xs font-semibold text-foreground">{t("name")}<input value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} autoComplete="name" className="mt-1.5 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" /></label>}
         <label className="block text-xs font-semibold text-foreground">{t("contact")}<input value={contact} onChange={(e) => setContact(e.target.value)} maxLength={100} autoComplete="tel" className="mt-1.5 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" /></label>

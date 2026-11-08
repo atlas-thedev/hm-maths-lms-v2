@@ -290,9 +290,9 @@ try {
     el.appendChild(probe);
     const matchesHeader = getComputedStyle(el.querySelector("header")).backgroundColor === getComputedStyle(probe).backgroundColor;
     probe.remove();
-    return { border: getComputedStyle(el).borderTopWidth, matchesHeader };
+    return { border: getComputedStyle(el).borderTopWidth, background: getComputedStyle(el).backgroundColor, matchesHeader };
   });
-  check(supportStyles.border === "0px" && supportStyles.matchesHeader, "support widget matches the landing header with no outer border");
+  check(supportStyles.border === "0px" && supportStyles.background === "rgba(0, 0, 0, 0)" && supportStyles.matchesHeader, "support widget matches the landing header with no border or light background fringe");
   await sp.getByRole("button", { name: /Live chat/ }).click();
   await sp.getByLabel("Your message").fill(`Slip question ${tag}`);
   await sp.getByRole("button", { name: "Start chat" }).click();
@@ -304,6 +304,10 @@ try {
   await ap.getByLabel("Your message").fill(`Support reply ${tag}`);
   await ap.getByRole("button", { name: "Send" }).click();
   await sp.getByText(`Support reply ${tag}`).waitFor({ timeout: 20000 });
+  const replyRow = sp.getByTestId("support-message").filter({ hasText: `Support reply ${tag}` });
+  const avatarBox = await replyRow.getByTestId("support-message-avatar").boundingBox();
+  const bubbleBox = await replyRow.getByTestId("support-message-bubble").boundingBox();
+  check(!!avatarBox && !!bubbleBox && Math.abs(avatarBox.y - bubbleBox.y) < 4, "admin avatar aligns with the top of the reply bubble");
   const [supportAdmin] = (await adminDb.query(`select p.full_name from public.profiles p join auth.users u on u.id=p.id where lower(u.email)=lower($1)`, [ADMIN_EMAIL])).rows;
   check(await sp.locator("[role=dialog]").getByText(supportAdmin.full_name, { exact: true }).count() > 0, "student sees joined admin's name with reply");
   await sp.getByRole("button", { name: "Close", exact: true }).click();

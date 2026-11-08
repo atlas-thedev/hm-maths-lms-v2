@@ -51,11 +51,11 @@ export function ChatMessages({ chat, staffId }: { chat: Chat; staffId?: string }
     {hasMore && <div className="text-center"><button type="button" onClick={earlier} disabled={busy} className={`rounded-full border px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${staffId ? "border-slate-200 bg-white text-slate-700" : "border-border bg-card text-foreground"}`}>{busy ? t("loading") : t("earlier")}</button>{error && <p role="alert" className={`mt-2 text-xs ${staffId ? "text-red-700" : "text-destructive-soft-foreground"}`}>{t("error")}</p>}</div>}
     {history.map((m) => {
       const mine = staffId ? m.sender === "staff" && m.staffId === staffId : m.sender === "visitor";
-      return <div key={m.id} className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
-        {!mine && m.sender === "staff" && <Face name={m.name} src={m.avatar} size="small" themed={!staffId} />}
+      return <div key={m.id} data-testid="support-message" className={`flex items-start gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+        {!mine && m.sender === "staff" && <span data-testid="support-message-avatar" className="mt-5 shrink-0"><Face name={m.name} src={m.avatar} size="small" themed={!staffId} /></span>}
         <div className={`min-w-0 max-w-[85%] ${mine ? "text-right" : "text-left"}`}>
           <p className={`mb-1 truncate text-[11px] font-semibold ${staffId ? "text-slate-500" : "text-muted-foreground"}`}>{mine ? t("you") : m.name}</p>
-          <p className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${staffId ? (mine ? "rounded-br-sm bg-slate-900 text-white" : "rounded-bl-sm bg-white text-slate-800 shadow-sm ring-1 ring-slate-200") : (mine ? "rounded-br-sm bg-brand-500 text-[#141414]" : "rounded-bl-sm bg-card text-card-foreground shadow-sm")}`}>{m.body}</p>
+          <p data-testid="support-message-bubble" className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${staffId ? (mine ? "rounded-br-sm bg-slate-900 text-white" : "rounded-bl-sm bg-white text-slate-800 shadow-sm ring-1 ring-slate-200") : (mine ? "rounded-br-sm bg-brand-500 text-[#141414]" : "rounded-bl-sm bg-card text-card-foreground shadow-sm")}`}>{m.body}</p>
           <time dateTime={m.createdAt} className={`mt-1 block text-[10px] ${staffId ? "text-slate-400" : "text-muted-foreground"}`}>{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
         </div>
       </div>;
