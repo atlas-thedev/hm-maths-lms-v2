@@ -246,7 +246,7 @@ export async function purgeOldLogsAction(): Promise<ActionState> {
   const { requireSuperAdmin } = await import("@/lib/auth");
   await requireSuperAdmin();
   const n = await asService(async (c) => (await c.query(
-    "delete from public.audit_logs where created_at < now() - interval '90 days'",
+    "delete from public.admin_audit_logs where created_at < now() - interval '90 days'",
   )).rowCount ?? 0);
   await log(`Purged ${n} audit log(s) older than 90 days`);
   revalidatePath("/dev/logs");

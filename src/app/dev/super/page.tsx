@@ -19,7 +19,7 @@ export default async function DevSuperPage() {
       (select count(*) from public.orders)::int as orders,
       (select count(*) from public.deliveries)::int as deliveries,
       (select count(*) from public.support_conversations)::int as support_chats,
-      (select count(*) from public.audit_logs)::int as audit_logs,
+      (select count(*) from public.admin_audit_logs)::int as audit_logs,
       (select count(*) from auth.sessions where revoked_at is null)::int as active_sessions`);
     return r.rows[0] as Record<string, number>;
   });
@@ -32,7 +32,7 @@ export default async function DevSuperPage() {
     { name: "orders", count: counts.orders },
     { name: "deliveries", count: counts.deliveries },
     { name: "support_conversations", count: counts.support_chats },
-    { name: "audit_logs", count: counts.audit_logs },
+    { name: "admin_audit_logs", count: counts.audit_logs },
     { name: "auth.sessions (active)", count: counts.active_sessions },
   ];
 

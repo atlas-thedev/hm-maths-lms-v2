@@ -55,7 +55,7 @@ export function ChatMessages({ chat, staffId }: { chat: Chat; staffId?: string }
         {!mine && m.sender === "staff" && <span data-testid="support-message-avatar" className="mb-5 shrink-0"><Face name={m.name} src={m.avatar} size="small" themed /></span>}
         <div className={`min-w-0 max-w-[82%] ${mine ? "text-right" : "text-left"}`}>
           <p className="mb-1 truncate px-1 text-[11px] font-semibold text-muted-foreground">{mine ? t("you") : m.name}</p>
-          <p data-testid="support-message-bubble" className={`whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${mine ? "rounded-br-sm bg-brand-500 font-medium text-[#141414]" : "rounded-bl-sm border border-border/70 bg-card text-card-foreground"}`}>{m.body}</p>
+          <p data-testid="support-message-bubble" className={`whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${mine ? "rounded-br-sm bg-brand-500 font-medium text-white" : "rounded-bl-sm border border-border/70 bg-card text-card-foreground"}`}>{m.body}</p>
           <time dateTime={m.createdAt} className="mt-1 block px-1 text-[10px] text-muted-foreground/80">{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
         </div>
       </div>;
