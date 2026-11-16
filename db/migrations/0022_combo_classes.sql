@@ -65,3 +65,11 @@ FROM (VALUES
 WHERE EXISTS (SELECT 1 FROM public.classes c WHERE c.id = v.combo_id::uuid)
   AND EXISTS (SELECT 1 FROM public.classes c WHERE c.id = v.class_id::uuid)
 ON CONFLICT DO NOTHING;
+
+-- 5. Table privileges.
+-- Postgres checks table grants BEFORE row-level security, so the policies above meant nothing without this:
+-- every role except service_role got "permission denied for table combo_items" (42501). That broke saving a
+-- Combo pack in the admin panel, the class page's combo list and the store page's combo children on any
+-- database created by a single deploy. (0015 makes writes owner-only through RLS; this only opens the door.)
+grant select on public.combo_items to authenticated;
+grant insert, update, delete on public.combo_items to authenticated;
