@@ -32,10 +32,10 @@ export const bankLogo = (name: string) => BANK_LOGOS.find((b) => b.re.test(name)
 export function BankLogo({ name, className }: { name: string; className?: string }) {
   const src = bankLogo(name);
   return (
-    <span className={cn("grid h-12 w-24 shrink-0 place-items-center rounded-lg bg-white p-1.5 ring-1 ring-black/5", className)}>
+    <span className={cn("flex h-12 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-2 ring-1 ring-black/5", className)}>
       {src
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={src} alt={name} className="max-h-full max-w-full object-contain" loading="lazy" />
+        ? <img src={src} alt={name} className="h-full w-full object-contain" loading="lazy" />
         : <span className="text-center text-[10px] font-bold leading-tight text-slate-700">{name}</span>}
     </span>
   );
