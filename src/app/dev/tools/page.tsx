@@ -1,5 +1,6 @@
 import { Download, FileSpreadsheet, RefreshCw } from "lucide-react";
 import { requireDeveloper } from "@/lib/auth";
+import { getT } from "@/i18n/server";
 import { Card, CardContent, CardHeader, ListRow, PageHeader, buttonVariants } from "@/components/ui";
 import { ClearCacheButton } from "./tools-forms";
 import { EXPORTS } from "../export/[kind]/exports";
@@ -7,13 +8,13 @@ import { EXPORTS } from "../export/[kind]/exports";
 export const metadata = { title: "Tools & exports" };
 
 export default async function DevToolsPage() {
-  await requireDeveloper();
+  const [, t] = await Promise.all([requireDeveloper(), getT("dev.tools")]);
   return (
     <div className="space-y-5">
-      <PageHeader title="Tools & exports" sticker="bulb" description="Download data as CSV (opens in Excel / Google Sheets) and maintenance helpers." />
+      <PageHeader title={t("title")} sticker="bulb" description={t("description")} />
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Card>
-          <CardHeader icon={FileSpreadsheet} title="CSV exports" description="Every export is recorded in the activity log." />
+          <CardHeader icon={FileSpreadsheet} title={t("csvTitle")} description={t("csvDesc")} />
           <CardContent className="space-y-2">
             {Object.entries(EXPORTS).map(([k, e]) => (
               <ListRow key={k} icon={FileSpreadsheet} tone="success" title={e.title} subtitle={e.description}
@@ -22,7 +23,7 @@ export default async function DevToolsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader icon={RefreshCw} title="Page cache" description="Pages are rebuilt automatically after changes. Clear the cache if something still looks out of date." />
+          <CardHeader icon={RefreshCw} title={t("cacheTitle")} description={t("cacheDesc")} />
           <CardContent><ClearCacheButton /></CardContent>
         </Card>
       </div>

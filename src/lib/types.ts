@@ -1,6 +1,6 @@
 import type { ClassType, NoticeTag, Town } from "./constants";
 
-export type Role = "student" | "admin" | "owner" | "developer";
+export type Role = "student" | "admin" | "owner" | "developer" | "superadmin";
 export type EnrollmentStatus = "pending" | "approved" | "rejected";
 
 export interface Profile {

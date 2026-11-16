@@ -17,6 +17,7 @@
     "attendance": "Attendance & QR Scanner",
     "developer": "Developer panel",
     "developerRole": "Developer",
+    "superadminRole": "Super Admin",
     "gallery": "Gallery",
     "deliveries": "Tute delivery"
   },
@@ -955,7 +956,8 @@
     "content": "Site text",
     "centers": "Centers",
     "contact": "Contact & links",
-    "results": "Results & teacher photos"
+    "results": "Results & teacher photos",
+    "super": "Super Admin"
   },
   "gallery": {
     "title": "Photo gallery",

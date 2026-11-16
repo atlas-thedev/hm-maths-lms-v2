@@ -20,8 +20,8 @@ export function Face({ name, src, size = "normal", themed = false }: { name: str
   const classes = size === "small" ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs";
   return src && !broken
     // eslint-disable-next-line @next/next/no-img-element
-    ? <img src={src} alt="" onError={() => setBroken(true)} className={`${classes} shrink-0 rounded-full object-cover ${themed ? "" : "ring-2 ring-white"}`} />
-    : <span aria-hidden className={`${classes} grid shrink-0 place-items-center rounded-full font-bold ${themed ? "bg-brand-500/15 text-primary-text" : "bg-slate-200 text-slate-700"}`}>{initials(name)}</span>;
+    ? <img src={src} alt="" onError={() => setBroken(true)} className={`${classes} shrink-0 rounded-full object-cover ${themed ? "ring-1 ring-border" : "ring-2 ring-background shadow-sm"}`} />
+    : <span aria-hidden className={`${classes} grid shrink-0 place-items-center rounded-full font-bold ${themed ? "bg-brand-500/15 text-primary ring-1 ring-brand-500/20" : "bg-primary/10 text-primary ring-1 ring-primary/20"}`}>{initials(name)}</span>;
 }
 export function ChatMessages({ chat, staffId }: { chat: Chat; staffId?: string }) {
   const t = useT("support");
@@ -48,15 +48,15 @@ export function ChatMessages({ chat, staffId }: { chat: Chat; staffId?: string }
     finally { setBusy(false); }
   }
   return <div className="space-y-4" aria-live="polite" aria-relevant="additions text">
-    {hasMore && <div className="text-center"><button type="button" onClick={earlier} disabled={busy} className={`rounded-full border px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${staffId ? "border-slate-200 bg-white text-slate-700" : "border-border bg-card text-foreground"}`}>{busy ? t("loading") : t("earlier")}</button>{error && <p role="alert" className={`mt-2 text-xs ${staffId ? "text-red-700" : "text-destructive-soft-foreground"}`}>{t("error")}</p>}</div>}
+    {hasMore && <div className="text-center"><button type="button" onClick={earlier} disabled={busy} className="rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-sm transition hover:bg-accent disabled:opacity-50">{busy ? t("loading") : t("earlier")}</button>{error && <p role="alert" className="mt-2 text-xs text-destructive">{t("error")}</p>}</div>}
     {history.map((m) => {
       const mine = staffId ? m.sender === "staff" && m.staffId === staffId : m.sender === "visitor";
-      return <div key={m.id} data-testid="support-message" className={`flex items-start gap-2 ${mine ? "justify-end" : "justify-start"}`}>
-        {!mine && m.sender === "staff" && <span data-testid="support-message-avatar" className="mt-5 shrink-0"><Face name={m.name} src={m.avatar} size="small" themed={!staffId} /></span>}
-        <div className={`min-w-0 max-w-[85%] ${mine ? "text-right" : "text-left"}`}>
-          <p className={`mb-1 truncate text-[11px] font-semibold ${staffId ? "text-slate-500" : "text-muted-foreground"}`}>{mine ? t("you") : m.name}</p>
-          <p data-testid="support-message-bubble" className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${staffId ? (mine ? "rounded-br-sm bg-slate-900 text-white" : "rounded-bl-sm bg-white text-slate-800 shadow-sm ring-1 ring-slate-200") : (mine ? "rounded-br-sm bg-brand-500 text-[#141414]" : "rounded-bl-sm bg-card text-card-foreground shadow-sm")}`}>{m.body}</p>
-          <time dateTime={m.createdAt} className={`mt-1 block text-[10px] ${staffId ? "text-slate-400" : "text-muted-foreground"}`}>{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+      return <div key={m.id} data-testid="support-message" className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+        {!mine && m.sender === "staff" && <span data-testid="support-message-avatar" className="mb-5 shrink-0"><Face name={m.name} src={m.avatar} size="small" themed /></span>}
+        <div className={`min-w-0 max-w-[82%] ${mine ? "text-right" : "text-left"}`}>
+          <p className="mb-1 truncate px-1 text-[11px] font-semibold text-muted-foreground">{mine ? t("you") : m.name}</p>
+          <p data-testid="support-message-bubble" className={`whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${mine ? "rounded-br-sm bg-brand-500 font-medium text-[#141414]" : "rounded-bl-sm border border-border/70 bg-card text-card-foreground"}`}>{m.body}</p>
+          <time dateTime={m.createdAt} className="mt-1 block px-1 text-[10px] text-muted-foreground/80">{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
         </div>
       </div>;
     })}<div ref={end} />

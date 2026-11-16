@@ -51,7 +51,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                     <Link href={`/admin/students/${p.id}`} className="break-words hover:text-primary hover:underline">
                       {p.full_name}
                     </Link>
-                    {p.role === "developer" ? <Badge variant="highlight">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge>{tc("shell.admin")}</Badge> : null}
+                    {p.role === "superadmin" ? <Badge variant="destructive">{tc("shell.superadmin")}</Badge> : p.role === "developer" ? <Badge variant="highlight">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge>{tc("shell.admin")}</Badge> : null}
                   </p>
                   <p className="font-mono text-xs text-muted-foreground">{p.student_id ?? tc("dash")} · {p.al_year ?? tc("dash")} · {tc(`towns.${p.town}`)}</p>
                 </div>
@@ -71,7 +71,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                 {/* Phone: its own full-width row (right aligned) so the wrapped buttons line up instead of floating mid-row. */}
                 <span className="flex w-full items-center justify-end gap-1 sm:ml-auto sm:w-auto">
                   {p.role === "student" && <Link href={`/admin/students/${p.id}`} aria-label={t("qr")} title={t("qr")} className={buttonVariants({ variant: "outline", size: "icon", className: "h-9" })}><QrCode className="h-4 w-4" /></Link>}
-                  {p.id !== user.id && (p.role === "student" || (isOwner && p.role !== "developer")) && <ResetPasswordButton id={p.id} name={p.full_name} />}
+                  {p.id !== user.id && (p.role === "student" || (isOwner && p.role !== "developer" && p.role !== "superadmin") || profile.role === "superadmin") && <ResetPasswordButton id={p.id} name={p.full_name} />}
                   {isOwner && p.id !== user.id && !isOwnerRole(p.role) && <RoleButton id={p.id} role={p.role} compact />}
                   {p.id !== user.id && canDeleteAccount(profile.role, p.role) && <DeleteUserButton id={p.id} name={p.full_name} compact />}
                 </span>
@@ -108,7 +108,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                       </Link>
                       <div className="flex items-center gap-1 mt-0.5">
                         <span className="font-mono text-[11px] text-muted-foreground">{p.student_id ?? tc("dash")}</span>
-                        {p.role === "developer" ? <Badge variant="highlight" className="text-[11px] py-0 px-1">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning" className="text-[11px] py-0 px-1">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge className="text-[11px] py-0 px-1">{tc("shell.admin")}</Badge> : null}
+                        {p.role === "superadmin" ? <Badge variant="destructive" className="text-[11px] py-0 px-1">{tc("shell.superadmin")}</Badge> : p.role === "developer" ? <Badge variant="highlight" className="text-[11px] py-0 px-1">{tc("shell.developer")}</Badge> : p.role === "owner" ? <Badge variant="warning" className="text-[11px] py-0 px-1">{tc("shell.owner")}</Badge> : p.role === "admin" ? <Badge className="text-[11px] py-0 px-1">{tc("shell.admin")}</Badge> : null}
                       </div>
                     </div>
                   </td>
@@ -141,7 +141,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                           <WhatsAppIcon className="h-4 w-4" />
                         </a>
                       )}
-                      {p.id !== user.id && (p.role === "student" || (isOwner && p.role !== "developer")) && (
+                      {p.id !== user.id && (p.role === "student" || (isOwner && p.role !== "developer" && p.role !== "superadmin") || profile.role === "superadmin") && (
                         <ResetPasswordButton id={p.id} name={p.full_name} compact />
                       )}
                       {isOwner && p.id !== user.id && !isOwnerRole(p.role) && (

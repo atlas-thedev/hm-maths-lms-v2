@@ -98,7 +98,8 @@ export async function changeStaffRoleAction(_p: ActionState, fd: FormData): Prom
     ).rows[0] as { id: string; full_name: string; role: string; student_id: string | null; al_year: number | null; email: string } | undefined,
   );
   if (!target) return { error: t("errors.notFound") };
-  if (target.role === "developer" && profile.role !== "developer") return { error: t("errors.developerLocked") };
+  if (target.role === "superadmin" && profile.role !== "superadmin") return { error: t("errors.developerLocked") };
+  if (target.role === "developer" && profile.role !== "developer" && profile.role !== "superadmin") return { error: t("errors.developerLocked") };
 
   await asService(async (c) => {
     if (nextRole === "student") {
@@ -148,7 +149,8 @@ export async function resetStaffPasswordAction(_p: ActionState, fd: FormData): P
       | undefined,
   );
   if (!target) return { error: t("errors.notFound") };
-  if (target.role === "developer" && profile.role !== "developer") return { error: t("errors.developerLocked") };
+  if (target.role === "superadmin" && profile.role !== "superadmin") return { error: t("errors.developerLocked") };
+  if (target.role === "developer" && profile.role !== "developer" && profile.role !== "superadmin") return { error: t("errors.developerLocked") };
 
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   const newPassword =

@@ -14,16 +14,28 @@
   },
   "bankAccounts": [
     {
-      "bank": "Bank of Ceylon",
+      "bank": "Sampath Bank",
       "branch": "Panadura",
-      "accountName": "H. MADUSANKA",
-      "accountNumber": "0000 0000 0000"
+      "accountName": "W H M Fernando",
+      "accountNumber": "102654057594"
+    },
+    {
+      "bank": "HNB",
+      "branch": "Panadura",
+      "accountName": "W H M Fernando",
+      "accountNumber": "069020392771"
     },
     {
       "bank": "Commercial Bank",
-      "branch": "Horana",
-      "accountName": "H. MADUSANKA",
-      "accountNumber": "0000 0000 0000"
+      "branch": "Panadura",
+      "accountName": "W H M Fernando",
+      "accountNumber": "8410029697"
+    },
+    {
+      "bank": "Bank of Ceylon",
+      "branch": "Panadura",
+      "accountName": "W H M Fernando",
+      "accountNumber": "635069"
     }
   ],
   "channels": [

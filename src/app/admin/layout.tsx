@@ -49,7 +49,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <DashboardShell area="admin" announcement={ann.enabled && ann.audience !== "students" ? ann : null} groups={groups} menu={menu} crumbNs="admin.crumbs"
       tabs={["/admin", "/admin/attendance", "/admin/payments", "/admin/students"]}
-      user={{ name: profile.full_name, subtitle: isDev ? t("developerRole") : isOwner ? t("ownerRole") : t("administrator"), avatar: avatar?.data?.signedUrl ?? null }}>
+      user={{ name: profile.full_name, subtitle: profile.role === "superadmin" ? t("superadminRole") : isDev ? t("developerRole") : isOwner ? t("ownerRole") : t("administrator"), avatar: avatar?.data?.signedUrl ?? null }}>
       {children}
     </DashboardShell>
   );

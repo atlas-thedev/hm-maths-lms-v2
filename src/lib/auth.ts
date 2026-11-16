@@ -29,19 +29,21 @@ export async function requireUser() {
   return { db: s.db, user: s.user, profile: s.profile };
 }
 
-/** Roles, lowest to highest: student < admin < owner < developer. Each helper includes the roles above it. */
-export const isStaffRole = (role?: string | null): boolean => role === "admin" || role === "owner" || role === "developer";
-export const isOwnerRole = (role?: string | null): boolean => role === "owner" || role === "developer";
-export const isDeveloperRole = (role?: string | null): boolean => role === "developer";
+/** Roles, lowest to highest: student < admin < owner < developer < superadmin. Each helper includes the roles above it. */
+export const isStaffRole = (role?: string | null): boolean => role === "admin" || role === "owner" || role === "developer" || role === "superadmin";
+export const isOwnerRole = (role?: string | null): boolean => role === "owner" || role === "developer" || role === "superadmin";
+export const isDeveloperRole = (role?: string | null): boolean => role === "developer" || role === "superadmin";
+export const isSuperAdminRole = (role?: string | null): boolean => role === "superadmin";
 
 /**
  * Who may delete whose account (never your own):
- *   students → any admin, owner or developer · admins → owner, developer · owners and developers → developer.
+ *   students → any staff · admins → owner, developer, superadmin · owners/developers → developer, superadmin · superadmin → anyone.
  */
 export function canDeleteAccount(actorRole?: string | null, targetRole?: string | null): boolean {
   if (!isStaffRole(actorRole)) return false;
   if (targetRole === "student") return true;
   if (targetRole === "admin") return isOwnerRole(actorRole);
+  if (targetRole === "superadmin") return isSuperAdminRole(actorRole);
   return isDeveloperRole(actorRole);
 }
 
@@ -60,5 +62,11 @@ export async function requireOwner() {
 export async function requireDeveloper() {
   const s = await requireUser();
   if (!isDeveloperRole(s.profile.role)) redirect(isStaffRole(s.profile.role) ? "/admin" : "/dashboard");
+  return s;
+}
+
+export async function requireSuperAdmin() {
+  const s = await requireUser();
+  if (!isSuperAdminRole(s.profile.role)) redirect(isDeveloperRole(s.profile.role) ? "/dev" : isStaffRole(s.profile.role) ? "/admin" : "/dashboard");
   return s;
 }

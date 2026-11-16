@@ -436,7 +436,8 @@ export async function resetPasswordAction(_p: ActionState, fd: FormData): Promis
   const { data: target } = await db.from("profiles").select("role, full_name, student_id").eq("id", id).maybeSingle();
   if (!target) return { error: await m("noStudent") };
   if (target.role !== "student" && !isOwnerRole(profile.role)) return { error: await m("adminReset") };
-  if (target.role === "developer" && profile.role !== "developer") return { error: await m("adminReset") };
+  if (target.role === "superadmin" && profile.role !== "superadmin") return { error: await m("adminReset") };
+  if (target.role === "developer" && !isDeveloperRole(profile.role)) return { error: await m("adminReset") };
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   const temp = Array.from({ length: 10 }, () => alphabet[randomInt(alphabet.length)]).join("");
   const { error } = await createAdminClient().auth.admin.updateUserById(id, { password: temp });

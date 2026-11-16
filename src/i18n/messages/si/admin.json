@@ -17,6 +17,7 @@
     "attendance": "පැමිණීම සහ QR ස්කෑනරය",
     "developer": "සංවර්ධක පුවරුව",
     "developerRole": "සංවර්ධක",
+    "superadminRole": "සුපිරි පරිපාලක",
     "deliveries": "Tute බෙදාහැරීම",
     "gallery": "ඡායාරූප ගැලරිය"
   },
@@ -943,19 +944,20 @@
     "students": "සිසුන්"
   },
   "devCrumbs": {
-    "theme": "Theme",
-    "site": "Site",
-    "users": "Users",
-    "logs": "Logs",
-    "tools": "Tools",
-    "ui": "UI kit",
-    "details": "Details",
-    "export": "Export",
-    "brand": "Brand & SEO",
-    "content": "Site text",
-    "centers": "Centers",
-    "contact": "Contact & links",
-    "results": "ප්‍රතිඵල සහ ගුරු ඡායාරූප"
+    "theme": "තේමාව",
+    "site": "වෙබ් අඩවිය",
+    "users": "පරිශීලකයින්",
+    "logs": "ක්‍රියාකාරකම් ලොගය",
+    "tools": "මෙවලම්",
+    "ui": "UI කට්ටලය",
+    "details": "විස්තර",
+    "export": "නිර්යාත",
+    "brand": "සන්නාමය සහ SEO",
+    "content": "අඩවි පෙළ",
+    "centers": "මධ්‍යස්ථාන",
+    "contact": "සම්බන්ධතා සහ සබැඳි",
+    "results": "ප්‍රතිඵල සහ ගුරු ඡායාරූප",
+    "super": "සුපිරි පරිපාලක"
   },
   "gallery": {
     "title": "ඡායාරූප ගැලරිය",

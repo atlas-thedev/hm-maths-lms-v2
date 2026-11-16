@@ -152,7 +152,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             </a>
           )}
           <PrintButton label="හැඳුනුම්පත Print කරන්න" />
-          {student.id !== user.id && (student.role === "student" || (isOwner && student.role !== "developer")) && (
+          {student.id !== user.id && (student.role === "student" || (isOwner && student.role !== "developer" && student.role !== "superadmin") || adminProfile.role === "superadmin") && (
             <ResetPasswordButton id={student.id} name={student.full_name} compact />
           )}
           {student.id !== user.id && canDeleteAccount(adminProfile.role, student.role) && (
