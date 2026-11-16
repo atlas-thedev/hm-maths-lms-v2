@@ -2,7 +2,7 @@ import type { Center } from "@/lib/centers";
 
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.NODE_ENV === "production" ? "https://hm.nativelaunch.xyz" : "http://localhost:3000")
+  (process.env.NODE_ENV === "production" ? "https://hasithamathx.lk" : "http://localhost:3000")
 ).replace(/\/$/, "");
 
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
