@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { randomInt } from "node:crypto";
-import { canDeleteAccount, isOwnerRole, requireAdmin } from "@/lib/auth";
+import { canDeleteAccount, isDeveloperRole, isOwnerRole, requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/db/admin";
 import { AL_YEARS, CLASS_TYPES, GRANT_DAY_OPTIONS, NOTICE_TAGS } from "@/lib/constants";
 import { townKeys } from "@/lib/centers";
