@@ -11,10 +11,10 @@
 
 -- ─── 1. Owner role & helper functions ───────────────────────────────────────
 alter table public.profiles drop constraint if exists profiles_role_check;
--- 'developer' (added in 0016) is listed here too: every deploy re-runs all migrations in order, and this
--- must not reject developer accounts that already exist.
+-- 'developer' (0016) and 'superadmin' (0031) are listed here too: every deploy re-runs all migrations in
+-- order, and this must not reject developer or superadmin accounts that already exist.
 alter table public.profiles add  constraint profiles_role_check
-  check (role in ('student', 'admin', 'owner', 'developer'));
+  check (role in ('student', 'admin', 'owner', 'developer', 'superadmin'));
 
 -- Promote existing admin account(s) to 'owner' only on first application of 0014
 -- (before admin_audit_logs exists), so re-running migrations on deploy never re-promotes a demoted account.

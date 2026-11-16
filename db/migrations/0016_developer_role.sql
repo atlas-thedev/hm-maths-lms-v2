@@ -7,8 +7,9 @@
 -- ════════════════════════════════════════════════════════════════════════════
 
 alter table public.profiles drop constraint if exists profiles_role_check;
+-- 'superadmin' (added in 0031) is listed here too so re-running migrations on deploy does not reject superadmin accounts.
 alter table public.profiles add  constraint profiles_role_check
-  check (role in ('student', 'admin', 'owner', 'developer'));
+  check (role in ('student', 'admin', 'owner', 'developer', 'superadmin'));
 
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = public as $$
