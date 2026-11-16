@@ -46,14 +46,14 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
             return (
               <motion.div key={(c.id ?? "p") + i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: Math.min(i, 4) * 0.08, duration: 0.6 }}
-                className="w-[82%] shrink-0 snap-start sm:w-[46%] lg:w-[31.5%]">
+                className="w-[85%] shrink-0 snap-start sm:w-[46%] lg:w-[31.5%]">
                 <Link href={href} className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-teal-100 bg-white shadow-soft transition duration-300 hover:-translate-y-1.5 hover:border-teal-300 hover:shadow-lift dark:border-white/10 dark:bg-slate-900">
-                  <div className="flex flex-1 flex-col p-6">
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider">
-                      <span className="rounded-full bg-teal-50 px-2.5 py-1 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">{tc(`classTypes.${c.type}`)}</span>
-                      {c.year ? <span className="rounded-full bg-brand-50 px-2.5 py-1 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">{tc("alBatch", { year: c.year })}</span> : null}
+                  <div className="flex flex-1 flex-col p-4 sm:p-6">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider sm:text-[11px]">
+                      <span className="whitespace-nowrap rounded-full bg-teal-50 px-2.5 py-1 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">{tc(`classTypes.${c.type}`)}</span>
+                      {c.year ? <span className="whitespace-nowrap rounded-full bg-brand-50 px-2.5 py-1 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">{tc("alBatch", { year: c.year })}</span> : null}
                     </div>
-                    <h3 className="mt-3.5 font-display text-base sm:text-lg font-bold text-ink group-hover:text-teal-600 dark:text-white line-clamp-2 h-[3.25rem] flex items-start">
+                    <h3 className="mt-3.5 font-display text-base sm:text-lg font-bold text-ink group-hover:text-teal-600 dark:text-white line-clamp-2 min-h-[3rem] flex items-start">
                       {c.title}
                     </h3>
                     {c.lines.length ? (
@@ -66,7 +66,7 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
                         </ul>
                       </div>
                     ) : null}
-                    <div className="mt-auto border-t border-slate-100 pt-3 dark:border-white/5 flex items-center justify-between gap-2">
+                    <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3.5 dark:border-white/5">
                       <span className="whitespace-nowrap font-display text-base sm:text-lg font-bold text-ink dark:text-white">
                         {!c.id ? null : c.isFree ? t("free") : (
                           <>
@@ -75,7 +75,7 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
                           </>
                         )}
                       </span>
-                      <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs sm:text-sm font-semibold text-teal-700 transition group-hover:translate-x-0.5">
+                      <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-700 ring-1 ring-teal-200/70 transition group-hover:bg-teal-600 group-hover:text-white dark:bg-teal-500/15 dark:text-teal-300 dark:ring-teal-500/30">
                         {t("enroll")} →
                       </span>
                     </div>
@@ -87,19 +87,19 @@ export function ClassesCarousel({ classes }: { classes: CarouselClass[] }) {
           })}
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-4">
-          <div className="flex gap-1.5">
+        <div className="mt-6 flex items-center justify-between gap-3 pr-14 sm:pr-0">
+          <div className="flex flex-wrap gap-1.5">
             {classes.map((_, i) => (
               <button key={i} type="button" onClick={() => go(i)} aria-label={t("goTo", { n: i + 1 })}
                 className={cn("h-2 rounded-full transition-all", i === active ? "w-7 bg-gradient-to-r from-teal-700 to-teal-600" : "w-2 bg-teal-200 hover:bg-teal-300")} />
             ))}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <Link href="/store" className="mr-2 hidden text-sm font-semibold text-teal-700 hover:underline sm:block">{t("viewAll")}</Link>
             <button type="button" onClick={() => go(Math.max(0, active - 1))} aria-label={t("previous")}
-              className="grid h-11 w-11 place-items-center rounded-full border border-teal-200 bg-white text-teal-700 shadow-sm transition hover:border-teal-400 dark:bg-white/5 dark:text-white"><ArrowLeft className="h-5 w-5" /></button>
+              className="grid h-10 w-10 place-items-center rounded-full border border-teal-200 bg-white text-teal-700 shadow-sm transition hover:border-teal-400 sm:h-11 sm:w-11 dark:bg-white/5 dark:text-white"><ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" /></button>
             <button type="button" onClick={() => go(Math.min(classes.length - 1, active + 1))} aria-label={t("next")}
-              className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-r from-teal-700 to-teal-600 text-white shadow-md shadow-teal-600/30 transition hover:-translate-y-px"><ArrowRight className="h-5 w-5" /></button>
+              className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-r from-teal-700 to-teal-600 text-white shadow-md shadow-teal-600/30 transition hover:-translate-y-px sm:h-11 sm:w-11"><ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" /></button>
           </div>
         </div>
       </div>
