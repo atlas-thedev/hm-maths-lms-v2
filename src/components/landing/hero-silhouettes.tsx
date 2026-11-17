@@ -67,7 +67,7 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         initial={reduce ? undefined : { opacity: 0, y: 40, x: 28 }}
         animate={{ opacity: 1, y: 0, x: 0 }}
         transition={{ duration: 1.05, delay: 0.18, ease }}
-        className="hidden sm:block absolute bottom-0 right-[1%] h-[74%] origin-bottom md:right-[2%] lg:right-[4%] lg:h-[80%] xl:right-[7%] xl:h-[84%]"
+        className="hidden sm:block absolute bottom-0 right-[3%] h-[74%] origin-bottom md:right-[4%] lg:right-[6%] lg:h-[80%] xl:right-[8%] xl:h-[84%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -75,18 +75,15 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_80%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)]"
         />
-        <span
-          className="absolute -right-4 top-[7%] h-[15%] w-10 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] lg:-right-6 lg:w-14"
-          style={{
-            maskImage: "url(/images/hero-comma.png)",
-            WebkitMaskImage: "url(/images/hero-comma.png)",
-            maskSize: "contain",
-            WebkitMaskSize: "contain",
-            maskRepeat: "no-repeat",
-            WebkitMaskRepeat: "no-repeat",
-          }}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/hero-comma.png"
+          alt=""
+          loading="eager"
+          decoding="async"
+          className="pointer-events-none absolute -right-4 top-[8%] h-[15%] w-auto select-none drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] lg:-right-6"
         />
       </motion.div>
 
@@ -105,12 +102,12 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
 /** Mobile-only unobstructed backlit stage showing the student silhouette + full-color Sir without text covering faces. */
 export function HeroMobileStage({ progress }: { progress: MotionValue<number> }) {
   const reduce = useReducedMotion();
-  const leftX = useTransform(progress, [0, 1], [0, -34]);
-  const rightX = useTransform(progress, [0, 1], [0, 34]);
+  const leftX = useTransform(progress, [0, 1], [0, -30]);
+  const rightX = useTransform(progress, [0, 1], [0, 30]);
   const scale = useTransform(progress, [0, 1], [1, 1.05]);
 
   return (
-    <div aria-hidden className="relative mt-5 h-56 w-full max-w-[360px] overflow-hidden rounded-3xl border border-white/10 bg-black/25 backdrop-blur-[2px] select-none sm:hidden">
+    <div aria-hidden className="relative mt-5 h-64 w-full max-w-[360px] overflow-hidden rounded-3xl border border-white/10 bg-black/25 backdrop-blur-[2px] select-none sm:hidden">
       <div
         className="absolute inset-0"
         style={{
@@ -131,7 +128,7 @@ export function HeroMobileStage({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_82%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_86%,transparent_100%)]"
         />
       </motion.div>
       <motion.div
@@ -139,7 +136,7 @@ export function HeroMobileStage({ progress }: { progress: MotionValue<number> })
         initial={reduce ? undefined : { opacity: 0, x: 18 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.95, delay: 0.18, ease }}
-        className="absolute bottom-0 right-5 h-[94%] origin-bottom"
+        className="absolute bottom-0 right-7 h-[96%] origin-bottom"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -147,21 +144,18 @@ export function HeroMobileStage({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_90%,transparent_100%)]"
         />
-        <span
-          className="absolute -right-3 top-[10%] h-[18%] w-7 bg-white/95 drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
-          style={{
-            maskImage: "url(/images/hero-comma.png)",
-            WebkitMaskImage: "url(/images/hero-comma.png)",
-            maskSize: "contain",
-            WebkitMaskSize: "contain",
-            maskRepeat: "no-repeat",
-            WebkitMaskRepeat: "no-repeat",
-          }}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/hero-comma.png"
+          alt=""
+          loading="eager"
+          decoding="async"
+          className="pointer-events-none absolute -right-4 top-[8%] h-[16%] w-auto select-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
         />
       </motion.div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black/35 to-transparent" />
     </div>
   );
 }
