@@ -57,7 +57,7 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_0_32px_hsl(var(--brand-400)/0.28)] [mask-image:linear-gradient(to_bottom,#000_76%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_76%,transparent_100%)]"
         />
       </motion.div>
 
@@ -75,7 +75,7 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_0_34px_hsl(var(--brand-400)/0.3)] [mask-image:linear-gradient(to_bottom,#000_76%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_76%,transparent_100%)]"
         />
         <span
           className="absolute right-1 top-[8%] h-[14%] w-7 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:-right-11 sm:top-[10%] sm:h-[16%] sm:w-14"
