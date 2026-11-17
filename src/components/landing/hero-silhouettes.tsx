@@ -4,8 +4,8 @@ import { motion, type MotionValue, useReducedMotion, useTransform } from "framer
 const ease = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Spaceship-style backlit studio spotlight + two silhouetted figures behind the hero.
- * Follows the active theme's --brand-500/--brand-600 glow and animates smoothly with scroll parallax.
+ * Spaceship-style backlit studio spotlight + silhouetted student (left) & full-color Sir (right).
+ * Full-bleed side framing on sm+ screens, with dedicated HeroMobileStage on phones so text never covers Sir's face.
  */
 export function HeroSilhouettes({ progress }: { progress: MotionValue<number> }) {
   const reduce = useReducedMotion();
@@ -22,7 +22,7 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
   const rightY = useTransform(progress, [0, 1], [0, 28]);
   const rightScale = useTransform(progress, [0, 1], [1, 1.1]);
 
-  const silhouetteOpacity = useTransform(progress, [0, 0.88], [0.94, 0.15]);
+  const figureOpacity = useTransform(progress, [0, 0.88], [1, 0.18]);
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden select-none">
@@ -38,18 +38,18 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           className="h-[115%] w-[180vw] blur-[64px] sm:h-[120%] sm:w-[min(1260px,145vw)] sm:blur-[72px]"
           style={{
             background:
-              "radial-gradient(ellipse 56% 58% at 50% 46%, hsl(var(--brand-500) / 0.78) 0%, hsl(var(--brand-600) / 0.48) 40%, hsl(var(--brand-800) / 0.18) 68%, transparent 90%)",
+              "radial-gradient(ellipse 56% 58% at 50% 44%, hsl(var(--brand-500) / 0.72) 0%, hsl(var(--brand-600) / 0.44) 40%, hsl(var(--brand-800) / 0.16) 68%, transparent 90%)",
           }}
         />
       </motion.div>
 
-      {/* Left silhouette (student figure, framed cleanly on left side, moving outward on scroll) */}
+      {/* Desktop/Tablet: Left silhouette (student looking inward, clear of centered copy) */}
       <motion.div
-        style={reduce ? undefined : { x: leftX, y: leftY, scale: leftScale, opacity: silhouetteOpacity }}
+        style={reduce ? undefined : { x: leftX, y: leftY, scale: leftScale, opacity: figureOpacity }}
         initial={reduce ? undefined : { opacity: 0, y: 36, x: -24 }}
         animate={{ opacity: 0.92, y: 0, x: 0 }}
         transition={{ duration: 1.0, delay: 0.1, ease }}
-        className="absolute bottom-6 left-[-8%] h-[54%] origin-bottom sm:bottom-0 sm:left-[2%] sm:h-[74%] lg:left-[8%] lg:h-[80%] xl:left-[12%]"
+        className="hidden sm:block absolute bottom-0 left-[1%] h-[70%] origin-bottom md:left-[2%] lg:left-[4%] lg:h-[76%] xl:left-[7%] xl:h-[80%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -57,17 +57,17 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_76%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_78%,transparent_100%)]"
         />
       </motion.div>
 
-      {/* Right figure (Hasitha Sir in full color standing with arms crossed + comma mark beside him) */}
+      {/* Desktop/Tablet: Right figure (Hasitha Sir in full color + comma mark, clear of center CTAs/stats) */}
       <motion.div
-        style={reduce ? undefined : { x: rightX, y: rightY, scale: rightScale, opacity: silhouetteOpacity }}
+        style={reduce ? undefined : { x: rightX, y: rightY, scale: rightScale, opacity: figureOpacity }}
         initial={reduce ? undefined : { opacity: 0, y: 40, x: 28 }}
         animate={{ opacity: 1, y: 0, x: 0 }}
         transition={{ duration: 1.05, delay: 0.18, ease }}
-        className="absolute bottom-6 right-[-6%] h-[58%] origin-bottom sm:bottom-0 sm:right-[2%] sm:h-[78%] lg:right-[6%] lg:h-[85%] xl:right-[10%]"
+        className="hidden sm:block absolute bottom-0 right-[1%] h-[74%] origin-bottom md:right-[2%] lg:right-[4%] lg:h-[80%] xl:right-[7%] xl:h-[84%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -75,10 +75,10 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_78%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_80%,transparent_100%)]"
         />
         <span
-          className="absolute right-3 top-[6%] h-[14%] w-7 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:-right-8 sm:top-[8%] sm:h-[16%] sm:w-14"
+          className="absolute -right-4 top-[7%] h-[15%] w-10 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] lg:-right-6 lg:w-14"
           style={{
             maskImage: "url(/images/hero-comma.png)",
             WebkitMaskImage: "url(/images/hero-comma.png)",
@@ -90,7 +90,7 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         />
       </motion.div>
 
-      {/* Subtle atmospheric top vignette + soft center contrast scrim */}
+      {/* Subtle atmospheric top vignette + center contrast scrim */}
       <div
         className="absolute inset-0"
         style={{
@@ -98,6 +98,70 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
             "radial-gradient(ellipse 68% 46% at 50% 34%, rgba(4,9,24,0.32) 0%, transparent 72%), linear-gradient(180deg, rgba(2,6,18,0.58) 0%, rgba(2,6,18,0.10) 28%, rgba(2,6,18,0.18) 100%)",
         }}
       />
+    </div>
+  );
+}
+
+/** Mobile-only unobstructed backlit stage showing the student silhouette + full-color Sir without text covering faces. */
+export function HeroMobileStage({ progress }: { progress: MotionValue<number> }) {
+  const reduce = useReducedMotion();
+  const leftX = useTransform(progress, [0, 1], [0, -34]);
+  const rightX = useTransform(progress, [0, 1], [0, 34]);
+  const scale = useTransform(progress, [0, 1], [1, 1.05]);
+
+  return (
+    <div aria-hidden className="relative mt-5 h-56 w-full max-w-[360px] overflow-hidden rounded-3xl border border-white/10 bg-black/25 backdrop-blur-[2px] select-none sm:hidden">
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 75% 75% at 50% 52%, hsl(var(--brand-500) / 0.65) 0%, hsl(var(--brand-600) / 0.35) 48%, transparent 82%)",
+        }}
+      />
+      <motion.div
+        style={reduce ? undefined : { x: leftX, scale }}
+        initial={reduce ? undefined : { opacity: 0, x: -18 }}
+        animate={{ opacity: 0.94, x: 0 }}
+        transition={{ duration: 0.9, delay: 0.1, ease }}
+        className="absolute bottom-0 left-3 h-[90%] origin-bottom"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/silhouette-male.webp"
+          alt=""
+          loading="eager"
+          decoding="async"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_82%,transparent_100%)]"
+        />
+      </motion.div>
+      <motion.div
+        style={reduce ? undefined : { x: rightX, scale }}
+        initial={reduce ? undefined : { opacity: 0, x: 18 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.95, delay: 0.18, ease }}
+        className="absolute bottom-0 right-5 h-[94%] origin-bottom"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/sir-hero-color.webp"
+          alt=""
+          loading="eager"
+          decoding="async"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)]"
+        />
+        <span
+          className="absolute -right-3 top-[10%] h-[18%] w-7 bg-white/95 drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+          style={{
+            maskImage: "url(/images/hero-comma.png)",
+            WebkitMaskImage: "url(/images/hero-comma.png)",
+            maskSize: "contain",
+            WebkitMaskSize: "contain",
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat",
+          }}
+        />
+      </motion.div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/50 to-transparent" />
     </div>
   );
 }

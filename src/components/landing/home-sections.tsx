@@ -13,7 +13,7 @@ import { SL_DISTRICTS, SL_VIEWBOX } from "./sl-map-data";
 import { Sticker } from "./sticker";
 import { Magnetic, SplitReveal, TiltCard } from "./motion-kit";
 import { HeroBanner } from "./hero-banner";
-import { HeroSilhouettes } from "./hero-silhouettes";
+import { HeroMobileStage, HeroSilhouettes } from "./hero-silhouettes";
 import { TeacherPhoto } from "./teacher-photo";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -93,8 +93,9 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
           className="w-full max-w-[1000px] drop-shadow-[0_12px_32px_rgba(0,0,0,0.45)]">
           <HeroBanner label={t("badge")} photo={photo} />
         </motion.div>
+        <HeroMobileStage progress={scrollYProgress} />
         <h1 className="sr-only">{t("line1")} {t("line2")}</h1>
-        <div className="flex w-full max-w-2xl flex-col items-center text-center">
+        <div className="flex w-full max-w-xl flex-col items-center text-center">
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }} className="mt-4 text-[15px] leading-relaxed text-white/85 drop-shadow-sm">{t("desc")}</motion.p>
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.6, ease }} className="mt-7 flex flex-wrap justify-center gap-3">
             <Magnetic strength={0.3}>
