@@ -99,44 +99,21 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
   );
 }
 
-/** Mobile-only unobstructed backlit stage showing the student silhouette + full-color Sir without text covering faces. */
+/** Mobile-only seamless backlit Sir figure + comma floating directly on the hero background (no box/card). */
 export function HeroMobileStage({ progress }: { progress: MotionValue<number> }) {
   const reduce = useReducedMotion();
-  const leftX = useTransform(progress, [0, 1], [0, -30]);
-  const rightX = useTransform(progress, [0, 1], [0, 30]);
+  const y = useTransform(progress, [0, 1], [0, -24]);
   const scale = useTransform(progress, [0, 1], [1, 1.05]);
+  const opacity = useTransform(progress, [0, 0.85], [1, 0.2]);
 
   return (
-    <div aria-hidden className="relative mt-5 h-64 w-full max-w-[360px] overflow-hidden rounded-3xl border border-white/10 bg-black/25 backdrop-blur-[2px] select-none sm:hidden">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 75% 75% at 50% 52%, hsl(var(--brand-500) / 0.65) 0%, hsl(var(--brand-600) / 0.35) 48%, transparent 82%)",
-        }}
-      />
+    <div aria-hidden className="relative mt-3 flex h-64 w-full items-end justify-center select-none sm:hidden">
       <motion.div
-        style={reduce ? undefined : { x: leftX, scale }}
-        initial={reduce ? undefined : { opacity: 0, x: -18 }}
-        animate={{ opacity: 0.94, x: 0 }}
-        transition={{ duration: 0.9, delay: 0.1, ease }}
-        className="absolute bottom-0 left-3 h-[90%] origin-bottom"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/silhouette-male.webp"
-          alt=""
-          loading="eager"
-          decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_86%,transparent_100%)]"
-        />
-      </motion.div>
-      <motion.div
-        style={reduce ? undefined : { x: rightX, scale }}
-        initial={reduce ? undefined : { opacity: 0, x: 18 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.95, delay: 0.18, ease }}
-        className="absolute bottom-0 right-7 h-[96%] origin-bottom"
+        style={reduce ? undefined : { y, scale, opacity }}
+        initial={reduce ? undefined : { opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.95, delay: 0.15, ease }}
+        className="relative h-full origin-bottom"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -144,7 +121,7 @@ export function HeroMobileStage({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_90%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_68%,transparent_100%)]"
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -152,10 +129,9 @@ export function HeroMobileStage({ progress }: { progress: MotionValue<number> })
           alt=""
           loading="eager"
           decoding="async"
-          className="pointer-events-none absolute -right-4 top-[8%] h-[16%] w-auto select-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
+          className="pointer-events-none absolute -right-7 top-[7%] h-[16%] w-auto select-none drop-shadow-[0_6px_16px_rgba(0,0,0,0.45)]"
         />
       </motion.div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black/35 to-transparent" />
     </div>
   );
 }
