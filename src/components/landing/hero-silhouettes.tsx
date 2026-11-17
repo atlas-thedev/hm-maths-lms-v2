@@ -61,24 +61,24 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         />
       </motion.div>
 
-      {/* Right silhouette (Hasitha Sir standing with arms crossed + comma mark beside him) */}
+      {/* Right figure (Hasitha Sir in full color standing with arms crossed + comma mark beside him) */}
       <motion.div
         style={reduce ? undefined : { x: rightX, y: rightY, scale: rightScale, opacity: silhouetteOpacity }}
         initial={reduce ? undefined : { opacity: 0, y: 40, x: 28 }}
-        animate={{ opacity: 0.95, y: 0, x: 0 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
         transition={{ duration: 1.05, delay: 0.18, ease }}
-        className="absolute bottom-6 right-[-2%] h-[60%] origin-bottom sm:bottom-0 sm:right-[4%] sm:h-[80%] lg:right-[9%] lg:h-[86%] xl:right-[13%]"
+        className="absolute bottom-6 right-[-6%] h-[58%] origin-bottom sm:bottom-0 sm:right-[2%] sm:h-[78%] lg:right-[6%] lg:h-[85%] xl:right-[10%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/silhouette-sir.webp"
+          src="/images/sir-hero-color.webp"
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_76%,transparent_100%)]"
+          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_78%,transparent_100%)]"
         />
         <span
-          className="absolute right-1 top-[8%] h-[14%] w-7 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:-right-11 sm:top-[10%] sm:h-[16%] sm:w-14"
+          className="absolute right-3 top-[6%] h-[14%] w-7 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:-right-8 sm:top-[8%] sm:h-[16%] sm:w-14"
           style={{
             maskImage: "url(/images/hero-comma.png)",
             WebkitMaskImage: "url(/images/hero-comma.png)",
