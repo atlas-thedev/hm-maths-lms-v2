@@ -43,13 +43,13 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         />
       </motion.div>
 
-      {/* Left silhouette (male figure, framed cleanly on left side, moving outward on scroll) */}
+      {/* Left silhouette (student figure, framed cleanly on left side, moving outward on scroll) */}
       <motion.div
         style={reduce ? undefined : { x: leftX, y: leftY, scale: leftScale, opacity: silhouetteOpacity }}
         initial={reduce ? undefined : { opacity: 0, y: 36, x: -24 }}
         animate={{ opacity: 0.92, y: 0, x: 0 }}
         transition={{ duration: 1.0, delay: 0.1, ease }}
-        className="absolute bottom-0 left-[-4%] h-[58%] origin-bottom sm:left-[3%] sm:h-[72%] lg:left-[8%] lg:h-[78%] xl:left-[12%]"
+        className="absolute bottom-0 left-[-6%] h-[62%] origin-bottom sm:left-[2%] sm:h-[74%] lg:left-[8%] lg:h-[80%] xl:left-[12%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -61,21 +61,21 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         />
       </motion.div>
 
-      {/* Right silhouette (female figure with long hair, framed cleanly on right side) */}
+      {/* Right silhouette (Hasitha Sir standing with arms crossed, framed cleanly on right side) */}
       <motion.div
         style={reduce ? undefined : { x: rightX, y: rightY, scale: rightScale, opacity: silhouetteOpacity }}
         initial={reduce ? undefined : { opacity: 0, y: 40, x: 28 }}
-        animate={{ opacity: 0.92, y: 0, x: 0 }}
+        animate={{ opacity: 0.95, y: 0, x: 0 }}
         transition={{ duration: 1.05, delay: 0.18, ease }}
-        className="absolute bottom-0 right-[-5%] h-[62%] origin-bottom sm:right-[2%] sm:h-[76%] lg:right-[7%] lg:h-[82%] xl:right-[11%]"
+        className="absolute bottom-0 right-[-8%] h-[68%] origin-bottom sm:right-[1%] sm:h-[80%] lg:right-[6%] lg:h-[86%] xl:right-[10%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/silhouette-female.webp"
+          src="/images/silhouette-sir.webp"
           alt=""
           loading="eager"
           decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_0_32px_hsl(var(--brand-400)/0.28)]"
+          className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_0_34px_hsl(var(--brand-400)/0.3)]"
         />
       </motion.div>
 

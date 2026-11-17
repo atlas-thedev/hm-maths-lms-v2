@@ -82,7 +82,7 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const primary = account === "guest" ? { href: "/register", label: t("ctaGuest") } : { href: account === "admin" ? "/admin" : "/dashboard", label: t("ctaGuest") };
   return (
-    <section ref={ref} id="home" className="relative scroll-mt-24 overflow-hidden bg-landing-hero pb-24 pt-24 text-white lg:pb-28 lg:pt-24">
+    <section ref={ref} id="home" className="relative scroll-mt-24 overflow-hidden bg-landing-hero pb-24 pt-28 text-white sm:pt-32 lg:pb-28 lg:pt-32">
       <HeroSilhouettes progress={scrollYProgress} />
       <motion.div style={reduce ? undefined : { y: textY, opacity: fade }} className="container relative z-10 flex flex-col items-center">
         {/* Channel banner is the hero: its backdrop blends with the backlit silhouette spotlight behind it.
