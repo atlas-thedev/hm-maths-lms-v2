@@ -220,8 +220,8 @@ export function HomeTeacher({ photo, isReal, photos = [] }: { photo: string; isR
   const SITE = useSite();
   const t = useT("landing.home.teacher");
   return (
-    <section id="teacher" className="relative scroll-mt-24 overflow-hidden py-12 sm:py-20">
-      <Glow className="-left-32 bottom-0 h-96 w-96 bg-warning/70" />
+    <section id="teacher" className="relative scroll-mt-24 overflow-x-clip py-12 sm:py-20">
+      <Glow className="-left-32 top-1/2 h-96 w-96 -translate-y-1/2 bg-warning/45" />
       <div className="container relative grid items-center gap-12 lg:grid-cols-2">
         <motion.div {...up()}>
           <Kicker>{t("label")}</Kicker>
