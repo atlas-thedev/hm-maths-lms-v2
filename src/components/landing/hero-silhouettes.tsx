@@ -61,13 +61,13 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         />
       </motion.div>
 
-      {/* Right silhouette (Hasitha Sir standing with arms crossed, framed cleanly on right side) */}
+      {/* Right silhouette (Hasitha Sir standing with arms crossed + comma mark beside him) */}
       <motion.div
         style={reduce ? undefined : { x: rightX, y: rightY, scale: rightScale, opacity: silhouetteOpacity }}
         initial={reduce ? undefined : { opacity: 0, y: 40, x: 28 }}
         animate={{ opacity: 0.95, y: 0, x: 0 }}
         transition={{ duration: 1.05, delay: 0.18, ease }}
-        className="absolute bottom-0 right-[-8%] h-[68%] origin-bottom sm:right-[1%] sm:h-[80%] lg:right-[6%] lg:h-[86%] xl:right-[10%]"
+        className="absolute bottom-0 right-[-2%] h-[68%] origin-bottom sm:right-[4%] sm:h-[80%] lg:right-[9%] lg:h-[86%] xl:right-[13%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -76,6 +76,17 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
           loading="eager"
           decoding="async"
           className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_0_34px_hsl(var(--brand-400)/0.3)]"
+        />
+        <span
+          className="absolute -right-7 top-[10%] h-[16%] w-10 bg-white/95 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:-right-12 sm:w-14"
+          style={{
+            maskImage: "url(/images/hero-comma.png)",
+            WebkitMaskImage: "url(/images/hero-comma.png)",
+            maskSize: "contain",
+            WebkitMaskSize: "contain",
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat",
+          }}
         />
       </motion.div>
 
