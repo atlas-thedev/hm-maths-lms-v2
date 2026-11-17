@@ -13,6 +13,7 @@ import { SL_DISTRICTS, SL_VIEWBOX } from "./sl-map-data";
 import { Sticker } from "./sticker";
 import { Magnetic, SplitReveal, TiltCard } from "./motion-kit";
 import { HeroBanner } from "./hero-banner";
+import { HeroSilhouettes } from "./hero-silhouettes";
 import { TeacherPhoto } from "./teacher-photo";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -82,39 +83,40 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
   const primary = account === "guest" ? { href: "/register", label: t("ctaGuest") } : { href: account === "admin" ? "/admin" : "/dashboard", label: t("ctaGuest") };
   return (
     <section ref={ref} id="home" className="relative scroll-mt-24 overflow-hidden bg-landing-hero pb-24 pt-24 text-white lg:pb-28 lg:pt-24">
-      <motion.div style={reduce ? undefined : { y: textY, opacity: fade }} className="container relative flex flex-col items-center">
-        {/* Channel banner is the hero: its backdrop matches --landing-hero in the theme, so it blends edge-to-edge.
+      <HeroSilhouettes progress={scrollYProgress} />
+      <motion.div style={reduce ? undefined : { y: textY, opacity: fade }} className="container relative z-10 flex flex-col items-center">
+        {/* Channel banner is the hero: its backdrop blends with the backlit silhouette spotlight behind it.
             The banner is neutral; everything that was red in the art is a brand-coloured mask on top (so it follows the
             theme) and the year badge is live code. */}
         <motion.div
           initial={{ opacity: 0, y: 24, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} transition={{ duration: 1.1, ease }}
-          className="w-full max-w-[1000px]">
+          className="w-full max-w-[1000px] drop-shadow-[0_12px_32px_rgba(0,0,0,0.45)]">
           <HeroBanner label={t("badge")} photo={photo} />
         </motion.div>
         <h1 className="sr-only">{t("line1")} {t("line2")}</h1>
         <div className="flex w-full max-w-2xl flex-col items-center text-center">
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }} className="mt-4 text-[15px] leading-relaxed text-white/65">{t("desc")}</motion.p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }} className="mt-4 text-[15px] leading-relaxed text-white/85 drop-shadow-sm">{t("desc")}</motion.p>
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.6, ease }} className="mt-7 flex flex-wrap justify-center gap-3">
             <Magnetic strength={0.3}>
-              <Link href={primary.href} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-500/30 transition hover:-translate-y-0.5 hover:bg-brand-400">
+              <Link href={primary.href} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/30 ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:bg-brand-400">
                 <span aria-hidden className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/35 to-transparent transition duration-700 group-hover:translate-x-full" />
                 <span className="relative">{primary.label}</span> <ArrowRight className="relative h-4 w-4 transition group-hover:translate-x-0.5" />
               </Link>
             </Magnetic>
             <Magnetic strength={0.25}>
-              <Link href="/#process" className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10">{t("ctaLearn")}</Link>
+              <Link href="/#process" className="inline-flex items-center rounded-full border border-white/20 bg-black/35 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-black/50">{t("ctaLearn")}</Link>
             </Magnetic>
           </motion.div>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }} className="mt-7 flex items-center gap-1.5 font-display text-lg font-semibold text-white/90">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }} className="mt-7 flex items-center gap-1.5 font-display text-lg font-semibold text-white/95 drop-shadow-sm">
             <Sticker name="cool-ducks" size={30} /> {t("tagline")} <Sticker name="target" size={30} />
           </motion.p>
           <motion.dl initial="h" animate="s" variants={{ s: { transition: { staggerChildren: 0.1, delayChildren: 0.95 } } }} className="mt-8 grid w-full max-w-xl grid-cols-2 gap-3 sm:grid-cols-4">
             {[[subs, t("stats.subs"), "hero-subs"], [abResults, t("stats.abResults"), "hero-ab-results"], [videos, t("stats.videos"), "hero-videos"], [String(Math.max(0, townKeys.length - 1)), t("stats.centers"), "hero-centers"]].map(([v, l, tid]) => (
               <motion.div key={tid} data-testid={tid} variants={{ h: { opacity: 0, y: 16, scale: 0.95 }, s: { opacity: 1, y: 0, scale: 1 } }} transition={{ duration: 0.6, ease }}
-                className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-md transition hover:border-brand-400/40 hover:bg-white/10">
+                className="rounded-2xl border border-white/15 bg-black/35 p-3 backdrop-blur-md transition hover:border-brand-300/60 hover:bg-black/45">
                 <dt className="sr-only">{l}</dt>
                 <dd className="font-display text-xl font-bold text-white sm:text-2xl"><CountUp value={v} /></dd>
-                <p className="mt-0.5 text-[11px] leading-snug text-white/55">{l}</p>
+                <p className="mt-0.5 text-[11px] leading-snug text-white/70">{l}</p>
               </motion.div>
             ))}
           </motion.dl>
@@ -128,7 +130,7 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
           </motion.div>
         </div>
       </motion.div>
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-landing-bg" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-b from-transparent to-landing-bg" />
     </section>
   );
 }
