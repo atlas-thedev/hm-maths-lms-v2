@@ -19,16 +19,16 @@ export function HeroBanner({ label, className }: { label: string; className?: st
       <div aria-hidden className="relative hidden w-full max-w-[1000px] select-none overflow-hidden text-white [container-type:inline-size] [text-rendering:geometricPrecision] sm:block" style={{ aspectRatio: "1000 / 351" }}>
         <HeroYearBadge label={label} />
 
-        <p className="absolute whitespace-nowrap font-display font-bold uppercase text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]" style={{ ...pct(175, 68), fontSize: "1cqw", letterSpacing: "0.21em", lineHeight: 1.2 }}>G.C.E Advanced Level Examination</p>
-        <p className="absolute whitespace-nowrap font-display font-extrabold uppercase text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)]" style={{ ...pct(172, 84), fontSize: "4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}>Combined</p>
-        <p className="absolute whitespace-nowrap font-display font-extrabold uppercase text-white/85 drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)]" style={{ ...pct(172, 121), fontSize: "4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}>Mathematics</p>
-        <span className="absolute rounded-full bg-white/90 shadow-sm" style={{ ...pct(173, 165), width: "23.8%", height: "1.1%", minHeight: 2 }} />
+        <p className="absolute whitespace-nowrap font-display font-bold uppercase text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]" style={{ ...pct(295, 68), fontSize: "1cqw", letterSpacing: "0.21em", lineHeight: 1.2 }}>G.C.E Advanced Level Examination</p>
+        <p className="absolute whitespace-nowrap font-display font-extrabold uppercase text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)]" style={{ ...pct(292, 84), fontSize: "4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}>Combined</p>
+        <p className="absolute whitespace-nowrap font-display font-extrabold uppercase text-white/85 drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)]" style={{ ...pct(292, 121), fontSize: "4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}>Mathematics</p>
+        <span className="absolute rounded-full bg-white/90 shadow-sm" style={{ ...pct(293, 165), width: "23.8%", height: "1.1%", minHeight: 2 }} />
 
-        <p className="absolute whitespace-nowrap font-sans font-extrabold drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)]" style={{ ...pct(172, 196), fontSize: "5.4cqw", lineHeight: 1.15 }}>
+        <p className="absolute whitespace-nowrap font-sans font-extrabold drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)]" style={{ ...pct(292, 196), fontSize: "5.4cqw", lineHeight: 1.15 }}>
           <span className="text-white">හසිත</span>{" "}<span className="text-brand-100">මධුසංක</span>
           <span className="ml-[0.7cqw] align-baseline font-semibold text-white/85" style={{ fontSize: "0.95cqw" }}>B.Sc</span>
         </p>
-        <p className="absolute whitespace-nowrap font-sans font-semibold text-white/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]" style={{ ...pct(176, 268), fontSize: "1.15cqw", lineHeight: 1.2 }}>{contact}</p>
+        <p className="absolute whitespace-nowrap font-sans font-semibold text-white/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]" style={{ ...pct(296, 268), fontSize: "1.15cqw", lineHeight: 1.2 }}>{contact}</p>
       </div>
 
       {/* Mobile (< sm): centered crisp layout without empty right gap */}

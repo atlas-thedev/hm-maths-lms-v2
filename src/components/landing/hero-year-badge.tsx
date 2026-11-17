@@ -31,7 +31,7 @@ export function HeroYearBadge({ label, inline = false }: { label: string; inline
   return (
     <svg viewBox={`${x} ${y} ${w} ${h}`} role="img" aria-label={`${year} ${label}`} data-testid={inline ? undefined : "hero-year-badge"}
       className={inline ? "h-12 w-12 shrink-0 [text-rendering:geometricPrecision]" : "absolute [text-rendering:geometricPrecision]"}
-      style={inline ? undefined : { left: `${x / 10}%`, top: `${y / 3.51}%`, width: `${w / 10}%` }}>
+      style={inline ? undefined : { left: "15%", top: `${y / 3.51}%`, width: `${w / 10}%` }}>
       <rect x="36" y="54.5" width="65" height="76" rx="11" fill="#101010" stroke="#fff" strokeWidth="2.6" />
       <path d="M96 82.2c0-1.6 1.7-2.5 3-1.7l9.4 6.6c1.3.9 1.3 2.8 0 3.7L99 97.4c-1.3.9-3 0-3-1.7z" fill="hsl(var(--brand-500))" />
       <AnimatePresence mode="wait" initial={false}>
