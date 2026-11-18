@@ -207,8 +207,8 @@ export function TimetableView({
                           </span>
                         </div>
                         {item.is_featured ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-brand-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                            <Sparkles className="h-3 w-3" /> {t("newIntakeBadge")}
+                          <span className="rounded-full bg-brand-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                            {t("newIntakeBadge")}
                           </span>
                         ) : null}
                       </div>

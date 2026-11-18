@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion, type MotionValue, useReducedMotion, useTransform } from "framer-motion";
-import { ArrowRight, CalendarDays, Sparkles } from "lucide-react";
+import { ArrowRight, CalendarDays } from "lucide-react";
 import { useLocale } from "@/i18n/client";
 import type { HeroPromoSettings } from "@/lib/settings";
 
@@ -18,9 +18,8 @@ function copy(promo: HeroPromoSettings, locale: string) {
 }
 
 /**
- * Interactive Hero Intake / New Batch spotlight card.
- * Replaces the left desktop student silhouette on lg+ screens with scroll parallax,
- * and shows as a compact clickable card on smaller screens.
+ * Architectural Hero Intake / New Batch callout pinned in the left studio spotlight
+ * where the desktop student silhouette stood, visually echoing HeroYearBadge & HeroBanner.
  */
 export function HeroIntakeCard({
   promo,
@@ -33,68 +32,61 @@ export function HeroIntakeCard({
   const reduce = useReducedMotion();
   const text = copy(promo, locale);
 
-  const y = useTransform(progress, [0, 1], [0, -44]);
-  const x = useTransform(progress, [0, 1], [0, -56]);
-  const opacity = useTransform(progress, [0, 0.82], [1, 0.1]);
+  const y = useTransform(progress, [0, 1], [0, -36]);
+  const x = useTransform(progress, [0, 1], [0, -48]);
+  const opacity = useTransform(progress, [0, 0.85], [1, 0.12]);
 
   if (!promo.enabled) return null;
 
   return (
-    <>
-      {/* Desktop (lg+): Sits in the left spotlight zone where the student silhouette stood */}
-      <motion.div
-        style={reduce ? undefined : { x, y, opacity }}
-        initial={reduce ? undefined : { opacity: 0, x: -32, y: 20 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        transition={{ duration: 0.95, delay: 0.2, ease }}
-        className="pointer-events-auto hidden lg:block absolute bottom-16 left-[3%] z-20 w-[248px] xl:bottom-20 xl:left-[5.5%] xl:w-[276px]"
+    <motion.div
+      style={reduce ? undefined : { x, y, opacity }}
+      initial={reduce ? undefined : { opacity: 0, x: -24, y: 12 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      transition={{ duration: 0.85, delay: 0.18, ease }}
+      className="pointer-events-auto hidden lg:block absolute left-5 top-[275px] z-20 w-[198px] xl:left-[max(2rem,calc(50%-600px))] xl:top-[285px] xl:w-[264px] 2xl:w-[272px]"
+    >
+      <Link
+        href={promo.href || "/timetable"}
+        className="group relative block overflow-hidden rounded-2xl border border-white/15 bg-[#081024]/85 p-4 text-left text-white shadow-[0_18px_42px_-12px_rgba(0,0,0,0.65)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-brand-400/55 hover:bg-[#0b1530]/95 xl:p-5"
       >
-        <Link
-          href={promo.href || "/timetable"}
-          className="group relative block overflow-hidden rounded-[1.75rem] border border-white/20 bg-black/45 p-5 text-left text-white shadow-[0_24px_60px_-15px_rgba(0,0,0,0.7)] backdrop-blur-xl ring-1 ring-brand-400/25 transition duration-300 hover:-translate-y-1.5 hover:border-brand-300/60 hover:bg-black/55 hover:shadow-[0_28px_70px_-12px_hsl(var(--brand-500)/0.45)]"
-        >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-brand-500/30 blur-2xl transition duration-500 group-hover:scale-125 group-hover:bg-brand-400/40"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition duration-700 group-hover:translate-x-full"
-          />
+        <span aria-hidden className="absolute inset-y-4 left-0 w-[3px] rounded-r-full bg-brand-500 transition-all duration-300 group-hover:inset-y-2.5" />
 
-          <div className="relative flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-300/40 bg-brand-500/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-100">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300" />
-              {text.badge}
-            </span>
-            <CalendarDays className="h-4 w-4 text-brand-200/80 transition group-hover:text-white" />
-          </div>
+        <div className="flex items-center justify-between gap-2 pl-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-300">
+            {text.badge}
+          </span>
+          <CalendarDays className="h-3.5 w-3.5 shrink-0 text-white/45 transition-colors group-hover:text-brand-300" />
+        </div>
 
-          <div className="relative mt-3.5 flex items-baseline gap-2">
-            <span className="bg-gradient-to-br from-white via-brand-100 to-brand-300 bg-clip-text font-display text-4xl font-black leading-none tracking-tight text-transparent xl:text-[2.65rem]">
-              {promo.year}
-            </span>
-            <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-brand-200">
-              <Sparkles className="h-3.5 w-3.5" /> A/L
-            </span>
-          </div>
+        <div className="mt-2.5 flex items-baseline gap-2 pl-2">
+          <span className="font-display text-[2.25rem] font-extrabold leading-none tracking-tight text-white tabular-nums xl:text-[3rem]">
+            {promo.year}
+          </span>
+          <span className="rounded border border-white/20 bg-white/[0.06] px-1.5 py-0.5 font-display text-[10px] font-bold tracking-wider text-white/85">
+            A/L
+          </span>
+        </div>
 
-          <h2 className="relative mt-2 font-display text-base font-extrabold leading-snug text-white xl:text-[1.06rem]">
-            {text.title}
-          </h2>
-          {text.subtitle ? (
-            <p className="relative mt-1.5 line-clamp-3 text-xs leading-relaxed text-white/75">
-              {text.subtitle}
-            </p>
-          ) : null}
+        <div className="ml-2 mt-2.5 h-[2px] w-9 rounded-full bg-brand-500/90 transition-all duration-300 group-hover:w-14" />
 
-          <div className="relative mt-4 inline-flex w-full items-center justify-between gap-2 rounded-2xl bg-brand-500 px-3.5 py-2.5 text-xs font-bold text-white shadow-md shadow-black/30 transition group-hover:bg-brand-400">
-            <span className="truncate">{text.cta}</span>
-            <ArrowRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-1" />
-          </div>
-        </Link>
-      </motion.div>
-    </>
+        <h2 className="mt-3 pl-2 font-display text-sm font-bold leading-snug text-white xl:text-[15px]">
+          {text.title}
+        </h2>
+        {text.subtitle ? (
+          <p className="mt-1.5 pl-2 text-[11px] leading-relaxed text-white/65 xl:text-xs">
+            {text.subtitle}
+          </p>
+        ) : null}
+
+        <div className="mt-4 ml-2 flex items-center justify-between border-t border-white/10 pt-3 text-xs font-semibold text-white/90 transition-colors group-hover:text-white">
+          <span className="truncate">{text.cta}</span>
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-500 text-white transition-transform duration-300 group-hover:translate-x-0.5 group-hover:bg-brand-400">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </div>
+      </Link>
+    </motion.div>
   );
 }
 
@@ -106,29 +98,26 @@ export function HeroIntakeMobileBar({ promo }: { promo: HeroPromoSettings }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.45, duration: 0.65, ease }}
+      transition={{ delay: 0.42, duration: 0.6, ease }}
       className="mt-5 w-full max-w-md lg:hidden"
     >
       <Link
         href={promo.href || "/timetable"}
-        className="group flex items-center gap-3.5 rounded-2xl border border-brand-300/35 bg-black/45 p-3.5 text-left text-white shadow-lg shadow-black/30 backdrop-blur-xl transition hover:border-brand-300/60 hover:bg-black/55"
+        className="group flex items-center gap-3.5 rounded-2xl border border-white/15 bg-[#081024]/85 p-3 text-left text-white shadow-lg shadow-black/30 backdrop-blur-md transition hover:border-brand-400/50 hover:bg-[#0b1530]/95"
       >
-        <div className="flex h-12 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-brand-500 text-white shadow-inner">
-          <span className="font-display text-base font-black leading-none">{promo.year}</span>
-          <span className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-white/90">A/L</span>
+        <div className="flex h-12 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-white/25 bg-[#101010] text-white">
+          <span className="font-display text-base font-extrabold leading-none tabular-nums">{promo.year}</span>
+          <span className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-brand-400">A/L</span>
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-200">{text.badge}</span>
-          </div>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-brand-300">{text.badge}</span>
           <p className="mt-0.5 truncate font-display text-sm font-bold text-white">{text.title}</p>
-          <p className="truncate text-[11px] text-white/75">{text.cta}</p>
+          <p className="truncate text-[11px] text-white/65">{text.cta}</p>
         </div>
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-white transition group-hover:bg-brand-500">
-          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-500 text-white transition group-hover:bg-brand-400">
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </span>
       </Link>
     </motion.div>
