@@ -54,6 +54,24 @@ export async function saveHeroPromoAction(_p: ActionState, fd: FormData): Promis
   return { ok: true, message: next.enabled ? `Saved. Hero promo (${next.year}) is live on the home page.` : "Saved. Hero promo card is hidden." };
 }
 
+type TimetableInput = {
+  id: string | null;
+  batch_year: number;
+  class_type: string;
+  title: string;
+  center_key: string;
+  hall_name: string;
+  day_label: string;
+  time_label: string;
+  fee_label: string;
+  start_note: string;
+  details: string;
+  class_id: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+  sort_order: number;
+};
+
 export async function saveTimetableAction(_p: ActionState, fd: FormData): Promise<ActionState> {
   const { user, profile } = await requireDeveloper();
   let raw: unknown;
@@ -64,7 +82,7 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
   }
   if (!Array.isArray(raw)) return { error: "Could not read timetable list." };
 
-  const cleaned = [];
+  const cleaned: TimetableInput[] = [];
   for (const [idx, item] of (raw as Record<string, unknown>[]).entries()) {
     const yearNum = Number(item?.batch_year);
     if (!Number.isInteger(yearNum) || yearNum < 2020 || yearNum > 2099) {
