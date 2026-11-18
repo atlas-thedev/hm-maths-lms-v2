@@ -47,7 +47,7 @@ INSERT INTO public.classes (
   (
     '874143e4-0e17-4462-a755-e051bf9db22e',
     '2027 A/L Combined Maths - Theory',
-    E'හසිත මධුසංක සර්ගේ 2027 A/L Combined Maths Theory පන්තිය.\n\nපන්ති කාලසටහන:\n• සක්යා - පානදුර: සඳුදා ප.ව. 3.00 – 6.30\n• විදුල - හොරණ: බ්‍රහස්පතින්දා ප.ව. 3.30 – 6.30\n• රසන්යා - කළුතර: සෙනසුරාදා ප.ව. 2.00 – 5.00\n• පැනෝලා - මතුගම: ඉරිදා පෙ.ව. 11.00 – ප.ව. 2.00\n• Online Live & Recordings',
+    E'හසිත මඳුසංක සර්ගේ 2027 A/L Combined Maths Theory පන්තිය.\n\nපන්ති කාලසටහන:\n• සක්යා - පානදුර: සඳුදා ප.ව. 3.00 – 6.30\n• විදුල - හොරණ: බ්‍රහස්පතින්දා ප.ව. 3.30 – 6.30\n• රසන්යා - කළුතර: සෙනසුරාදා ප.ව. 2.00 – 5.00\n• පැනෝලා - මතුගම: ඉරිදා පෙ.ව. 11.00 – ප.ව. 2.00\n• Online Live & Recordings',
     'Theory', 2027, 'Online', 3500.00,
     NULL, ARRAY[1], '15:00:00'::time, 210,
     NULL, '{"badge":"THEORY","tagline":"A සාමාර්ථයක් සහතික කෙරෙන අසමසම සිද්ධාන්ත පන්තිය","headline":"","subtitle":"Combined Maths Theory","template":"brand","headlineMode":"month"}'::jsonb,

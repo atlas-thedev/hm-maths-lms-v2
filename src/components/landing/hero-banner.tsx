@@ -25,7 +25,7 @@ export function HeroBanner({ label, className }: { label: string; className?: st
         <span className="absolute rounded-full bg-white/90 shadow-sm" style={{ ...pct(293, 165), width: "23.8%", height: "1.1%", minHeight: 2 }} />
 
         <p className="absolute whitespace-nowrap font-sans font-extrabold drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)]" style={{ ...pct(292, 196), fontSize: "5.4cqw", lineHeight: 1.15 }}>
-          <span className="text-white">හසිත</span>{" "}<span className="text-brand-100">මධුසංක</span>
+          <span className="text-white">හසිත</span>{" "}<span className="text-brand-100">මඳුසංක</span>
           <span className="ml-[0.7cqw] align-baseline font-semibold text-white/85" style={{ fontSize: "0.95cqw" }}>B.Sc</span>
         </p>
         <p className="absolute whitespace-nowrap font-sans font-semibold text-white/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]" style={{ ...pct(296, 268), fontSize: "1.15cqw", lineHeight: 1.2 }}>{contact}</p>
@@ -45,7 +45,7 @@ export function HeroBanner({ label, className }: { label: string; className?: st
         </p>
         <span className="mt-2.5 h-1 w-20 rounded-full bg-white/85" />
         <p className="mt-3 font-sans text-3xl font-extrabold leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
-          <span className="text-white">හසිත</span>{" "}<span className="text-brand-100">මධුසංක</span>
+          <span className="text-white">හසිත</span>{" "}<span className="text-brand-100">මඳුසංක</span>
           <span className="ml-1.5 text-xs font-semibold text-white/80">B.Sc</span>
         </p>
         <p className="mt-3 inline-flex items-center rounded-full border border-white/15 bg-black/30 px-3.5 py-1 text-xs font-semibold text-white/90 backdrop-blur-sm">

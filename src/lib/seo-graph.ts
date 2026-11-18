@@ -32,7 +32,7 @@ export function siteGraph(o: {
       knowsAbout: ["Combined Mathematics", "G.C.E. Advanced Level", "Pure Mathematics", "Applied Mathematics", "A/L Mathematics past papers"],
     },
     {
-      "@type": "Person", "@id": `${SITE_URL}/#teacher`, name: brand.owner, alternateName: "හසිත මධුසංක", jobTitle: "A/L Combined Mathematics Teacher",
+      "@type": "Person", "@id": `${SITE_URL}/#teacher`, name: brand.owner, alternateName: "හසිත මඳුසංක", jobTitle: "A/L Combined Mathematics Teacher",
       honorificSuffix: "B.Sc", worksFor: { "@id": org }, sameAs, image: absolute(SITE.youtube.avatar ?? "/images/hasitha-yt.webp"),
     },
     ...(o.classes ?? []).map((c) => ({

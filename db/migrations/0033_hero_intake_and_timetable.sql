@@ -207,3 +207,8 @@ insert into public.timetable_entries (
     false, true, 230
   )
 on conflict (id) do nothing;
+
+-- Ensure existing class descriptions also use මඳුසංක (සඤ්ඤක ඳ)
+update public.classes
+   set description = replace(replace(description, 'මධුසංක', 'මඳුසංක'), 'මදුසංක', 'මඳුසංක')
+ where description like '%මධුසංක%' or description like '%මදුසංක%';
