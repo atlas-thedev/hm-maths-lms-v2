@@ -54,6 +54,13 @@ export async function saveHeroPromoAction(_p: ActionState, fd: FormData): Promis
   return { ok: true, message: next.enabled ? `Saved. Hero promo (${next.year}) is live on the home page.` : "Saved. Hero promo card is hidden." };
 }
 
+type TimetableSlotInput = {
+  center_key: string;
+  hall_name: string;
+  day_label: string;
+  time_label: string;
+};
+
 type TimetableInput = {
   id: string | null;
   batch_year: number;
@@ -66,6 +73,7 @@ type TimetableInput = {
   fee_label: string;
   start_note: string;
   details: string;
+  slots: TimetableSlotInput[];
   class_id: string | null;
   is_featured: boolean;
   is_active: boolean;
@@ -86,15 +94,45 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
   for (const [idx, item] of (raw as Record<string, unknown>[]).entries()) {
     const yearNum = Number(item?.batch_year);
     if (!Number.isInteger(yearNum) || yearNum < 2020 || yearNum > 2099) {
-      return { error: `Row ${idx + 1}: enter a valid A/L year (e.g. 2029).` };
+      return { error: `Card ${idx + 1}: enter a valid A/L year (e.g. 2029).` };
     }
     const title = cleanStr(item?.title, 140);
-    const center_key = cleanStr(item?.center_key, 60);
-    const day_label = cleanStr(item?.day_label, 100);
-    const time_label = cleanStr(item?.time_label, 120);
-    if (!title || !center_key || !day_label || !time_label) {
-      return { error: `Row ${idx + 1}: title, center, day and time are required.` };
+    if (!title) {
+      return { error: `Card ${idx + 1}: title is required.` };
     }
+
+    const rawSlots = Array.isArray(item?.slots) ? (item.slots as Record<string, unknown>[]) : [];
+    const slots: TimetableSlotInput[] = [];
+    for (const [sIdx, s] of rawSlots.entries()) {
+      const center_key = cleanStr(s?.center_key, 60);
+      const day_label = cleanStr(s?.day_label, 100);
+      const time_label = cleanStr(s?.time_label, 120);
+      if (!center_key || !day_label || !time_label) {
+        return { error: `Card ${idx + 1}, slot ${sIdx + 1}: center, day and time are required.` };
+      }
+      slots.push({
+        center_key,
+        hall_name: cleanStr(s?.hall_name, 140),
+        day_label,
+        time_label,
+      });
+    }
+
+    if (slots.length === 0) {
+      const center_key = cleanStr(item?.center_key, 60);
+      const day_label = cleanStr(item?.day_label, 100);
+      const time_label = cleanStr(item?.time_label, 120);
+      if (!center_key || !day_label || !time_label) {
+        return { error: `Card ${idx + 1}: add at least one institute/center schedule row.` };
+      }
+      slots.push({
+        center_key,
+        hall_name: cleanStr(item?.hall_name, 140),
+        day_label,
+        time_label,
+      });
+    }
+
     const id = typeof item?.id === "string" && UUID_RE.test(item.id) ? item.id : null;
     const class_id = typeof item?.class_id === "string" && UUID_RE.test(item.class_id) ? item.class_id : null;
     cleaned.push({
@@ -102,13 +140,14 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
       batch_year: yearNum,
       class_type: cleanStr(item?.class_type, 40) || "Theory",
       title,
-      center_key,
-      hall_name: cleanStr(item?.hall_name, 140),
-      day_label,
-      time_label,
+      center_key: slots[0].center_key,
+      hall_name: cleanStr(item?.hall_name, 140) || slots[0].hall_name,
+      day_label: slots[0].day_label,
+      time_label: slots[0].time_label,
       fee_label: cleanStr(item?.fee_label, 100),
       start_note: cleanStr(item?.start_note, 180),
-      details: cleanStr(item?.details, 1500),
+      details: cleanStr(item?.details, 600),
+      slots,
       class_id,
       is_featured: Boolean(item?.is_featured),
       is_active: item?.is_active !== false,
@@ -125,12 +164,13 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
     }
 
     for (const r of cleaned) {
+      const slotsJson = JSON.stringify(r.slots);
       if (r.id) {
         await c.query(
           `insert into public.timetable_entries (
              id, batch_year, class_type, title, center_key, hall_name, day_label, time_label,
-             fee_label, start_note, details, class_id, is_featured, is_active, sort_order, updated_at
-           ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now())
+             fee_label, start_note, details, slots, class_id, is_featured, is_active, sort_order, updated_at
+           ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13, $14, $15, $16, now())
            on conflict (id) do update set
              batch_year  = excluded.batch_year,
              class_type  = excluded.class_type,
@@ -142,6 +182,7 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
              fee_label   = excluded.fee_label,
              start_note  = excluded.start_note,
              details     = excluded.details,
+             slots       = excluded.slots,
              class_id    = excluded.class_id,
              is_featured = excluded.is_featured,
              is_active   = excluded.is_active,
@@ -150,19 +191,19 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
           [
             r.id, r.batch_year, r.class_type, r.title, r.center_key, r.hall_name,
             r.day_label, r.time_label, r.fee_label, r.start_note, r.details,
-            r.class_id, r.is_featured, r.is_active, r.sort_order,
+            slotsJson, r.class_id, r.is_featured, r.is_active, r.sort_order,
           ],
         );
       } else {
         await c.query(
           `insert into public.timetable_entries (
              batch_year, class_type, title, center_key, hall_name, day_label, time_label,
-             fee_label, start_note, details, class_id, is_featured, is_active, sort_order
-           ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+             fee_label, start_note, details, slots, class_id, is_featured, is_active, sort_order
+           ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb, $12, $13, $14, $15)`,
           [
             r.batch_year, r.class_type, r.title, r.center_key, r.hall_name,
             r.day_label, r.time_label, r.fee_label, r.start_note, r.details,
-            r.class_id, r.is_featured, r.is_active, r.sort_order,
+            slotsJson, r.class_id, r.is_featured, r.is_active, r.sort_order,
           ],
         );
       }
@@ -175,12 +216,12 @@ export async function saveTimetableAction(_p: ActionState, fd: FormData): Promis
     actorRole: profile.role,
     category: "settings",
     action: "settings_changed",
-    summary: `Updated public timetable (${cleaned.length} slot(s))`,
+    summary: `Updated public timetable (${cleaned.length} class card(s))`,
     details: { count: cleaned.length },
   });
 
   revalidatePath("/", "layout");
   revalidatePath("/timetable");
   revalidatePath("/dev/timetable");
-  return { ok: true, message: `Saved ${cleaned.length} timetable entry(ies). Live at /timetable.` };
+  return { ok: true, message: `Saved ${cleaned.length} class card(s). Live at /timetable.` };
 }

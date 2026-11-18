@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CalendarClock, CalendarDays, MapPin, Phone, Sparkles, Tag, Wifi } from "lucide-react";
+import { ArrowRight, CalendarDays, MapPin, Phone, Tag, Wifi } from "lucide-react";
 import { WhatsAppIcon } from "@/components/brand-icons";
 import { useLocale, useT } from "@/i18n/client";
 import { centerLabel, ONLINE_KEY, type Center } from "@/lib/centers";
@@ -37,8 +37,12 @@ export function TimetableView({
     () => [...new Set(entries.map((e) => e.batch_year))].sort((a, b) => b - a),
     [entries],
   );
+
   const centerKeys = useMemo(() => {
-    const keys = new Set<string>(entries.map((e) => e.center_key));
+    const keys = new Set<string>();
+    for (const e of entries) {
+      for (const s of e.slots) keys.add(s.center_key);
+    }
     const ordered = centers.map((c) => c.key).filter((k) => keys.has(k));
     if (keys.has(ONLINE_KEY)) ordered.push(ONLINE_KEY);
     for (const k of keys) if (!ordered.includes(k)) ordered.push(k);
@@ -51,7 +55,7 @@ export function TimetableView({
   const [selectedCenter, setSelectedCenter] = useState<string>("all");
 
   const labelForCenter = (key: string) => {
-    if (key === ONLINE_KEY) return locale === "si" ? "Online" : "Online";
+    if (key === ONLINE_KEY) return "Online";
     const found = centers.find((c) => c.key.toLowerCase() === key.toLowerCase());
     return found ? centerLabel(found, locale) : key;
   };
@@ -60,13 +64,18 @@ export function TimetableView({
     () =>
       entries.filter((e) => {
         if (selectedYear !== null && e.batch_year !== selectedYear) return false;
-        if (selectedCenter !== "all" && e.center_key.toLowerCase() !== selectedCenter.toLowerCase()) return false;
+        if (
+          selectedCenter !== "all" &&
+          !e.slots.some((s) => s.center_key.toLowerCase() === selectedCenter.toLowerCase())
+        ) {
+          return false;
+        }
         return true;
       }),
     [entries, selectedYear, selectedCenter],
   );
 
-  // Group filtered entries by batch year (highest year first)
+  // Group filtered class cards by batch year (newest first)
   const grouped = useMemo(() => {
     const map = new Map<number, TimetableEntry[]>();
     for (const e of filtered) {
@@ -82,7 +91,6 @@ export function TimetableView({
       {/* Filter Toolbar */}
       <div className="rounded-3xl border border-black/[0.06] bg-white p-4 shadow-soft sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          {/* Batch Year Tabs */}
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
@@ -158,10 +166,11 @@ export function TimetableView({
         </div>
       ) : (
         <div className="space-y-10">
-          {grouped.map(([year, items]) => (
-            <section key={year} aria-labelledby={`batch-${year}`}>
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
+          {grouped.map(([year, items]) => {
+            const singleCard = items.length === 1;
+            return (
+              <section key={year} aria-labelledby={`batch-${year}`}>
+                <div className="mb-4 flex items-center gap-3">
                   <span className="inline-flex h-11 items-center rounded-2xl bg-gradient-brand px-4 font-display text-xl font-black text-white shadow-sm">
                     {year}
                   </span>
@@ -172,120 +181,157 @@ export function TimetableView({
                     <p className="text-xs font-medium text-slate-500">{t("count", { n: items.length })}</p>
                   </div>
                 </div>
-              </div>
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {items.map((item, idx) => {
-                  const waText = `Hi, I would like details about ${item.title} (${labelForCenter(item.center_key)}${item.hall_name ? ` - ${item.hall_name}` : ""}, ${item.day_label} ${item.time_label}).`;
-                  const waHref = whatsappLink(whatsappNumber, waText);
-                  const typeCls = TYPE_STYLE[item.class_type] ?? "bg-slate-100 text-slate-700 ring-slate-200";
-                  const lines = item.details
-                    .split(/\r?\n/)
-                    .map((l) => l.replace(/^[-•*]\s*/, "").trim())
-                    .filter(Boolean);
+                <div
+                  className={cn(
+                    "grid gap-5",
+                    singleCard
+                      ? "grid-cols-1"
+                      : items.length === 2
+                        ? "grid-cols-1 lg:grid-cols-2"
+                        : "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
+                  )}
+                >
+                  {items.map((item, idx) => {
+                    const waText = `Hi, I would like timetable & registration details for ${item.title}.`;
+                    const waHref = whatsappLink(whatsappNumber, waText);
+                    const typeCls = TYPE_STYLE[item.class_type] ?? "bg-slate-100 text-slate-700 ring-slate-200";
+                    const isCenterFiltered = selectedCenter !== "all";
 
-                  return (
-                    <motion.article
-                      key={item.id}
-                      initial={{ opacity: 0, y: 18 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-40px" }}
-                      transition={{ duration: 0.45, delay: Math.min(idx, 5) * 0.05 }}
-                      className={cn(
-                        "flex h-full flex-col rounded-3xl border bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-lift sm:p-6",
-                        item.is_featured ? "border-brand-200 ring-1 ring-brand-100" : "border-black/[0.06]",
-                      )}
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1", typeCls)}>
-                            {tc.raw<Record<string, string>>("classTypes")?.[item.class_type] ?? item.class_type}
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700">
-                            {item.center_key === ONLINE_KEY ? <Wifi className="h-3 w-3 text-brand-600" /> : <MapPin className="h-3 w-3 text-brand-600" />}
-                            {labelForCenter(item.center_key)}
-                          </span>
-                        </div>
-                        {item.is_featured ? (
-                          <span className="rounded-full bg-brand-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                            {t("newIntakeBadge")}
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <h3 className="mt-3.5 font-display text-lg font-extrabold leading-snug text-ink">
-                        {item.title}
-                      </h3>
-                      {item.hall_name ? (
-                        <p className="mt-1 text-sm font-semibold text-brand-700">{item.hall_name}</p>
-                      ) : null}
-
-                      <div className="mt-4 space-y-2 rounded-2xl bg-slate-50 p-3.5 text-sm">
-                        <div className="flex items-start gap-2.5">
-                          <CalendarClock className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-                          <div>
-                            <p className="font-bold text-ink">{item.day_label}</p>
-                            <p className="text-xs font-semibold text-slate-600">{item.time_label}</p>
-                          </div>
-                        </div>
-                        {item.fee_label ? (
-                          <div className="flex items-center gap-2.5 border-t border-slate-200/70 pt-2">
-                            <Tag className="h-4 w-4 shrink-0 text-teal-600" />
-                            <p className="text-xs font-bold text-slate-800">{item.fee_label}</p>
-                          </div>
-                        ) : null}
-                      </div>
-
-                      {item.start_note ? (
-                        <p className="mt-3 rounded-xl bg-brand-50/70 px-3 py-2 text-xs font-semibold text-brand-800">
-                          {item.start_note}
-                        </p>
-                      ) : null}
-
-                      {lines.length > 0 ? (
-                        <ul className="mt-3.5 space-y-1.5 text-xs leading-relaxed text-slate-600">
-                          {lines.map((line, i) => (
-                            <li key={i} className="flex gap-2">
-                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                              <span>{line}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-
-                      <div className="mt-auto flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-                        {item.class_id ? (
-                          <Link
-                            href={`/dashboard/store/class/${item.class_id}`}
-                            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-brand-700"
-                          >
-                            {t("viewClassBtn")} <ArrowRight className="h-3.5 w-3.5" />
-                          </Link>
-                        ) : (
-                          <Link
-                            href="/register"
-                            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-brand-700"
-                          >
-                            {t("registerBtn")} <ArrowRight className="h-3.5 w-3.5" />
-                          </Link>
+                    return (
+                      <motion.article
+                        key={item.id}
+                        initial={{ opacity: 0, y: 14 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-40px" }}
+                        transition={{ duration: 0.4, delay: Math.min(idx, 5) * 0.05 }}
+                        className={cn(
+                          "flex h-full flex-col rounded-3xl border bg-white p-5 shadow-soft transition hover:shadow-lift sm:p-6",
+                          item.is_featured ? "border-brand-200 ring-1 ring-brand-100" : "border-black/[0.06]",
                         )}
-                        {waHref ? (
-                          <a
-                            href={waHref}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100"
-                          >
-                            <WhatsAppIcon className="h-3.5 w-3.5" /> {t("whatsappBtn")}
-                          </a>
+                      >
+                        {/* Top Badges & Fee */}
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1", typeCls)}>
+                              {tc.raw<Record<string, string>>("classTypes")?.[item.class_type] ?? item.class_type}
+                            </span>
+                            {item.is_featured ? (
+                              <span className="rounded-full bg-brand-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                                {t("newIntakeBadge")}
+                              </span>
+                            ) : null}
+                          </div>
+                          {item.fee_label ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1 text-xs font-bold text-teal-800 ring-1 ring-teal-200/70">
+                              <Tag className="h-3.5 w-3.5 text-teal-600" />
+                              {item.fee_label}
+                            </span>
+                          ) : null}
+                        </div>
+
+                        {/* Title & Optional 1-line Note */}
+                        <h3 className="mt-3.5 font-display text-lg font-extrabold leading-snug text-ink sm:text-xl">
+                          {item.title}
+                        </h3>
+                        {item.start_note ? (
+                          <p className="mt-1.5 text-xs font-semibold text-brand-700">{item.start_note}</p>
                         ) : null}
-                      </div>
-                    </motion.article>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
+
+                        {/* Structured Institute Timetable Rows (All institutes inside this ONE card) */}
+                        <div
+                          className={cn(
+                            "mt-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-200/70",
+                            singleCard && item.slots.length > 1
+                              ? "grid grid-cols-1 gap-px md:grid-cols-2"
+                              : "grid grid-cols-1 gap-px",
+                          )}
+                        >
+                          {item.slots.map((slot, sIdx) => {
+                            const matched =
+                              isCenterFiltered &&
+                              slot.center_key.toLowerCase() === selectedCenter.toLowerCase();
+                            const dimmed = isCenterFiltered && !matched;
+                            const isOnline = slot.center_key === ONLINE_KEY;
+                            const spanFull =
+                              singleCard &&
+                              item.slots.length > 1 &&
+                              item.slots.length % 2 === 1 &&
+                              sIdx === item.slots.length - 1;
+
+                            return (
+                              <div
+                                key={`${slot.center_key}-${sIdx}`}
+                                className={cn(
+                                  "flex items-center justify-between gap-3 bg-slate-50/95 px-4 py-3 text-sm transition-colors",
+                                  spanFull && "md:col-span-2",
+                                  matched && "bg-brand-50/95",
+                                  dimmed && "opacity-45",
+                                )}
+                              >
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    {isOnline ? (
+                                      <Wifi className="h-3.5 w-3.5 shrink-0 text-brand-600" />
+                                    ) : (
+                                      <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-600" />
+                                    )}
+                                    <span className="truncate font-display font-bold text-ink">
+                                      {labelForCenter(slot.center_key)}
+                                    </span>
+                                  </div>
+                                  {slot.hall_name ? (
+                                    <p className="mt-0.5 truncate pl-5 text-xs font-medium text-slate-500">
+                                      {slot.hall_name}
+                                    </p>
+                                  ) : null}
+                                </div>
+                                <div className="shrink-0 text-right">
+                                  <p className="text-xs font-bold text-ink sm:text-[13px]">{slot.day_label}</p>
+                                  <p className="mt-0.5 text-xs font-semibold text-brand-700 tabular-nums">
+                                    {slot.time_label}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* CTA Footer */}
+                        <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                          {item.class_id ? (
+                            <Link
+                              href={`/dashboard/store/class/${item.class_id}`}
+                              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-brand-700"
+                            >
+                              {t("viewClassBtn")} <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                          ) : (
+                            <Link
+                              href="/register"
+                              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-brand-700"
+                            >
+                              {t("registerBtn")} <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                          )}
+                          {waHref ? (
+                            <a
+                              href={waHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100"
+                            >
+                              <WhatsAppIcon className="h-3.5 w-3.5" /> {t("whatsappBtn")}
+                            </a>
+                          ) : null}
+                        </div>
+                      </motion.article>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
 
