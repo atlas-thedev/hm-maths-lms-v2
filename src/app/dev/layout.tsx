@@ -17,6 +17,7 @@ export default async function DevLayout({ children }: { children: React.ReactNod
       { href: "/dev/results", label: t("results"), icon: "grad" },
       { href: "/dev/faq", label: t("faq"), icon: "faq" },
       { href: "/dev/centers", label: t("centers"), icon: "map" },
+      { href: "/dev/timetable", label: t("timetable"), icon: "events" },
       { href: "/dev/contact", label: t("contact"), icon: "link" },
       { href: "/dev/site", label: t("site"), tab: t("tabSite"), icon: "power" },
       { href: "/dev/users", label: t("users"), tab: t("tabUsers"), icon: "team" },

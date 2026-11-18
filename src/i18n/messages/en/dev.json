@@ -11,6 +11,7 @@
     "results": "Results & teacher photos",
     "faq": "FAQ",
     "centers": "Centers",
+    "timetable": "Hero Promo & Timetable",
     "contact": "Contact & links",
     "site": "Maintenance & site",
     "tabSite": "Site",
@@ -79,6 +80,7 @@
     "contentDesc": "Edit any sentence, English or Sinhala",
     "faqDesc": "Add, edit and reorder frequently asked questions",
     "centersDesc": "Class locations (Nugegoda, …)",
+    "timetableDesc": "Hero new-intake card & public class timetable",
     "contactDesc": "Phones, channels, bank accounts, videos"
   },
   "users": {

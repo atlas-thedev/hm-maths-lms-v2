@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { Activity, Database, GitCommit, HardDrive, HelpCircle, MapPin, Megaphone, Palette, Phone, Power, Server, ShieldCheck, Tag, Type, Users, UserRoundCheck, Wrench } from "lucide-react";
+import { Activity, CalendarDays, Database, GitCommit, HardDrive, HelpCircle, MapPin, Megaphone, Palette, Phone, Power, Server, ShieldCheck, Tag, Type, Users, UserRoundCheck, Wrench } from "lucide-react";
 import { requireDeveloper } from "@/lib/auth";
 import { asService } from "@/lib/db/pg";
 import { getAccessSettings, getAnnouncementSettings, getMaintenanceSettings, getThemeSettings } from "@/lib/settings";
@@ -142,11 +142,12 @@ export default async function DevOverviewPage() {
         <ActionCard href="/dev/users" title={tn("users")} description={t("usersDesc")} icon={Users} tone="info" />
         <ActionCard href="/dev/tools" title={tn("tools")} description={t("toolsDesc")} icon={HardDrive} tone="highlight" />
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         <ActionCard href="/dev/brand" title={tn("brand")} description={t("brandDesc")} icon={Tag} />
         <ActionCard href="/dev/content" title={tn("content")} description={t("contentDesc")} icon={Type} tone="info" />
         <ActionCard href="/dev/faq" title={tn("faq")} description={t("faqDesc")} icon={HelpCircle} tone="brand" />
         <ActionCard href="/dev/centers" title={tn("centers")} description={t("centersDesc")} icon={MapPin} tone="success" />
+        <ActionCard href="/dev/timetable" title={tn("timetable")} description={t("timetableDesc")} icon={CalendarDays} tone="highlight" />
         <ActionCard href="/dev/contact" title={tn("contact")} description={t("contactDesc")} icon={Phone} tone="warning" />
       </div>
     </div>

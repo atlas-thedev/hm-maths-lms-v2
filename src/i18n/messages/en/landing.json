@@ -355,6 +355,7 @@
       "support": "FAQ",
       "gallery": "Gallery",
       "results": "Results",
+      "timetable": "Timetable",
       "more": "More"
     },
     "hero": {
@@ -601,5 +602,23 @@
     "bResults": "B results",
     "rank": "Rank",
     "otherResults": "More achievements"
+  },
+  "timetablePage": {
+    "title": "Class Timetable & New Intakes",
+    "subtitle": "Full weekly schedule across all physical centers and island-wide Online classes, updated live from our portal.",
+    "badge": "LIVE SCHEDULE",
+    "allBatches": "All A/L Batches",
+    "allCenters": "All Centers",
+    "batchLabel": "{year} A/L",
+    "newIntakeBadge": "New Intake",
+    "registerBtn": "Register Free",
+    "viewClassBtn": "Open in Store",
+    "whatsappBtn": "WhatsApp Inquiry",
+    "empty": "No classes match this filter.",
+    "emptyDesc": "Try switching the A/L batch year or selecting All Centers.",
+    "contactBannerTitle": "Need help choosing the right class or hall?",
+    "contactBannerDesc": "Call or message our team on WhatsApp and we will guide you with halls, fees, and registration.",
+    "callBtn": "Call Now",
+    "count": "{n} classes listed"
   }
 }

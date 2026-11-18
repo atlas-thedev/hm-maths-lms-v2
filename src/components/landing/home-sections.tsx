@@ -13,8 +13,10 @@ import { SL_DISTRICTS, SL_VIEWBOX } from "./sl-map-data";
 import { Sticker } from "./sticker";
 import { Magnetic, SplitReveal, TiltCard } from "./motion-kit";
 import { HeroBanner } from "./hero-banner";
+import { HeroIntakeCard, HeroIntakeMobileBar } from "./hero-intake-card";
 import { HeroMobileStage, HeroSilhouettes } from "./hero-silhouettes";
 import { TeacherPhoto } from "./teacher-photo";
+import type { HeroPromoSettings } from "@/lib/settings";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const up = (d = 0) => ({ initial: { opacity: 0, y: 26 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.7, delay: d, ease } });
@@ -66,7 +68,7 @@ export function ScrollProgress() {
 
 export type LandingStats = { abResults?: string; subscribers?: string; videos?: string };
 
-export function HomeHero({ account, stats, photo }: { account: "guest" | "student" | "admin"; stats?: LandingStats; photo?: string | null }) {
+export function HomeHero({ account, stats, photo, heroPromo }: { account: "guest" | "student" | "admin"; stats?: LandingStats; photo?: string | null; heroPromo: HeroPromoSettings }) {
   const SITE = useSite();
   const townKeys = useTownKeys();
   const t = useT("landing.home.hero");
@@ -83,7 +85,8 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
   const primary = account === "guest" ? { href: "/register", label: t("ctaGuest") } : { href: account === "admin" ? "/admin" : "/dashboard", label: t("ctaGuest") };
   return (
     <section ref={ref} id="home" className="relative scroll-mt-24 overflow-hidden bg-landing-hero pb-24 pt-24 text-white lg:pb-28 lg:pt-24">
-      <HeroSilhouettes progress={scrollYProgress} />
+      <HeroSilhouettes progress={scrollYProgress} showLeftSilhouette={!heroPromo.enabled} />
+      <HeroIntakeCard promo={heroPromo} progress={scrollYProgress} />
       <motion.div style={reduce ? undefined : { y: textY, opacity: fade }} className="container relative z-10 flex flex-col items-center">
         {/* Channel banner is the hero: its backdrop blends with the backlit silhouette spotlight behind it.
             The banner is neutral; everything that was red in the art is a brand-coloured mask on top (so it follows the
@@ -96,6 +99,7 @@ export function HomeHero({ account, stats, photo }: { account: "guest" | "studen
         <HeroMobileStage progress={scrollYProgress} />
         <h1 className="sr-only">{t("line1")} {t("line2")}</h1>
         <div className="relative z-10 -mt-5 flex w-full max-w-xl flex-col items-center text-center sm:mt-0">
+          <HeroIntakeMobileBar promo={heroPromo} />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }} className="mt-4 text-[15px] leading-relaxed text-white/85 drop-shadow-sm">{t("desc")}</motion.p>
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.6, ease }} className="mt-7 flex flex-wrap justify-center gap-3">
             <Magnetic strength={0.3}>

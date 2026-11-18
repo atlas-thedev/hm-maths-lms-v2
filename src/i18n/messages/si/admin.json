@@ -885,7 +885,7 @@
         "settings_changed": "සැකසුම් වෙනස් කළා",
         "user_deleted": "ගිණුම මකා දැමීම",
         "video_limit": "පටිගත කිරීම් ඕනෑවට වඩා විවෘත කළා",
-        "video_tamper": "වීඩියෝ ජල සලකුණ ඉවත් කළා",
+        "video_tamper": "වීඩියෝ Watermark එක ඉවත් කළා",
         "gallery_changed": "ඡායාරූප ගැලරිය"
       },
       "ref": "සඳහන",

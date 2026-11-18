@@ -10,7 +10,7 @@ import { getScheduleLabel, getT } from "@/i18n/server";
 import { SITE } from "@/content/site";
 import { publicImage } from "@/lib/public-image";
 import type { ClassRow } from "@/lib/types";
-import { getBrand, getBrandSettings, getCenters, getLandingStatsSettings, getSiteData } from "@/lib/settings";
+import { getBrand, getBrandSettings, getCenters, getHeroPromoSettings, getLandingStatsSettings, getSiteData } from "@/lib/settings";
 import { getLatestPhotos } from "@/lib/gallery-data";
 import { getTeacherPortraits } from "@/lib/public-results";
 import { siteGraph } from "@/lib/seo-graph";
@@ -20,7 +20,7 @@ import { mapPoint } from "@/lib/centers";
 type Placeholder = { title: string; type: string; year: number; lines: string[] };
 
 export default async function HomePage() {
-  const [{ db, user, profile }, t, sched, tm, landingStats, brand, brandSettings, centers, SITEDATA] = await Promise.all([
+  const [{ db, user, profile }, t, sched, tm, landingStats, brand, brandSettings, centers, SITEDATA, heroPromo] = await Promise.all([
     getSession(),
     getT("landing"),
     getScheduleLabel(),
@@ -30,6 +30,7 @@ export default async function HomePage() {
     getBrandSettings(),
     getCenters(),
     getSiteData(),
+    getHeroPromoSettings(),
   ]);
   const [galleryPhotos, portraits] = await Promise.all([getLatestPhotos(db, 9), getTeacherPortraits(db)]);
   const { data } = await db.from("classes").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(10);
@@ -58,7 +59,7 @@ export default async function HomePage() {
       <ScrollProgress />
       <HomeNav account={account} />
       <main>
-        <HomeHero account={account} stats={landingStats} photo={brandSettings.heroPhoto || null} />
+        <HomeHero account={account} stats={landingStats} photo={brandSettings.heroPhoto || null} heroPromo={heroPromo} />
         <MarqueeBand />
         <HomeAbout />
         <HomeProcess />

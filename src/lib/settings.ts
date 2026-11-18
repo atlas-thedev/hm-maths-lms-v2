@@ -18,7 +18,7 @@ import { normalizeSiteData, type SiteData } from "@/lib/site-data";
 
 // ─── generic read / write ───
 // Every setting is read with ONE query per request (React cache()), so adding settings costs nothing extra.
-const ALL_KEYS = ["landing_stats", "theme", "maintenance", "announcement", "access", "brand", "centers", "site_text", "site_data", "faqs"];
+const ALL_KEYS = ["landing_stats", "theme", "maintenance", "announcement", "access", "brand", "centers", "site_text", "site_data", "faqs", "hero_promo"];
 const allSettings = cache(async (): Promise<Record<string, unknown>> => {
   try {
     const rows = await asService(async (c) => (await c.query("select key, value from public.system_settings where key = any($1::text[])", [ALL_KEYS])).rows);
@@ -223,6 +223,59 @@ export const getFaqs = cache(async (): Promise<FaqItem[]> => {
 });
 
 export const saveFaqs = (next: FaqItem[], actorId: string) => writeSetting("faqs", next, actorId);
+
+// ─── Hero Intake / Promo spotlight card (replaces desktop left silhouette, Dev panel editable) ───
+export interface HeroPromoSettings {
+  enabled: boolean;
+  year: string;
+  badgeEn: string;
+  badgeSi: string;
+  titleEn: string;
+  titleSi: string;
+  subtitleEn: string;
+  subtitleSi: string;
+  ctaEn: string;
+  ctaSi: string;
+  href: string;
+}
+
+export const DEFAULT_HERO_PROMO: HeroPromoSettings = {
+  enabled: true,
+  year: "2029",
+  badgeEn: "NEW INTAKE",
+  badgeSi: "නව බඳවා ගැනීම්",
+  titleEn: "2029 A/L New Class Registration",
+  titleSi: "2029 නව පන්ති ලියාපදිංචිය",
+  subtitleEn: "Physical Centers & Island-wide Online · Full Schedule & Details",
+  subtitleSi: "පානදුර · හොරණ · කළුතර · මතුගම · නුගේගොඩ සහ Online · සම්පූර්ණ විස්තර",
+  ctaEn: "View Timetable",
+  ctaSi: "කාලසටහන බලන්න",
+  href: "/timetable?year=2029",
+};
+
+const safeHref = (u: unknown, fallback: string) => {
+  const s = str(u, "", 200);
+  return /^(\/[^\s<>"]*)$|^https:\/\/[^\s<>"]+$/.test(s) ? s : fallback;
+};
+
+export const getHeroPromoSettings = cache(async (): Promise<HeroPromoSettings> => {
+  const v = await readSetting("hero_promo");
+  return {
+    enabled: bool(v.enabled, DEFAULT_HERO_PROMO.enabled),
+    year: str(v.year, "", 20) || DEFAULT_HERO_PROMO.year,
+    badgeEn: str(v.badgeEn, "", 50) || DEFAULT_HERO_PROMO.badgeEn,
+    badgeSi: str(v.badgeSi, "", 50) || DEFAULT_HERO_PROMO.badgeSi,
+    titleEn: str(v.titleEn, "", 120) || DEFAULT_HERO_PROMO.titleEn,
+    titleSi: str(v.titleSi, "", 120) || DEFAULT_HERO_PROMO.titleSi,
+    subtitleEn: str(v.subtitleEn, "", 220) || DEFAULT_HERO_PROMO.subtitleEn,
+    subtitleSi: str(v.subtitleSi, "", 220) || DEFAULT_HERO_PROMO.subtitleSi,
+    ctaEn: str(v.ctaEn, "", 50) || DEFAULT_HERO_PROMO.ctaEn,
+    ctaSi: str(v.ctaSi, "", 50) || DEFAULT_HERO_PROMO.ctaSi,
+    href: safeHref(v.href, DEFAULT_HERO_PROMO.href),
+  };
+});
+
+export const saveHeroPromoSettings = (next: HeroPromoSettings, actorId: string) => writeSetting("hero_promo", next, actorId);
 
 // ─── Audit log ───
 export async function recordAuditLog(entry: {

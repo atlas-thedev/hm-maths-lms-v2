@@ -7,7 +7,13 @@ const ease = [0.22, 1, 0.36, 1] as const;
  * Spaceship-style backlit studio spotlight + silhouetted student (left) & full-color Sir (right).
  * Full-bleed side framing on sm+ screens, with dedicated HeroMobileStage on phones so text never covers Sir's face.
  */
-export function HeroSilhouettes({ progress }: { progress: MotionValue<number> }) {
+export function HeroSilhouettes({
+  progress,
+  showLeftSilhouette = false,
+}: {
+  progress: MotionValue<number>;
+  showLeftSilhouette?: boolean;
+}) {
   const reduce = useReducedMotion();
 
   const beamScale = useTransform(progress, [0, 1], [1, 1.22]);
@@ -43,23 +49,25 @@ export function HeroSilhouettes({ progress }: { progress: MotionValue<number> })
         />
       </motion.div>
 
-      {/* Desktop/Tablet: Left silhouette (student looking inward, clear of centered copy) */}
-      <motion.div
-        style={reduce ? undefined : { x: leftX, y: leftY, scale: leftScale, opacity: figureOpacity }}
-        initial={reduce ? undefined : { opacity: 0, y: 36, x: -24 }}
-        animate={{ opacity: 0.92, y: 0, x: 0 }}
-        transition={{ duration: 1.0, delay: 0.1, ease }}
-        className="hidden sm:block absolute bottom-0 left-[1%] h-[70%] origin-bottom md:left-[2%] lg:left-[4%] lg:h-[76%] xl:left-[7%] xl:h-[80%]"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/silhouette-male.webp"
-          alt=""
-          loading="eager"
-          decoding="async"
-          className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_78%,transparent_100%)]"
-        />
-      </motion.div>
+      {/* Desktop/Tablet: Optional fallback left silhouette when intake promo card is disabled */}
+      {showLeftSilhouette ? (
+        <motion.div
+          style={reduce ? undefined : { x: leftX, y: leftY, scale: leftScale, opacity: figureOpacity }}
+          initial={reduce ? undefined : { opacity: 0, y: 36, x: -24 }}
+          animate={{ opacity: 0.92, y: 0, x: 0 }}
+          transition={{ duration: 1.0, delay: 0.1, ease }}
+          className="hidden sm:block absolute bottom-0 left-[1%] h-[70%] origin-bottom md:left-[2%] lg:left-[4%] lg:h-[76%] xl:left-[7%] xl:h-[80%]"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/silhouette-male.webp"
+            alt=""
+            loading="eager"
+            decoding="async"
+            className="h-full w-auto max-w-none object-contain object-bottom [mask-image:linear-gradient(to_bottom,#000_78%,transparent_100%)]"
+          />
+        </motion.div>
+      ) : null}
 
       {/* Desktop/Tablet: Right figure (Hasitha Sir in full color + comma mark, clear of center CTAs/stats) */}
       <motion.div

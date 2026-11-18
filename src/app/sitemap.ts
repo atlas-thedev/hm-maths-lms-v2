@@ -29,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absolute("/combined-maths-classes"), lastModified: classesChanged ?? now, changeFrequency: "weekly", priority: 0.9 },
     ...centers.map((c) => ({ url: absolute(`/combined-maths-classes/${centerSlug(c)}`), lastModified: classesChanged ?? now, changeFrequency: "weekly" as const, priority: 0.85 })),
     { url: absolute(`/combined-maths-classes/${ONLINE_SLUG}`), lastModified: classesChanged ?? now, changeFrequency: "weekly", priority: 0.85 },
+    { url: absolute("/timetable"), lastModified: classesChanged ?? now, changeFrequency: "weekly", priority: 0.9 },
     { url: absolute("/store"), lastModified: classesChanged ?? now, changeFrequency: "weekly", priority: 0.8 },
     { url: absolute("/results"), lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: absolute("/gallery"), lastModified: albums[0]?.updated ?? albums[0]?.created_at ?? now, changeFrequency: "weekly", priority: 0.6 },

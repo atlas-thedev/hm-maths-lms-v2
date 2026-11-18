@@ -9,9 +9,9 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { useT } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 
-const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["stories", "stories"], ["gallery", "gallery"], ["results", "results"], ["support", "support"]] as const;
+const LINKS = [["home", "home"], ["process", "process"], ["teacher", "teacher"], ["centers", "centers"], ["classes", "classes"], ["timetable", "timetable"], ["stories", "stories"], ["gallery", "gallery"], ["results", "results"], ["support", "support"]] as const;
 /** Sections that have a page of their own: the nav goes there instead of scrolling. */
-const PAGE_LINKS: Record<string, string> = { gallery: "/gallery", results: "/results" };
+const PAGE_LINKS: Record<string, string> = { timetable: "/timetable", gallery: "/gallery", results: "/results" };
 const PRIMARY = LINKS.filter(([key]) => ["home", "teacher", "classes", "results"].includes(key));
 const MORE = LINKS.filter(([key]) => !["home", "teacher", "classes", "results"].includes(key));
 
@@ -28,7 +28,7 @@ export function HomeNav({ account }: { account: "guest" | "student" | "admin" })
   const onHome = pathname === "/";
   const [seen, setSeen] = useState("home");
   // On the home page the section in view is active; standalone public pages highlight their own link.
-  const active = onHome ? seen : pathname.startsWith("/gallery") ? "gallery" : pathname.startsWith("/results") ? "results" : "";
+  const active = onHome ? seen : pathname.startsWith("/timetable") ? "timetable" : pathname.startsWith("/gallery") ? "gallery" : pathname.startsWith("/results") ? "results" : "";
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);
